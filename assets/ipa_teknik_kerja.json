@@ -1,0 +1,103 @@
+{
+  "J01B-Kerja": {
+    "name": "IPA (Teknik) - Kerja",
+    "description": "Fokus: Matematika, Fisika, IT (arah teknik/teknologi) untuk pekerjaan langsung, bisa belajar mandiri melalui kursus atau pelatihan.",
+    "categories": [
+      "Teknologi & IT",
+      "Manufaktur",
+      "Pekerjaan Teknik"
+    ],
+    "minat": {
+      "Elektronika": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk memperbaiki dan merakit perangkat elektronik tanpa kuliah formal? [7]",
+          "Apakah Anda ingin belajar tentang instalasi perangkat elektronik melalui kursus atau tutorial online? [6]",
+          "Apakah Anda tertarik untuk bekerja di industri yang mengembangkan teknologi elektronik? [6]",
+          "Apakah Anda ingin memecahkan masalah teknis dengan alat-alat elektronik? [6]"
+        ],
+        "karir": [
+          "Teknisi Elektronika[20]",
+          "Teknisi Perangkat Elektronik[19]",
+          "Teknisi Service HP[18]",
+          "Pengembang Perangkat Elektronik[18]"
+        ],
+        "jurusan_terkait": []
+      },
+      "Robotika": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk mengembangkan robot atau mesin otomatis dengan belajar mandiri? [7]",
+          "Apakah Anda ingin bekerja dengan sistem robot dan otomatisasi tanpa kuliah formal? [7]",
+          "Apakah Anda ingin mempelajari lebih lanjut tentang teknologi robotika melalui kursus online? [6]",
+          "Apakah Anda tertarik untuk memprogram robot dan membuatnya berfungsi sesuai keinginan? [6]"
+        ],
+        "karir": [
+          "Teknisi Robotika[20]",
+          "Pengembang Robot[19]",
+          "Operator Robot Industri[18]",
+          "Automation Engineer[18]"
+        ],
+        "jurusan_terkait": []
+      },
+      "Teknologi": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk belajar pemrograman komputer dan membuat aplikasi secara mandiri? [7]",
+          "Apakah Anda ingin bekerja di bidang teknologi informasi tanpa kuliah? [6]",
+          "Apakah Anda ingin memahami cara kerja jaringan komputer dan server melalui kursus? [6]",
+          "Apakah Anda tertarik untuk mengembangkan solusi teknologi untuk masalah sehari-hari? [6]"
+        ],
+        "karir": [
+          "Software Developer[20]",
+          "Network Engineer[19]",
+          "IT Support[18]",
+          "Freelance Web Developer[18]"
+        ],
+        "jurusan_terkait": []
+      },
+      "Teknik Mesin": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk bekerja dengan mesin dan perangkat mekanis tanpa gelar kuliah? [7]",
+          "Apakah Anda ingin mempelajari proses pembuatan dan perbaikan mesin melalui pelatihan atau kursus? [6]",
+          "Apakah Anda ingin bekerja di industri manufaktur dan perakitan mesin? [6]",
+          "Apakah Anda tertarik untuk memperbaiki mesin dan alat industri? [6]"
+        ],
+        "karir": [
+          "Teknisi Mesin[20]",
+          "Operator Mesin[19]",
+          "Perancang Mesin[18]",
+          "Engineer Maintenance Mesin[18]"
+        ],
+        "jurusan_terkait": []
+      },
+      "Teknik Sipil": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk bekerja dalam perencanaan dan pengawasan proyek konstruksi tanpa kuliah? [7]",
+          "Apakah Anda ingin mempelajari dasar-dasar desain bangunan dan jalan melalui pelatihan? [6]",
+          "Apakah Anda ingin bekerja di lapangan untuk proyek konstruksi dan infrastruktur? [6]",
+          "Apakah Anda tertarik dengan analisis material dan struktur bangunan? [5]"
+        ],
+        "karir": [
+          "Teknisi Sipil[20]",
+          "Pengawas Konstruksi[19]",
+          "Surveyor Lapangan[18]",
+          "Staf Pengelola Proyek Konstruksi[18]"
+        ],
+        "jurusan_terkait": []
+      },
+      "Teknik Kimia": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk bekerja di industri kimia tanpa gelar kuliah? [7]",
+          "Apakah Anda ingin memahami proses kimia industri melalui kursus atau pelatihan? [6]",
+          "Apakah Anda tertarik untuk bekerja dengan bahan kimia dan proses pembuatan produk kimia? [6]",
+          "Apakah Anda ingin berkarir di pengolahan limbah dan pemurnian air? [5]"
+        ],
+        "karir": [
+          "Teknisi Kimia[20]",
+          "Operator Proses Kimia[19]",
+          "Staf Produksi Kimia[18]",
+          "Ahli Laboratorium Kimia[18]"
+        ],
+        "jurusan_terkait": []
+      }
+    }
+  }
+}

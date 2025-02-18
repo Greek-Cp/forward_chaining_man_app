@@ -1,0 +1,124 @@
+{
+    
+        "J01B": {
+          "name": "IPA (Teknik)",
+          "description": "Fokus: Matematika, Fisika, IT (arah teknik/teknologi)",
+          "categories": [
+            "Teknologi & IT"
+          ],
+          "minat": {
+            "Elektronika": {
+              "pertanyaan": [
+                "Apakah Anda tertarik dengan dunia elektronik dan rangkaian listrik? [5]",
+                "Apakah Anda ingin belajar cara membuat perangkat elektronik sederhana? [6]",
+                "Apakah Anda suka memecahkan masalah teknis dengan alat-alat elektronik? [6]",
+                "Apakah Anda tertarik untuk mengembangkan teknologi elektronik untuk kehidupan sehari-hari? [5]"
+              ],
+              "karir": [
+                "Insinyur Elektro[20]",
+                "Teknisi Elektronika[19]",
+                "R&D Specialist[18]"
+              ],
+              "jurusan_terkait": [
+                "Teknik Elektro",
+                "Teknik Mekatronika",
+                "Elektronika Industri"
+              ]
+            },
+            "Robotika": {
+              "pertanyaan": [
+                "Apakah Anda tertarik untuk mengembangkan robot atau mesin otomatis? [6]",
+                "Apakah Anda suka bekerja dengan teknologi yang menggabungkan perangkat keras dan perangkat lunak? [7]",
+                "Apakah Anda tertarik dengan dunia sensor dan bagaimana mereka bekerja dalam robot? [6]",
+                "Apakah Anda menikmati belajar cara membuat robot bergerak atau berinteraksi dengan lingkungannya? [6]"
+              ],
+              "karir": [
+                "Robotic Engineer[20]",
+                "Automation Engineer[19]",
+                "Teknisi Robotik[18]"
+              ],
+              "jurusan_terkait": [
+                "Teknik Mekatronika",
+                "Teknik Elektro",
+                "Teknik Informatika (Konsentrasi Robotika)"
+              ]
+            },
+            "Teknologi": {
+              "pertanyaan": [
+                "Apakah Anda tertarik untuk membuat perangkat lunak atau aplikasi untuk komputer atau ponsel? [7]",
+                "Apakah Anda suka bekerja dengan kode dan pengembangan teknologi? [7]",
+                "Apakah Anda ingin memahami cara kerja jaringan komputer dan internet? [6]",
+                "Apakah Anda menikmati tantangan dalam menciptakan solusi teknologi untuk masalah sehari-hari? [6]"
+              ],
+              "karir": [
+                "Software Engineer[20]",
+                "Network Engineer[19]",
+                "IT Consultant[18]"
+              ],
+              "jurusan_terkait": [
+                "Teknik Informatika",
+                "Sistem Informasi",
+                "Teknologi Informasi"
+              ]
+            },
+            "Teknik Mesin": {
+              "pertanyaan": [
+                "Apakah Anda tertarik dengan cara kerja mesin dan perangkat mekanis? [6]",
+                "Apakah Anda ingin belajar tentang proses manufaktur dan pembuatan mesin? [6]",
+                "Apakah Anda suka mempelajari cara benda-benda bergerak atau bekerja dalam kehidupan sehari-hari? [5]",
+                "Apakah Anda tertarik untuk merancang alat atau mesin yang bisa membantu memecahkan masalah? [6]"
+              ],
+              "karir": [
+                "Insinyur Mesin[20]",
+                "Teknisi Mesin[19]",
+                "R&D Mechanical Engineer[18]"
+              ],
+              "jurusan_terkait": [
+                "Teknik Mesin",
+                "Teknik Industri",
+                "Teknik Otomotif",
+                "Teknik Aeronautika"
+              ]
+            },
+            "Teknik Sipil": {
+              "pertanyaan": [
+                "Apakah Anda tertarik dengan pembangunan dan perancangan bangunan? [6]",
+                "Apakah Anda suka belajar tentang bagaimana gedung atau jembatan dibangun? [6]",
+                "Apakah Anda tertarik untuk mempelajari cara bangunan menahan beban? [5]",
+                "Apakah Anda menikmati mempelajari teknik dan cara-cara konstruksi dalam kehidupan sehari-hari? [5]"
+              ],
+              "karir": [
+                "Insinyur Sipil[20]",
+                "Pengawas Konstruksi[19]",
+                "Perencana Infrastruktur[18]"
+              ],
+              "jurusan_terkait": [
+                "Teknik Sipil",
+                "Teknik Konstruksi",
+                "Teknik Transportasi"
+              ]
+            },
+            "Teknik Kimia": {
+              "pertanyaan": [
+                "Apakah Anda tertarik dengan reaksi kimia yang terjadi di sekitar kita? [6]",
+                "Apakah Anda ingin memahami bagaimana bahan kimia digunakan dalam kehidupan sehari-hari? [5]",
+                "Apakah Anda tertarik untuk mempelajari cara proses kimia bekerja, seperti pembuatan sabun atau pembersih? [5]",
+                "Apakah Anda ingin tahu lebih banyak tentang pengolahan limbah atau kualitas air? [5]"
+              ],
+              "karir": [
+                "Insinyur Kimia[20]",
+                "Proses Engineer[19]",
+                "Ahli Lingkungan[18]"
+              ],
+              "jurusan_terkait": [
+                "Teknik Kimia",
+                "Teknik Lingkungan",
+                "Teknik Biokimia"
+              ]
+            }
+          }
+        }
+
+
+  }
+  

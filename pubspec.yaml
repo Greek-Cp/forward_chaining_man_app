@@ -1,0 +1,27 @@
+name: forward_chaining_man_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/data_ekonomi.json
+    - assets/ipa_sains_kerja.json
+    - assets/ipa_teknik_kerja.json
+    - assets/ipa_sains_kuliah.json
+    - assets/ipa_teknik_kuliah.json

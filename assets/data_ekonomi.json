@@ -1,0 +1,20 @@
+{
+    "data_ekonomi": [
+      {
+        "kode": "E01",
+        "deskripsi": "Saya dan keluarga memiliki kondisi ekonomi yang cukup untuk melanjutkan kuliah"
+      },
+      {
+        "kode": "E02",
+        "deskripsi": "Saya perlu mempertimbangkan biaya karena kondisi ekonomi keluarga terbatas"
+      },
+      {
+        "kode": "E03",
+        "deskripsi": "Saya berminat kuliah tapi berencana mencari beasiswa atau bantuan pendanaan"
+      },
+      {
+        "kode": "E04",
+        "deskripsi": "Saya lebih memilih bekerja atau usaha karena kondisi ekonomi saat ini"
+      }
+    ]
+  }

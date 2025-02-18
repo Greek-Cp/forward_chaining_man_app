@@ -1,0 +1,59 @@
+{
+    "J01A-Kerja": {
+      "name": "IPA (Sains Murni) - Kerja",
+      "description": "Fokus: Biologi, Kimia, dsb. (pekerjaan di bidang kesehatan, sains, farmasi) tanpa kuliah formal, bisa belajar mandiri melalui kursus.",
+      "categories": [
+        "Kesehatan & Sains",
+        "Penelitian",
+        "Pekerjaan Sains"
+      ],
+      "minat": {
+        "Kedokteran": {
+          "pertanyaan": [
+            "Apakah Anda tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal? [6]",
+            "Apakah Anda ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh? [6]",
+            "Apakah Anda tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan? [6]",
+            "Apakah Anda ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter? [5]"
+          ],
+          "karir": [
+            "Asisten Medis[20]",
+            "Tenaga Kesehatan[19]",
+            "Staf Klinik[18]",
+            "Perawat[18]"
+          ],
+          "jurusan_terkait": []
+        },
+        "Sains": {
+          "pertanyaan": [
+            "Apakah Anda ingin menjadi peneliti atau bekerja di laboratorium? [7]",
+            "Apakah Anda senang melakukan eksperimen ilmiah dan mempelajari data percobaan? [6]",
+            "Apakah Anda tertarik untuk bekerja di bidang riset atau pengembangan produk tanpa kuliah formal? [6]",
+            "Apakah Anda ingin bekerja dengan tim sains di industri atau lembaga penelitian? [6]"
+          ],
+          "karir": [
+            "Peneliti Laboratorium[20]",
+            "Asisten Peneliti[19]",
+            "Teknisi Laboratorium[18]",
+            "Staf R&D[18]"
+          ],
+          "jurusan_terkait": []
+        },
+        "Farmasi": {
+          "pertanyaan": [
+            "Apakah Anda tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal? [6]",
+            "Apakah Anda ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat? [6]",
+            "Apakah Anda tertarik dengan pengujian obat dan kualitas farmasi di industri? [5]",
+            "Apakah Anda ingin menjadi bagian dari tim yang mengembangkan produk obat? [6]"
+          ],
+          "karir": [
+            "Asisten Apoteker[20]",
+            "Teknisi Farmasi[19]",
+            "Staf Produksi Obat[18]",
+            "Pengujian Obat[17]"
+          ],
+          "jurusan_terkait": []
+        }
+      }
+    }
+  }
+  

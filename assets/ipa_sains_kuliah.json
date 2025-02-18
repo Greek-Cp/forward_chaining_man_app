@@ -1,0 +1,74 @@
+{
+  "J01A": {
+    "name": "IPA (Sains Murni)",
+    "description": "Fokus: Biologi, Kimia, dsb. (kedokteran, farmasi, sains)",
+    "categories": [
+      "Kesehatan & Sains"
+    ],
+    "minat": {
+      "Kedokteran": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk mempelajari bagaimana tubuh manusia bekerja? [5]",
+          "Apakah Anda ingin membantu orang lain untuk sembuh dari penyakit? [6]",
+          "Apakah Anda tertarik mempelajari cara-cara medis untuk mendiagnosis dan mengobati penyakit? [6]",
+          "Apakah Anda suka belajar tentang sistem organ tubuh dan bagaimana mereka berfungsi? [5]"
+        ],
+        "karir": [
+          "Dokter Umum[20]",
+          "Dokter Spesialis[18]",
+          "Tenaga Medis[16]",
+          "Dokter Gigi[18]",
+          "Ahli Bedah[20]"
+        ],
+        "jurusan_terkait": [
+          "Kedokteran Umum",
+          "Kedokteran Gigi",
+          "Kedokteran Hewan",
+          "Kesehatan Masyarakat"
+        ]
+      },
+      "Sains": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk melakukan eksperimen ilmiah dan menemukan sesuatu yang baru? [6]",
+          "Apakah Anda senang menganalisis data dan hasil percobaan? [5]",
+          "Apakah Anda suka belajar tentang alam dan bagaimana semua itu bekerja? [6]",
+          "Apakah Anda ingin memahami lebih dalam tentang dunia di sekitar Anda, seperti hewan, tumbuhan, atau planet? [6]"
+        ],
+        "karir": [
+          "Peneliti Biologi[21]",
+          "Peneliti Kimia[21]",
+          "Asisten Dosen[20]",
+          "Scientist R&D[20]",
+          "Ahli Ekologi[19]",
+          "Ahli Fisika[19]"
+        ],
+        "jurusan_terkait": [
+          "Biologi",
+          "Kimia",
+          "Fisika",
+          "Matematika"
+        ]
+      },
+      "Farmasi": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk mempelajari bagaimana obat bekerja dalam tubuh manusia? [6]",
+          "Apakah Anda ingin membantu menciptakan obat-obatan yang dapat menyembuhkan penyakit? [6]",
+          "Apakah Anda suka belajar tentang bahan kimia dan bagaimana mereka digunakan untuk tujuan medis? [5]",
+          "Apakah Anda ingin tahu lebih banyak tentang bagaimana obat dikembangkan dan diuji? [5]"
+        ],
+        "karir": [
+          "Apoteker[20]",
+          "Peneliti Obat[21]",
+          "Quality Control Farmasi[18]",
+          "Asisten Farmasi[17]"
+        ],
+        "jurusan_terkait": [
+          "Farmasi",
+          "Kimia",
+          "Teknologi Pangan",
+          "Bioteknologi"
+        ]
+      }
+    }
+  }
+}
