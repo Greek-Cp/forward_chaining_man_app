@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 void main() {
   runApp(MyApp());
@@ -10,12 +12,512 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ProgressTrackingScreen(),
+      home: KuisionerScreen(
+        isKuliah: true,
+      ),
+    );
+  }
+}
+
+class KuisionerScreen extends StatefulWidget {
+  final bool isKuliah; // contoh jika Anda butuh parameter
+
+  KuisionerScreen({this.isKuliah = true});
+
+  @override
+  _KuisionerScreenState createState() => _KuisionerScreenState();
+}
+
+class _KuisionerScreenState extends State<KuisionerScreen> {
+  int currentPageIndex = 0; // Indeks halaman (tiap halaman 5 pertanyaan)
+  Map<int, bool?> answers = {}; // Menyimpan jawaban (true = Ya, false = Tidak)
+  List<String> questions = [];
+  Map<int, String> questionIndexToMinat = {}; // mapping pertanyaan -> minat
+
+  @override
+  void initState() {
+    super.initState();
+    _loadQuestionsCombined(); // Contoh memuat pertanyaan
+  }
+
+  /// Contoh memuat 2 file JSON (IPA Sains + IPA Teknik) lalu gabung pertanyaannya
+  /// Jika tidak butuh itu, Anda bisa ubah jadi 1 file JSON saja
+  Future<void> _loadQuestionsCombined() async {
+    try {
+      // Misal default -> assets/ipa_sains_kuliah.json & assets/ipa_teknik_kuliah.json
+      String sainsFile = 'assets/ipa_sains_kuliah.json';
+      String teknikFile = 'assets/ipa_teknik_kuliah.json';
+
+      // Muat isi JSON
+      final sainsJsonStr = await rootBundle.loadString(sainsFile);
+      final teknikJsonStr = await rootBundle.loadString(teknikFile);
+
+      final sainsJson = json.decode(sainsJsonStr) as Map<String, dynamic>;
+      final teknikJson = json.decode(teknikJsonStr) as Map<String, dynamic>;
+
+      // Kita akan menyimpan semua pertanyaan di "loadedQuestions"
+      // juga kita perlu simpan "index -> minat"
+      List<String> loadedQuestions = [];
+      int qIndex = 0; // Index global pertanyaan
+
+      // ---- [1] Memasukkan pertanyaan dari Sains ----
+      sainsJson.forEach((key, value) {
+        // value seharusnya punya struktur "minat": {...}
+        if (value["minat"] != null) {
+          Map<String, dynamic> minatMap = value["minat"];
+          // Loop di setiap "minat"
+          minatMap.forEach((minatKey, minatValue) {
+            if (minatValue["pertanyaan"] != null) {
+              List pertanyaanList = minatValue["pertanyaan"];
+
+              for (var p in pertanyaanList) {
+                // Tambahkan pertanyaan ke list
+                loadedQuestions.add(p.toString());
+                // Tandai index pertanyaan ini -> minatKey
+                questionIndexToMinat[qIndex] = minatKey;
+                qIndex++;
+              }
+            }
+          });
+        }
+      });
+
+      // ---- [2] Memasukkan pertanyaan dari Teknik ----
+      teknikJson.forEach((key, value) {
+        if (value["minat"] != null) {
+          Map<String, dynamic> minatMap = value["minat"];
+          minatMap.forEach((minatKey, minatValue) {
+            if (minatValue["pertanyaan"] != null) {
+              List pertanyaanList = minatValue["pertanyaan"];
+
+              for (var p in pertanyaanList) {
+                loadedQuestions.add(p.toString());
+                questionIndexToMinat[qIndex] = minatKey;
+                qIndex++;
+              }
+            }
+          });
+        }
+      });
+
+      // Setelah semuanya digabung, update state
+      setState(() {
+        questions = loadedQuestions;
+      });
+    } catch (e) {
+      print("Error loading JSON: $e");
+      // Tangani kesalahan (misal tampilkan dialog)
+    }
+  }
+
+  // Hitung berapa banyak pertanyaan yang sudah dijawab (Ya atau Tidak)
+  int _answeredCount() {
+    int count = 0;
+    for (var entry in answers.entries) {
+      if (entry.value != null) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Jika pertanyaan belum terisi (masih loading), tampilkan loading
+    if (questions.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("Kuisioner",
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          backgroundColor: Colors.white,
+          elevation: 0,
+        ),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    int startIndex = currentPageIndex * 5;
+    int endIndex = (startIndex + 5).clamp(0, questions.length);
+
+    // =============================================
+    // PROGRESS BAR: Berdasarkan jumlah jawaban user
+    // =============================================
+    int answered = _answeredCount();
+    double progress = answered / questions.length;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          "Kuisioner",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            if (currentPageIndex > 0) {
+              setState(() {
+                currentPageIndex--;
+              });
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // --------------------------------------------------
+            // Menampilkan X/Y berdasar "answered" vs total
+            // --------------------------------------------------
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.yellow[100],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    "${answered}/${questions.length} Pertanyaan",
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+
+            // Progress bar
+            LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey[300],
+              color: Colors.orange,
+              minHeight: 6,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            SizedBox(height: 20),
+
+            // Deskripsi
+            Text(
+              "Jawab dengan jujur pertanyaan di bawah ini.",
+              style: TextStyle(fontSize: 14, color: Colors.black54),
+            ),
+            SizedBox(height: 20),
+
+            // Label "Pertanyaan"
+            Text(
+              "Pertanyaan",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+
+            // Tampilkan 5 pertanyaan per halaman
+            Expanded(
+              child: ListView.builder(
+                itemCount: endIndex - startIndex,
+                itemBuilder: (context, index) {
+                  int questionIndex = startIndex + index;
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Garis vertikal biru
+                      Column(
+                        children: [
+                          Container(
+                            width: 4,
+                            height: 15,
+                            color: Colors.blue,
+                          ),
+                          Container(
+                            width: 4,
+                            height: 50,
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 8),
+
+                      // Teks pertanyaan + checkbox
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${questionIndex + 1}. ${questions[questionIndex]}",
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            SizedBox(height: 10),
+
+                            // Checkbox "Ya"
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: answers[questionIndex] == true,
+                                  activeColor: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      // Pilih jawaban true
+                                      answers[questionIndex] = true;
+                                    });
+                                  },
+                                ),
+                                Text("Ya"),
+                              ],
+                            ),
+
+                            // Checkbox "Tidak"
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: answers[questionIndex] == false,
+                                  activeColor: Colors.red,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      // Pilih jawaban false
+                                      answers[questionIndex] = false;
+                                    });
+                                  },
+                                ),
+                                Text("Tidak"),
+                              ],
+                            ),
+
+                            SizedBox(height: 15),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+
+            // Tombol Navigasi
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Tombol Sebelumnya
+                if (currentPageIndex > 0)
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        currentPageIndex--;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      "Sebelumnya",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+
+                // Tombol Lanjut atau Selesai
+                ElevatedButton(
+                  onPressed: () {
+                    // Cek apakah semua pertanyaan di halaman ini sudah dijawab
+                    if (_allQuestionsAnswered(startIndex, endIndex)) {
+                      // Jika masih ada halaman berikutnya
+                      if (endIndex < questions.length) {
+                        setState(() {
+                          currentPageIndex++;
+                        });
+                      } else {
+                        _showCompletionDialog();
+                      }
+                    } else {
+                      _showWarningDialog();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    endIndex < questions.length ? "Lanjut" : "Selesai",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool _allQuestionsAnswered(int start, int end) {
+    for (int i = start; i < end; i++) {
+      // Pastikan key 'i' sudah ada di map answers
+      if (!answers.containsKey(i)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void _showCompletionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Kuisioner Selesai"),
+          content: Text("Terima kasih telah mengisi kuisioner!"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+
+                // Hasil forward chaining
+                List<Map<String, String>> results = _calculateRecommendations();
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProgressTrackingScreen(
+                      recommendedSteps: results,
+                    ),
+                  ),
+                );
+              },
+              child: Text("Lihat Rekomendasi"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  List<Map<String, String>> _calculateRecommendations() {
+    // 1) Hitung total "Ya"
+    int totalYes = answers.values.where((v) => v == true).length;
+
+    // 2) Buat map untuk menampung skor per minat
+    Map<String, int> minatScores = {};
+
+    // 3) Loop semua jawaban
+    answers.forEach((index, isYes) {
+      if (isYes == true) {
+        // Cari minat pertanyaan ini
+        final minat = questionIndexToMinat[index];
+        if (minat != null) {
+          // Tambah skor
+          minatScores[minat] = (minatScores[minat] ?? 0) + 1;
+        }
+      }
+    });
+
+    // Lanjutkan rule-based Anda...
+    // 4) Cek totalYes, dsb...
+    // 5) Cek minatScores tertinggi...
+    // 6) Return list rekomendasi
+
+    // Contoh sederhana:
+    if (totalYes < 3) {
+      return [
+        {
+          "title": "Kurang Berminat pada IPA",
+          "description": "Hanya menjawab 'Ya' di bawah 3 pertanyaan",
+          "category": "Umum"
+        }
+      ];
+    }
+
+    // Jika ada minat tinggi:
+    if (minatScores.isNotEmpty) {
+      // Urutkan secara descending
+      final sorted = minatScores.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+      final topMinat = sorted.first.key;
+      final topScore = sorted.first.value;
+
+      // Misal: minat tertinggi == "Kedokteran"
+      if (topMinat == "Kedokteran") {
+        return [
+          {
+            "title": "Cocok di Kedokteran",
+            "description": "Skor: $topScore",
+            "category": "Kedokteran"
+          }
+        ];
+      } else if (topMinat == "Sains") {
+        return [
+          {
+            "title": "Cocok di Sains",
+            "description": "Skor: $topScore",
+            "category": "Sains"
+          }
+        ];
+      }
+      // dan seterusnya ...
+    }
+
+    // Jika tidak ada minat menonjol
+    return [
+      {
+        "title": "Belum Ada Rekomendasi",
+        "description": "Tidak ada minat menonjol",
+        "category": "Umum"
+      }
+    ];
+  }
+
+  void _showWarningDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Peringatan"),
+          content: Text(
+              "Silakan jawab semua pertanyaan di halaman ini terlebih dahulu."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
 
 class ProgressTrackingScreen extends StatefulWidget {
+  final List<Map<String, String>> recommendedSteps;
+
+  // Terima data dari halaman kuisioner
+  ProgressTrackingScreen({required this.recommendedSteps});
+
   @override
   _ProgressTrackingScreenState createState() => _ProgressTrackingScreenState();
 }
@@ -26,36 +528,6 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
   late Animation<double> _progressAnimation;
   Map<int, double> itemHeights = {}; // Menyimpan tinggi masing-masing item
 
-  final List<Map<String, String>> steps = [
-    {
-      "title": "Menyukai Matematika",
-      "description": "Memahami konsep angka",
-      "category": "IPA"
-    },
-    {
-      "title": "Menyukai Elektronika",
-      "description": "Mengenal komponen listrik",
-      "category": "IPA"
-    },
-    {
-      "title": "Eksperimen Robotik",
-      "description":
-          "Membuat proyek kecilMembuat proyek kecilMembuat proyek kecilMembuat proyek kecilMembuat proyek kecilMembuat proyek kecilMembuat proyek kecilMembuat proyek kecilMembuat proyek kecilMembuat proyek kecil",
-      "category": "Teknologi"
-    },
-    {
-      "title": "Mempelajari Coding",
-      "description":
-          "Membuat proyek kecilMembuat proyek kecilMembuat proyek kecilMembuat proyek kecil",
-      "category": "Teknologi"
-    },
-    {
-      "title": "Membangun Aplikasi",
-      "description": "Membuat aplikasi Flutter",
-      "category": "Teknologi"
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -65,13 +537,11 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
   void _initAnimation() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 5), // Durasi animasi
+      duration: Duration(seconds: 5), // Durasi animasi timeline
     );
-
     _progressAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
-
     _controller.forward();
   }
 
@@ -88,6 +558,9 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Ganti steps => widget.recommendedSteps
+    final steps = widget.recommendedSteps;
+
     return Scaffold(
       appBar: AppBar(title: Text("Progress Tracking Timeline")),
       body: Padding(
@@ -109,17 +582,16 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
 
                 return TimelineTile(
                   step: index + 1,
-                  title: steps[index]["title"]!,
-                  description: steps[index]["description"]!,
-                  category: steps[index]["category"]!,
+                  title: steps[index]["title"] ?? "",
+                  description: steps[index]["description"] ?? "",
+                  category: steps[index]["category"] ?? "",
                   isActive:
                       _progressAnimation.value > (progressPerStep * index),
                   isActiveNow: isActiveNow,
                   isLast: index == steps.length - 1,
                   isCompleted: isCompleted,
                   isLineVisible: isLineVisible,
-                  lineHeight:
-                      max(0, lineHeight * 0.8), // Menyesuaikan tinggi garis
+                  lineHeight: max(0, lineHeight * 0.8),
                   onHeightCalculated: (height) =>
                       updateItemHeight(index, height),
                 );
@@ -237,7 +709,7 @@ class _TimelineTileState extends State<TimelineTile> {
                 AnimatedContainer(
                   duration: Duration(milliseconds: 500),
                   width: 3,
-                  height: widget.isLineVisible ? max(0, widget.lineHeight) : 0,
+                  height: widget.isLineVisible ? widget.lineHeight : 0,
                   color: widget.isActive ? activeColor : Colors.grey[300],
                 ),
             ],
