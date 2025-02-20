@@ -420,8 +420,10 @@ class _KuisionerScreenState extends State<KuisionerScreen> {
     // 1) Hitung total "Ya"
     int totalYes = answers.values.where((v) => v == true).length;
 
-    // 2) Buat map untuk menampung skor per minat
+    // 2) Buat map untuk menampung skor per minat dan pertanyaan yang dipilih
     Map<String, int> minatScores = {};
+    Map<String, List<String>> minatPertanyaan =
+        {}; // Menyimpan pertanyaan yang dipilih untuk setiap minat
 
     // 3) Loop semua jawaban
     answers.forEach((index, isYes) {
@@ -431,63 +433,65 @@ class _KuisionerScreenState extends State<KuisionerScreen> {
         if (minat != null) {
           // Tambah skor
           minatScores[minat] = (minatScores[minat] ?? 0) + 1;
+
+          // Tambahkan pertanyaan ke daftar pertanyaan untuk minat ini
+          final question = questions[index]; // Ambil pertanyaan dari indeks
+          if (minatPertanyaan[minat] == null) {
+            minatPertanyaan[minat] = [];
+          }
+          minatPertanyaan[minat]?.add(question);
         }
       }
     });
 
-    // Lanjutkan rule-based Anda...
-    // 4) Cek totalYes, dsb...
-    // 5) Cek minatScores tertinggi...
-    // 6) Return list rekomendasi
+    // 4) Menilai minat tertinggi
+    List<Map<String, String>> recommendations = [];
 
-    // Contoh sederhana:
+    // Jika tidak ada jawaban "Ya", tidak ada rekomendasi
     if (totalYes < 3) {
-      return [
-        {
-          "title": "Kurang Berminat pada IPA",
-          "description": "Hanya menjawab 'Ya' di bawah 3 pertanyaan",
-          "category": "Umum"
-        }
-      ];
-    }
-
-    // Jika ada minat tinggi:
-    if (minatScores.isNotEmpty) {
-      // Urutkan secara descending
-      final sorted = minatScores.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-      final topMinat = sorted.first.key;
-      final topScore = sorted.first.value;
-
-      // Misal: minat tertinggi == "Kedokteran"
-      if (topMinat == "Kedokteran") {
-        return [
-          {
-            "title": "Cocok di Kedokteran",
-            "description": "Skor: $topScore",
-            "category": "Kedokteran"
-          }
-        ];
-      } else if (topMinat == "Sains") {
-        return [
-          {
-            "title": "Cocok di Sains",
-            "description": "Skor: $topScore",
-            "category": "Sains"
-          }
-        ];
-      }
-      // dan seterusnya ...
-    }
-
-    // Jika tidak ada minat menonjol
-    return [
-      {
-        "title": "Belum Ada Rekomendasi",
-        "description": "Tidak ada minat menonjol",
+      recommendations.add({
+        "title": "Kurang Berminat pada IPA",
+        "description": "Hanya menjawab 'Ya' di bawah 3 pertanyaan",
         "category": "Umum"
+      });
+    } else {
+      // 5) Jika ada minat tinggi, kita urutkan berdasarkan skor
+      if (minatScores.isNotEmpty) {
+        final sorted = minatScores.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+
+        // Ambil 3 rekomendasi paling tinggi
+        int recommendationCount = 0;
+        for (var entry in sorted) {
+          final topMinat = entry.key;
+          final topScore = entry.value;
+
+          // Menambahkan rekomendasi berdasarkan minat
+          recommendations.add({
+            "title": "Cocok di $topMinat",
+            "description": "Skor: $topScore",
+            "category": topMinat,
+            "pertanyaan": minatPertanyaan[topMinat]?.join("\n") ??
+                "Tidak ada pertanyaan terkait",
+          });
+
+          recommendationCount++;
+          if (recommendationCount >= 3) {
+            break; // Ambil hanya 3 rekomendasi paling tinggi
+          }
+        }
       }
-    ];
+    }
+
+    // Tambahkan hasil akhir atau informasi tambahan setelah rekomendasi
+    recommendations.add({
+      "title": "Hasil Akhir",
+      "description":
+          "Berdasarkan jawaban Anda, kami telah memberikan beberapa rekomendasi terbaik.",
+      "category": "Informasi"
+    });
+
+    return recommendations;
   }
 
   void _showWarningDialog() {
@@ -515,7 +519,6 @@ class _KuisionerScreenState extends State<KuisionerScreen> {
 class ProgressTrackingScreen extends StatefulWidget {
   final List<Map<String, String>> recommendedSteps;
 
-  // Terima data dari halaman kuisioner
   ProgressTrackingScreen({required this.recommendedSteps});
 
   @override
@@ -568,34 +571,55 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
         child: AnimatedBuilder(
           animation: _progressAnimation,
           builder: (context, child) {
-            return Column(
-              children: List.generate(steps.length, (index) {
-                double progressPerStep = 1.0 / steps.length;
-                bool isCompleted = _progressAnimation.value >= 1.0;
-                bool isActiveNow = (_progressAnimation.value >=
-                        progressPerStep * index &&
-                    _progressAnimation.value < progressPerStep * (index + 1));
-                bool isLineVisible =
-                    _progressAnimation.value > (progressPerStep * index);
-                double lineHeight =
-                    itemHeights[index] ?? 0.0; // Tinggi garis mengikuti item
+            return SingleChildScrollView(
+              child: Column(
+                children: List.generate(steps.length, (index) {
+                  double progressPerStep = 1.0 / steps.length;
+                  bool isCompleted = _progressAnimation.value >= 1.0;
+                  bool isActiveNow = (_progressAnimation.value >=
+                          progressPerStep * index &&
+                      _progressAnimation.value < progressPerStep * (index + 1));
+                  bool isLineVisible =
+                      _progressAnimation.value > (progressPerStep * index);
+                  double lineHeight =
+                      itemHeights[index] ?? 0.0; // Tinggi garis mengikuti item
 
-                return TimelineTile(
-                  step: index + 1,
-                  title: steps[index]["title"] ?? "",
-                  description: steps[index]["description"] ?? "",
-                  category: steps[index]["category"] ?? "",
-                  isActive:
-                      _progressAnimation.value > (progressPerStep * index),
-                  isActiveNow: isActiveNow,
-                  isLast: index == steps.length - 1,
-                  isCompleted: isCompleted,
-                  isLineVisible: isLineVisible,
-                  lineHeight: max(0, lineHeight * 0.8),
-                  onHeightCalculated: (height) =>
-                      updateItemHeight(index, height),
-                );
-              }),
+                  // Tampilkan timeline item untuk pertanyaan yang dipilih
+                  if (steps[index].containsKey("pertanyaan")) {
+                    return TimelineTile(
+                      step: index + 1,
+                      title: steps[index]["pertanyaan"] ?? "",
+                      description: steps[index]["description"] ?? "",
+                      category: steps[index]["category"] ?? "",
+                      isActive:
+                          _progressAnimation.value > (progressPerStep * index),
+                      isActiveNow: isActiveNow,
+                      isLast: index == steps.length - 1,
+                      isCompleted: isCompleted,
+                      isLineVisible: isLineVisible,
+                      lineHeight: max(0, lineHeight * 0.8),
+                      onHeightCalculated: (height) =>
+                          updateItemHeight(index, height),
+                    );
+                  }
+
+                  return TimelineTile(
+                    step: index + 1,
+                    title: steps[index]["title"] ?? "",
+                    description: steps[index]["description"] ?? "",
+                    category: steps[index]["category"] ?? "",
+                    isActive:
+                        _progressAnimation.value > (progressPerStep * index),
+                    isActiveNow: isActiveNow,
+                    isLast: index == steps.length - 1,
+                    isCompleted: isCompleted,
+                    isLineVisible: isLineVisible,
+                    lineHeight: max(0, lineHeight * 0.8),
+                    onHeightCalculated: (height) =>
+                        updateItemHeight(index, height),
+                  );
+                }),
+              ),
             );
           },
         ),
