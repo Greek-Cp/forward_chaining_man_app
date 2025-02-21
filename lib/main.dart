@@ -1,371 +1,281 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' as rootBundle;
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
+/// Root widget aplikasi
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: KuisionerScreen(
-        isKuliah: true,
+      title: 'Forward Chaining IF-THEN Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const HomePage(),
+    );
+  }
+}
+
+/// Halaman untuk memilih Kerja atau Kuliah
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool? _pilihan; // null = belum pilih; true = Kerja; false = Kuliah
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Pilih Kerja atau Kuliah'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            RadioListTile<bool>(
+              title: const Text('Kerja'),
+              value: true,
+              groupValue: _pilihan,
+              onChanged: (val) => setState(() => _pilihan = val),
+            ),
+            RadioListTile<bool>(
+              title: const Text('Kuliah'),
+              value: false,
+              groupValue: _pilihan,
+              onChanged: (val) => setState(() => _pilihan = val),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _pilihan == null
+                  ? null
+                  : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => QuestionPage(isKerja: _pilihan!),
+                        ),
+                      );
+                    },
+              child: const Text('Lanjut'),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class KuisionerScreen extends StatefulWidget {
-  final bool isKuliah; // contoh jika Anda butuh parameter
-
-  KuisionerScreen({this.isKuliah = true});
+/// Halaman menampilkan pertanyaan (5 per halaman), wajib jawab semua
+class QuestionPage extends StatefulWidget {
+  final bool isKerja;
+  const QuestionPage({Key? key, required this.isKerja}) : super(key: key);
 
   @override
-  _KuisionerScreenState createState() => _KuisionerScreenState();
+  State<QuestionPage> createState() => _QuestionPageState();
 }
 
-class _KuisionerScreenState extends State<KuisionerScreen> {
-  int currentPageIndex = 0; // Indeks halaman (tiap halaman 5 pertanyaan)
-  Map<int, bool?> answers = {}; // Menyimpan jawaban (true = Ya, false = Tidak)
-  List<String> questions = [];
-  Map<int, String> questionIndexToMinat = {}; // mapping pertanyaan -> minat
+class _QuestionPageState extends State<QuestionPage> {
+  late Future<List<QuestionItem>> futureQuestions;
+
+  int currentPage = 0;
+  static const pageSize = 5;
 
   @override
   void initState() {
     super.initState();
-    _loadQuestionsCombined(); // Contoh memuat pertanyaan
+    futureQuestions = _loadQuestions(widget.isKerja);
   }
 
-  /// Contoh memuat 2 file JSON (IPA Sains + IPA Teknik) lalu gabung pertanyaannya
-  /// Jika tidak butuh itu, Anda bisa ubah jadi 1 file JSON saja
-  Future<void> _loadQuestionsCombined() async {
-    try {
-      // Misal default -> assets/ipa_sains_kuliah.json & assets/ipa_teknik_kuliah.json
-      String sainsFile = 'assets/ipa_sains_kuliah.json';
-      String teknikFile = 'assets/ipa_teknik_kuliah.json';
+  /// Memuat data JSON (Sains + Teknik), lalu 'flatten' semua pertanyaan
+  /// Kita berikan ID pertanyaan: Q1, Q2, Q3, dst.
+  Future<List<QuestionItem>> _loadQuestions(bool isKerja) async {
+    final sainsFile = isKerja
+        ? 'assets/ipa_sains_kerja.json'
+        : 'assets/ipa_sains_kuliah.json';
+    final teknikFile = isKerja
+        ? 'assets/ipa_teknik_kerja.json'
+        : 'assets/ipa_teknik_kuliah.json';
 
-      // Muat isi JSON
-      final sainsJsonStr = await rootBundle.loadString(sainsFile);
-      final teknikJsonStr = await rootBundle.loadString(teknikFile);
+    // Baca JSON sains
+    final sainsString = await rootBundle.rootBundle.loadString(sainsFile);
+    final sainsMap = json.decode(sainsString) as Map<String, dynamic>;
 
-      final sainsJson = json.decode(sainsJsonStr) as Map<String, dynamic>;
-      final teknikJson = json.decode(teknikJsonStr) as Map<String, dynamic>;
+    // Baca JSON teknik
+    final teknikString = await rootBundle.rootBundle.loadString(teknikFile);
+    final teknikMap = json.decode(teknikString) as Map<String, dynamic>;
 
-      // Kita akan menyimpan semua pertanyaan di "loadedQuestions"
-      // juga kita perlu simpan "index -> minat"
-      List<String> loadedQuestions = [];
-      int qIndex = 0; // Index global pertanyaan
-
-      // ---- [1] Memasukkan pertanyaan dari Sains ----
-      sainsJson.forEach((key, value) {
-        // value seharusnya punya struktur "minat": {...}
-        if (value["minat"] != null) {
-          Map<String, dynamic> minatMap = value["minat"];
-          // Loop di setiap "minat"
-          minatMap.forEach((minatKey, minatValue) {
-            if (minatValue["pertanyaan"] != null) {
-              List pertanyaanList = minatValue["pertanyaan"];
-
-              for (var p in pertanyaanList) {
-                // Tambahkan pertanyaan ke list
-                loadedQuestions.add(p.toString());
-                // Tandai index pertanyaan ini -> minatKey
-                questionIndexToMinat[qIndex] = minatKey;
-                qIndex++;
-              }
-            }
-          });
-        }
-      });
-
-      // ---- [2] Memasukkan pertanyaan dari Teknik ----
-      teknikJson.forEach((key, value) {
-        if (value["minat"] != null) {
-          Map<String, dynamic> minatMap = value["minat"];
-          minatMap.forEach((minatKey, minatValue) {
-            if (minatValue["pertanyaan"] != null) {
-              List pertanyaanList = minatValue["pertanyaan"];
-
-              for (var p in pertanyaanList) {
-                loadedQuestions.add(p.toString());
-                questionIndexToMinat[qIndex] = minatKey;
-                qIndex++;
-              }
-            }
-          });
-        }
-      });
-
-      // Setelah semuanya digabung, update state
-      setState(() {
-        questions = loadedQuestions;
-      });
-    } catch (e) {
-      print("Error loading JSON: $e");
-      // Tangani kesalahan (misal tampilkan dialog)
+    // Ubah ke list ProgramStudi
+    final programList = <ProgramStudi>[];
+    for (var entry in sainsMap.entries) {
+      programList.add(ProgramStudi.fromJson(entry.value));
     }
-  }
+    for (var entry in teknikMap.entries) {
+      programList.add(ProgramStudi.fromJson(entry.value));
+    }
 
-  // Hitung berapa banyak pertanyaan yang sudah dijawab (Ya atau Tidak)
-  int _answeredCount() {
-    int count = 0;
-    for (var entry in answers.entries) {
-      if (entry.value != null) {
-        count++;
+    // Flatten semua pertanyaan
+    // Kita siapkan list, lalu berikan ID unik (Q1, Q2, dsb) secara urut
+    final allQuestions = <QuestionItem>[];
+    var questionCounter = 1;
+
+    for (var prog in programList) {
+      for (var minatEntry in prog.minat.entries) {
+        final minatKey = minatEntry.key;
+        final minatVal = minatEntry.value;
+
+        for (var p in minatVal.pertanyaan) {
+          final bobot = extractBobot(p);
+          final cleaned = cleanPertanyaan(p);
+
+          final questionId = 'Q$questionCounter';
+          questionCounter++;
+
+          allQuestions.add(
+            QuestionItem(
+              id: questionId,
+              programName: prog.name,
+              minatKey: minatKey,
+              questionText: cleaned,
+              rawQuestionText: p,
+              bobot: bobot,
+            ),
+          );
+        }
       }
     }
-    return count;
+    return allQuestions;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Jika pertanyaan belum terisi (masih loading), tampilkan loading
-    if (questions.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("Kuisioner",
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-          backgroundColor: Colors.white,
-          elevation: 0,
-        ),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    int startIndex = currentPageIndex * 5;
-    int endIndex = (startIndex + 5).clamp(0, questions.length);
-
-    // =============================================
-    // PROGRESS BAR: Berdasarkan jumlah jawaban user
-    // =============================================
-    int answered = _answeredCount();
-    double progress = answered / questions.length;
+    final title = widget.isKerja ? 'Kerja' : 'Kuliah';
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          "Kuisioner",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            if (currentPageIndex > 0) {
-              setState(() {
-                currentPageIndex--;
-              });
-            } else {
-              Navigator.pop(context);
-            }
-          },
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --------------------------------------------------
-            // Menampilkan X/Y berdasar "answered" vs total
-            // --------------------------------------------------
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.yellow[100],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    "${answered}/${questions.length} Pertanyaan",
-                    style: TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
+      appBar: AppBar(title: Text('Forward Chaining IF-THEN ($title)')),
+      body: FutureBuilder<List<QuestionItem>>(
+        future: futureQuestions,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          final data = snapshot.data ?? [];
+          if (data.isEmpty) {
+            return const Center(child: Text('Data Kosong'));
+          }
+
+          final totalPages = (data.length / pageSize).ceil();
+          if (currentPage >= totalPages) currentPage = totalPages - 1;
+          if (currentPage < 0) currentPage = 0;
+
+          final startIndex = currentPage * pageSize;
+          final endIndex = ((currentPage + 1) * pageSize).clamp(0, data.length);
+          final questionsThisPage = data.sublist(startIndex, endIndex);
+
+          final answeredCount = data.where((q) => q.userAnswer != null).length;
+          final totalCount = data.length;
+
+          final allAnsweredThisPage =
+              questionsThisPage.every((q) => q.userAnswer != null);
+
+          return Column(
+            children: [
+              // Label Info
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'Halaman ${currentPage + 1} / $totalPages',
+                      style: const TextStyle(fontSize: 16),
                     ),
-                  ),
+                    Text(
+                      'Anda telah mengisi $answeredCount dari $totalCount pertanyaan',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            SizedBox(height: 10),
-
-            // Progress bar
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[300],
-              color: Colors.orange,
-              minHeight: 6,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            SizedBox(height: 20),
-
-            // Deskripsi
-            Text(
-              "Jawab dengan jujur pertanyaan di bawah ini.",
-              style: TextStyle(fontSize: 14, color: Colors.black54),
-            ),
-            SizedBox(height: 20),
-
-            // Label "Pertanyaan"
-            Text(
-              "Pertanyaan",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-
-            // Tampilkan 5 pertanyaan per halaman
-            Expanded(
-              child: ListView.builder(
-                itemCount: endIndex - startIndex,
-                itemBuilder: (context, index) {
-                  int questionIndex = startIndex + index;
-
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Garis vertikal biru
-                      Column(
-                        children: [
-                          Container(
-                            width: 4,
-                            height: 15,
-                            color: Colors.blue,
-                          ),
-                          Container(
-                            width: 4,
-                            height: 50,
-                            color: Colors.blue,
-                          ),
-                        ],
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: questionsThisPage.length,
+                  itemBuilder: (context, index) {
+                    final qItem = questionsThisPage[index];
+                    final globalIndex = startIndex + index;
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
                       ),
-                      SizedBox(width: 8),
-
-                      // Teks pertanyaan + checkbox
-                      Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${questionIndex + 1}. ${questions[questionIndex]}",
-                              style: TextStyle(fontSize: 14),
+                              '${qItem.id} - Pertanyaan ${globalIndex + 1}:',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
                             ),
-                            SizedBox(height: 10),
-
-                            // Checkbox "Ya"
+                            const SizedBox(height: 5),
+                            Text(qItem.questionText),
+                            const SizedBox(height: 10),
                             Row(
                               children: [
+                                // Checkbox "Ya"
                                 Checkbox(
-                                  value: answers[questionIndex] == true,
-                                  activeColor: Colors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  onChanged: (value) {
+                                  value: qItem.userAnswer == true,
+                                  onChanged: (bool? val) {
                                     setState(() {
-                                      // Pilih jawaban true
-                                      answers[questionIndex] = true;
+                                      if (val == true) {
+                                        qItem.userAnswer = true;
+                                      } else {
+                                        qItem.userAnswer = null;
+                                      }
                                     });
                                   },
                                 ),
-                                Text("Ya"),
-                              ],
-                            ),
-
-                            // Checkbox "Tidak"
-                            Row(
-                              children: [
+                                const Text('Ya'),
+                                const SizedBox(width: 20),
+                                // Checkbox "Tidak"
                                 Checkbox(
-                                  value: answers[questionIndex] == false,
-                                  activeColor: Colors.red,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  onChanged: (value) {
+                                  value: qItem.userAnswer == false,
+                                  onChanged: (bool? val) {
                                     setState(() {
-                                      // Pilih jawaban false
-                                      answers[questionIndex] = false;
+                                      if (val == true) {
+                                        qItem.userAnswer = false;
+                                      } else {
+                                        qItem.userAnswer = null;
+                                      }
                                     });
                                   },
                                 ),
-                                Text("Tidak"),
+                                const Text('Tidak'),
                               ],
                             ),
-
-                            SizedBox(height: 15),
                           ],
                         ),
                       ),
-                    ],
-                  );
-                },
-              ),
-            ),
-
-            // Tombol Navigasi
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Tombol Sebelumnya
-                if (currentPageIndex > 0)
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        currentPageIndex--;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      "Sebelumnya",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
-                  ),
-
-                // Tombol Lanjut atau Selesai
-                ElevatedButton(
-                  onPressed: () {
-                    // Cek apakah semua pertanyaan di halaman ini sudah dijawab
-                    if (_allQuestionsAnswered(startIndex, endIndex)) {
-                      // Jika masih ada halaman berikutnya
-                      if (endIndex < questions.length) {
-                        setState(() {
-                          currentPageIndex++;
-                        });
-                      } else {
-                        _showCompletionDialog();
-                      }
-                    } else {
-                      _showWarningDialog();
-                    }
+                    );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    endIndex < questions.length ? "Lanjut" : "Selesai",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
                 ),
+<<<<<<< HEAD
+=======
               ],
             ),
           ],
@@ -420,8 +330,10 @@ class _KuisionerScreenState extends State<KuisionerScreen> {
     // 1) Hitung total "Ya"
     int totalYes = answers.values.where((v) => v == true).length;
 
-    // 2) Buat map untuk menampung skor per minat
+    // 2) Buat map untuk menampung skor per minat dan pertanyaan yang dipilih
     Map<String, int> minatScores = {};
+    Map<String, List<String>> minatPertanyaan =
+        {}; // Menyimpan pertanyaan yang dipilih untuk setiap minat
 
     // 3) Loop semua jawaban
     answers.forEach((index, isYes) {
@@ -431,63 +343,65 @@ class _KuisionerScreenState extends State<KuisionerScreen> {
         if (minat != null) {
           // Tambah skor
           minatScores[minat] = (minatScores[minat] ?? 0) + 1;
+
+          // Tambahkan pertanyaan ke daftar pertanyaan untuk minat ini
+          final question = questions[index]; // Ambil pertanyaan dari indeks
+          if (minatPertanyaan[minat] == null) {
+            minatPertanyaan[minat] = [];
+          }
+          minatPertanyaan[minat]?.add(question);
         }
       }
     });
 
-    // Lanjutkan rule-based Anda...
-    // 4) Cek totalYes, dsb...
-    // 5) Cek minatScores tertinggi...
-    // 6) Return list rekomendasi
+    // 4) Menilai minat tertinggi
+    List<Map<String, String>> recommendations = [];
 
-    // Contoh sederhana:
+    // Jika tidak ada jawaban "Ya", tidak ada rekomendasi
     if (totalYes < 3) {
-      return [
-        {
-          "title": "Kurang Berminat pada IPA",
-          "description": "Hanya menjawab 'Ya' di bawah 3 pertanyaan",
-          "category": "Umum"
-        }
-      ];
-    }
-
-    // Jika ada minat tinggi:
-    if (minatScores.isNotEmpty) {
-      // Urutkan secara descending
-      final sorted = minatScores.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-      final topMinat = sorted.first.key;
-      final topScore = sorted.first.value;
-
-      // Misal: minat tertinggi == "Kedokteran"
-      if (topMinat == "Kedokteran") {
-        return [
-          {
-            "title": "Cocok di Kedokteran",
-            "description": "Skor: $topScore",
-            "category": "Kedokteran"
-          }
-        ];
-      } else if (topMinat == "Sains") {
-        return [
-          {
-            "title": "Cocok di Sains",
-            "description": "Skor: $topScore",
-            "category": "Sains"
-          }
-        ];
-      }
-      // dan seterusnya ...
-    }
-
-    // Jika tidak ada minat menonjol
-    return [
-      {
-        "title": "Belum Ada Rekomendasi",
-        "description": "Tidak ada minat menonjol",
+      recommendations.add({
+        "title": "Kurang Berminat pada IPA",
+        "description": "Hanya menjawab 'Ya' di bawah 3 pertanyaan",
         "category": "Umum"
+      });
+    } else {
+      // 5) Jika ada minat tinggi, kita urutkan berdasarkan skor
+      if (minatScores.isNotEmpty) {
+        final sorted = minatScores.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+
+        // Ambil 3 rekomendasi paling tinggi
+        int recommendationCount = 0;
+        for (var entry in sorted) {
+          final topMinat = entry.key;
+          final topScore = entry.value;
+
+          // Menambahkan rekomendasi berdasarkan minat
+          recommendations.add({
+            "title": "Cocok di $topMinat",
+            "description": "Skor: $topScore",
+            "category": topMinat,
+            "pertanyaan": minatPertanyaan[topMinat]?.join("\n") ??
+                "Tidak ada pertanyaan terkait",
+          });
+
+          recommendationCount++;
+          if (recommendationCount >= 3) {
+            break; // Ambil hanya 3 rekomendasi paling tinggi
+          }
+        }
       }
-    ];
+    }
+
+    // Tambahkan hasil akhir atau informasi tambahan setelah rekomendasi
+    recommendations.add({
+      "title": "Hasil Akhir",
+      "description":
+          "Berdasarkan jawaban Anda, kami telah memberikan beberapa rekomendasi terbaik.",
+      "category": "Informasi"
+    });
+
+    return recommendations;
   }
 
   void _showWarningDialog() {
@@ -515,7 +429,6 @@ class _KuisionerScreenState extends State<KuisionerScreen> {
 class ProgressTrackingScreen extends StatefulWidget {
   final List<Map<String, String>> recommendedSteps;
 
-  // Terima data dari halaman kuisioner
   ProgressTrackingScreen({required this.recommendedSteps});
 
   @override
@@ -568,34 +481,55 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
         child: AnimatedBuilder(
           animation: _progressAnimation,
           builder: (context, child) {
-            return Column(
-              children: List.generate(steps.length, (index) {
-                double progressPerStep = 1.0 / steps.length;
-                bool isCompleted = _progressAnimation.value >= 1.0;
-                bool isActiveNow = (_progressAnimation.value >=
-                        progressPerStep * index &&
-                    _progressAnimation.value < progressPerStep * (index + 1));
-                bool isLineVisible =
-                    _progressAnimation.value > (progressPerStep * index);
-                double lineHeight =
-                    itemHeights[index] ?? 0.0; // Tinggi garis mengikuti item
+            return SingleChildScrollView(
+              child: Column(
+                children: List.generate(steps.length, (index) {
+                  double progressPerStep = 1.0 / steps.length;
+                  bool isCompleted = _progressAnimation.value >= 1.0;
+                  bool isActiveNow = (_progressAnimation.value >=
+                          progressPerStep * index &&
+                      _progressAnimation.value < progressPerStep * (index + 1));
+                  bool isLineVisible =
+                      _progressAnimation.value > (progressPerStep * index);
+                  double lineHeight =
+                      itemHeights[index] ?? 0.0; // Tinggi garis mengikuti item
 
-                return TimelineTile(
-                  step: index + 1,
-                  title: steps[index]["title"] ?? "",
-                  description: steps[index]["description"] ?? "",
-                  category: steps[index]["category"] ?? "",
-                  isActive:
-                      _progressAnimation.value > (progressPerStep * index),
-                  isActiveNow: isActiveNow,
-                  isLast: index == steps.length - 1,
-                  isCompleted: isCompleted,
-                  isLineVisible: isLineVisible,
-                  lineHeight: max(0, lineHeight * 0.8),
-                  onHeightCalculated: (height) =>
-                      updateItemHeight(index, height),
-                );
-              }),
+                  // Tampilkan timeline item untuk pertanyaan yang dipilih
+                  if (steps[index].containsKey("pertanyaan")) {
+                    return TimelineTile(
+                      step: index + 1,
+                      title: steps[index]["pertanyaan"] ?? "",
+                      description: steps[index]["description"] ?? "",
+                      category: steps[index]["category"] ?? "",
+                      isActive:
+                          _progressAnimation.value > (progressPerStep * index),
+                      isActiveNow: isActiveNow,
+                      isLast: index == steps.length - 1,
+                      isCompleted: isCompleted,
+                      isLineVisible: isLineVisible,
+                      lineHeight: max(0, lineHeight * 0.8),
+                      onHeightCalculated: (height) =>
+                          updateItemHeight(index, height),
+                    );
+                  }
+
+                  return TimelineTile(
+                    step: index + 1,
+                    title: steps[index]["title"] ?? "",
+                    description: steps[index]["description"] ?? "",
+                    category: steps[index]["category"] ?? "",
+                    isActive:
+                        _progressAnimation.value > (progressPerStep * index),
+                    isActiveNow: isActiveNow,
+                    isLast: index == steps.length - 1,
+                    isCompleted: isCompleted,
+                    isLineVisible: isLineVisible,
+                    lineHeight: max(0, lineHeight * 0.8),
+                    onHeightCalculated: (height) =>
+                        updateItemHeight(index, height),
+                  );
+                }),
+              ),
             );
           },
         ),
@@ -704,50 +638,288 @@ class _TimelineTileState extends State<TimelineTile> {
                     ),
                   );
                 },
+>>>>>>> 327b355ac598c3321f16164821daa1430c712555
               ),
-              if (!widget.isLast)
-                AnimatedContainer(
-                  duration: Duration(milliseconds: 500),
-                  width: 3,
-                  height: widget.isLineVisible ? widget.lineHeight : 0,
-                  color: widget.isActive ? activeColor : Colors.grey[300],
-                ),
-            ],
-          ),
-          SizedBox(width: 10),
-          Expanded(
-            child: Container(
-              key: _containerKey, // Mengukur tinggi item
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // Navigasi Bawah
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text(
-                    widget.title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: widget.isActive ? activeColor : Colors.grey,
+                  ElevatedButton(
+                    onPressed: (currentPage > 0)
+                        ? () {
+                            setState(() {
+                              currentPage--;
+                            });
+                          }
+                        : null,
+                    child: const Text('Prev'),
+                  ),
+                  if (currentPage < totalPages - 1)
+                    ElevatedButton(
+                      onPressed: allAnsweredThisPage
+                          ? () {
+                              setState(() {
+                                currentPage++;
+                              });
+                            }
+                          : null,
+                      child: const Text('Next'),
+                    )
+                  else
+                    ElevatedButton(
+                      onPressed: allAnsweredThisPage
+                          ? () => _runForwardChaining(data)
+                          : null,
+                      child: const Text('Cek Rekomendasi'),
                     ),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    widget.description,
-                    style: TextStyle(fontSize: 13, color: Colors.black54),
-                  ),
-                  Text(
-                    widget.category,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
                 ],
               ),
-            ),
-          ),
+              const SizedBox(height: 12),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  /// Di sinilah kita implementasikan Forward Chaining berbasis IF-THEN
+  void _runForwardChaining(List<QuestionItem> allQuestions) {
+    // 1. Buat Working Memory: kumpulan fakta, misal "Q1=Yes"
+    final workingMemory = <String>{};
+
+    for (var q in allQuestions) {
+      if (q.userAnswer == true) {
+        workingMemory.add('${q.id}=Yes'); // misal "Q1=Yes"
+      } else {
+        workingMemory
+            .add('${q.id}=No'); // Opsional, agar terekam juga jika Tidak
+      }
+    }
+
+    // 2. Siapkan struktur untuk menyimpan skor minat
+    final minatScores = <String, int>{};
+
+    // 3. Siapkan struktur untuk menyimpan catatan rule per-minat
+    //    (Akan berisi daftar teks rule yang menambah skor ke minat tertentu)
+    final minatContrib = <String, List<String>>{};
+
+    // 4. Buat sekumpulan RULES IF-THEN
+    //    (Generate rule otomatis: "IF Qx=Yes THEN skor[(prog|minat)] += bobot")
+    final rules = <Rule>[];
+    for (var q in allQuestions) {
+      final rule = Rule(
+        ifFacts: ['${q.id}=Yes'],
+        thenAction: (wm) {
+          final keyMinat = '${q.programName}|${q.minatKey}';
+          // Tambah skor
+          minatScores[keyMinat] = (minatScores[keyMinat] ?? 0) + q.bobot;
+          // Catat rule/pertanyaan ini berkontribusi
+          minatContrib[keyMinat] ??= [];
+          minatContrib[keyMinat]!.add(
+            'Rule fired: IF ${q.id}=Yes THEN +${q.bobot} → ${keyMinat}',
+          );
+        },
+      );
+      rules.add(rule);
+    }
+
+    // 5. Jalankan forward chaining secara iteratif
+    bool firedSomething = true;
+    final firedRules = <Rule>{};
+
+    while (firedSomething) {
+      firedSomething = false;
+      for (var r in rules) {
+        if (firedRules.contains(r)) {
+          continue; // rule ini sudah menembak
+        }
+        final allMatch =
+            r.ifFacts.every((fact) => workingMemory.contains(fact));
+        if (allMatch) {
+          r.thenAction(workingMemory);
+          firedRules.add(r);
+          firedSomething = true;
+        }
+      }
+    }
+
+    // 6. Cek hasil skor
+    if (minatScores.isEmpty) {
+      // Mungkin semua jawaban "Tidak" atau bobot=0
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Rekomendasi'),
+          content: const Text('Skor minat kosong (semua 0).'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            )
+          ],
+        ),
+      );
+      return;
+    }
+
+    // 7. Urutkan descending & ambil top 3
+    final sorted = minatScores.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final top3 = sorted.take(3).toList();
+
+    // 8. Buat string output, per rekomendasi + rules
+    String message = 'HASIL FORWARD CHAINING (IF-THEN):\n\n';
+    message += 'Fakta di Working Memory: ${workingMemory.join(', ')}\n\n';
+
+    message += 'Top 3 Minat (dengan rule yang berkontribusi):\n';
+    for (int i = 0; i < top3.length; i++) {
+      final minatKey = top3[i].key; // ex: "IPA(Sains Murni)|Farmasi"
+      final score = top3[i].value;
+      message += '${i + 1}. $minatKey (Skor: $score)\n';
+
+      // Tampilkan catatan rule
+      final listRules = minatContrib[minatKey] ?? [];
+      if (listRules.isEmpty) {
+        message += '  (Tidak ada catatan rule)\n\n';
+      } else {
+        message += '  Rules yang menambah skor:\n';
+        for (var rText in listRules) {
+          message += '   - $rText\n';
+        }
+        message += '\n';
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Rekomendasi'),
+        content: SingleChildScrollView(child: Text(message)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          )
         ],
       ),
     );
   }
+}
+//////////////////////////////////////////////
+// Bagian Model, Fungsi Pendukung, & Rule
+//////////////////////////////////////////////
+
+/// Model ProgramStudi: menampung data dari JSON
+class ProgramStudi {
+  final String name;
+  final String description;
+  final List<String> categories;
+  final Map<String, Minat> minat;
+
+  ProgramStudi({
+    required this.name,
+    required this.description,
+    required this.categories,
+    required this.minat,
+  });
+
+  factory ProgramStudi.fromJson(Map<String, dynamic> json) {
+    final minatMap = <String, Minat>{};
+    if (json['minat'] != null) {
+      (json['minat'] as Map<String, dynamic>).forEach((key, value) {
+        minatMap[key] = Minat.fromJson(value);
+      });
+    }
+    return ProgramStudi(
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      categories: (json['categories'] == null)
+          ? []
+          : List<String>.from(json['categories']),
+      minat: minatMap,
+    );
+  }
+}
+
+/// Model Minat
+class Minat {
+  final List<String> pertanyaan;
+  final List<String> karir;
+  final List<String> jurusanTerkait;
+
+  Minat({
+    required this.pertanyaan,
+    required this.karir,
+    required this.jurusanTerkait,
+  });
+
+  factory Minat.fromJson(Map<String, dynamic> json) {
+    return Minat(
+      pertanyaan: (json['pertanyaan'] == null)
+          ? []
+          : List<String>.from(json['pertanyaan']),
+      karir: (json['karir'] == null) ? [] : List<String>.from(json['karir']),
+      jurusanTerkait: (json['jurusan_terkait'] == null)
+          ? []
+          : List<String>.from(json['jurusan_terkait']),
+    );
+  }
+}
+
+/// Item pertanyaan (UI)
+class QuestionItem {
+  final String id; // misal "Q1", "Q2"
+  final String programName; // ex: "IPA (Sains Murni) - Kerja"
+  final String minatKey; // ex: "Kedokteran"
+  final String questionText; // teks pertanyaan (bersih dari [n])
+  final String rawQuestionText; // teks asli (berisi [n])
+  final int bobot; // angkanya
+  bool? userAnswer; // null=belum jawab, true=Ya, false=Tidak
+
+  QuestionItem({
+    required this.id,
+    required this.programName,
+    required this.minatKey,
+    required this.questionText,
+    required this.rawQuestionText,
+    required this.bobot,
+    this.userAnswer,
+  });
+}
+
+/// Fungsi ambil bobot [n] dari pertanyaan
+int extractBobot(String pertanyaan) {
+  final regex = RegExp(r"\[(\d+)\]");
+  final match = regex.firstMatch(pertanyaan);
+  if (match != null) {
+    return int.parse(match.group(1)!);
+  }
+  return 0;
+}
+
+/// Fungsi hapus [n] dari teks pertanyaan
+String cleanPertanyaan(String pertanyaan) {
+  return pertanyaan.replaceAll(RegExp(r"\[\d+\]"), "").trim();
+}
+
+/// Kelas Rule sederhana: IF [beberapa fakta] THEN jalankan aksi (tambah skor, dsb)
+class Rule {
+  final List<String> ifFacts;
+  final void Function(Set<String> workingMemory) thenAction;
+
+  Rule({
+    required this.ifFacts,
+    required this.thenAction,
+  });
+
+  // Biar bisa di-set (HashSet) kita override equality:
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Rule &&
+          runtimeType == other.runtimeType &&
+          ifFacts == other.ifFacts; // cukup bandingkan list ifFacts
+
+  @override
+  int get hashCode => ifFacts.hashCode;
 }
