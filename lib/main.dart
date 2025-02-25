@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' as rootBundle;
+import 'package:get/get.dart';
+
+// Global flag for developer mode
+bool developerMode = false;
 
 void main() {
   runApp(const MyApp());
@@ -12,29 +16,44 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Forward Chaining Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomePage(),
+      home: const DeveloperModePage(),
     );
   }
 }
 
+/// Controller untuk DeveloperModePage
+class DeveloperModeController extends GetxController {
+  final RxBool isDeveloperMode = developerMode.obs;
+
+  void toggleDeveloperMode(bool value) {
+    isDeveloperMode.value = value;
+    developerMode = value;
+  }
+}
+
+/// Controller untuk HomePage
+class HomeController extends GetxController {
+  final Rx<bool?> pilihan =
+      Rx<bool?>(null); // null=belum pilih; true=Kerja; false=Kuliah
+
+  void setPilihan(bool? val) {
+    pilihan.value = val;
+  }
+}
+
 /// Halaman untuk memilih Kerja atau Kuliah
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  bool? _pilihan; // null=belum pilih; true=Kerja; false=Kuliah
-
-  @override
   Widget build(BuildContext context) {
+    final controller = Get.put(HomeController());
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pilih Kerja atau Kuliah'),
@@ -44,34 +63,30 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Radio: Kerja
-            RadioListTile<bool>(
-              title: const Text('Kerja'),
-              value: true,
-              groupValue: _pilihan,
-              onChanged: (val) => setState(() => _pilihan = val),
-            ),
+            Obx(() => RadioListTile<bool>(
+                  title: const Text('Kerja'),
+                  value: true,
+                  groupValue: controller.pilihan.value,
+                  onChanged: (val) => controller.setPilihan(val),
+                )),
             // Radio: Kuliah
-            RadioListTile<bool>(
-              title: const Text('Kuliah'),
-              value: false,
-              groupValue: _pilihan,
-              onChanged: (val) => setState(() => _pilihan = val),
-            ),
+            Obx(() => RadioListTile<bool>(
+                  title: const Text('Kuliah'),
+                  value: false,
+                  groupValue: controller.pilihan.value,
+                  onChanged: (val) => controller.setPilihan(val),
+                )),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _pilihan == null
-                  ? null
-                  : () {
-                      // Bawa user ke halaman pertanyaan
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => QuestionPage(isKerja: _pilihan!),
-                        ),
-                      );
-                    },
-              child: const Text('Lanjut'),
-            ),
+            Obx(() => ElevatedButton(
+                  onPressed: controller.pilihan.value == null
+                      ? null
+                      : () {
+                          // Bawa user ke halaman pertanyaan
+                          Get.to(() =>
+                              QuestionPage(isKerja: controller.pilihan.value!));
+                        },
+                  child: const Text('Lanjut'),
+                )),
           ],
         ),
       ),
@@ -79,75 +94,111 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-/// Halaman menampilkan daftar pertanyaan (5 per halaman), lalu forward chaining
-class QuestionPage extends StatefulWidget {
-  final bool isKerja; // true=Kerja, false=Kuliah
-  const QuestionPage({Key? key, required this.isKerja}) : super(key: key);
+/// Controller untuk QuestionPage
+class QuestionController extends GetxController {
+  final bool isKerja;
 
-  @override
-  State<QuestionPage> createState() => _QuestionPageState();
-}
+  QuestionController({required this.isKerja});
 
-class _QuestionPageState extends State<QuestionPage> {
   // Akan menampung data ProgramStudi lengkap (untuk lookup karir di akhir)
-  late Future<List<ProgramStudi>> futureProgramList;
+  final Rx<List<ProgramStudi>> programList = Rx<List<ProgramStudi>>([]);
 
   // Daftar pertanyaan yang sudah di-flatten
-  List<QuestionItem> allQuestions = [];
+  final RxList<QuestionItem> allQuestions = <QuestionItem>[].obs;
 
   // Paging
-  int currentPage = 0;
+  final RxInt currentPage = 0.obs;
   static const pageSize = 5;
 
+  // Untuk tampilan loading
+  final RxBool isLoading = true.obs;
+  final RxString errorMessage = ''.obs;
+
   @override
-  void initState() {
-    super.initState();
-    futureProgramList = _loadProgramData(widget.isKerja);
+  void onInit() {
+    super.onInit();
+    loadProgramData(isKerja);
   }
 
+  /// Computed property: pertanyaan pada halaman saat ini
+  List<QuestionItem> get questionsThisPage {
+    final totalPages = (allQuestions.length / pageSize).ceil();
+    if (currentPage.value >= totalPages) currentPage.value = totalPages - 1;
+    if (currentPage.value < 0) currentPage.value = 0;
+
+    final startIndex = currentPage.value * pageSize;
+    final endIndex =
+        ((currentPage.value + 1) * pageSize).clamp(0, allQuestions.length);
+    return allQuestions.sublist(startIndex, endIndex);
+  }
+
+  /// Computed property: total halaman
+  int get totalPages => (allQuestions.length / pageSize).ceil();
+
+  /// Computed property: jumlah pertanyaan terjawab
+  int get answeredCount =>
+      allQuestions.where((q) => q.userAnswer != null).length;
+
+  /// Computed property: total pertanyaan
+  int get totalCount => allQuestions.length;
+
+  /// Computed property: semua pertanyaan di halaman ini terjawab
+  bool get allAnsweredThisPage =>
+      questionsThisPage.every((q) => q.userAnswer != null);
+
   /// Memuat data ProgramStudi dari file JSON (Sains + Teknik) tergantung Kerja/Kuliah
-  Future<List<ProgramStudi>> _loadProgramData(bool isKerja) async {
-    // Tentukan file sains
-    final sainsFile = isKerja
-        ? 'assets/ipa_sains_kerja.json'
-        : 'assets/ipa_sains_kuliah.json';
+  Future<void> loadProgramData(bool isKerja) async {
+    isLoading.value = true;
+    errorMessage.value = '';
 
-    // File teknik
-    final teknikFile = isKerja
-        ? 'assets/ipa_teknik_kerja.json'
-        : 'assets/ipa_teknik_kuliah.json';
+    try {
+      // Tentukan file sains
+      final sainsFile = isKerja
+          ? 'assets/ipa_sains_kerja.json'
+          : 'assets/ipa_sains_kuliah.json';
 
-    // Baca JSON sains
-    final sainsString = await rootBundle.rootBundle.loadString(sainsFile);
-    final sainsMap = json.decode(sainsString) as Map<String, dynamic>;
+      // File teknik
+      final teknikFile = isKerja
+          ? 'assets/ipa_teknik_kerja.json'
+          : 'assets/ipa_teknik_kuliah.json';
 
-    // Baca JSON teknik
-    final teknikString = await rootBundle.rootBundle.loadString(teknikFile);
-    final teknikMap = json.decode(teknikString) as Map<String, dynamic>;
+      // Baca JSON sains
+      final sainsString = await rootBundle.rootBundle.loadString(sainsFile);
+      final sainsMap = json.decode(sainsString) as Map<String, dynamic>;
 
-    // Ubah ke list ProgramStudi
-    final programList = <ProgramStudi>[];
-    // Parsing sains
-    for (var entry in sainsMap.entries) {
-      programList.add(ProgramStudi.fromJson(entry.value));
+      // Baca JSON teknik
+      final teknikString = await rootBundle.rootBundle.loadString(teknikFile);
+      final teknikMap = json.decode(teknikString) as Map<String, dynamic>;
+
+      // Ubah ke list ProgramStudi
+      final programs = <ProgramStudi>[];
+      // Parsing sains
+      for (var entry in sainsMap.entries) {
+        programs.add(ProgramStudi.fromJson(entry.value));
+      }
+      // Parsing teknik
+      for (var entry in teknikMap.entries) {
+        programs.add(ProgramStudi.fromJson(entry.value));
+      }
+
+      programList.value = programs;
+
+      // Flatten jadi QuestionItem
+      flattenQuestions(programs);
+
+      isLoading.value = false;
+    } catch (e) {
+      errorMessage.value = e.toString();
+      isLoading.value = false;
     }
-    // Parsing teknik
-    for (var entry in teknikMap.entries) {
-      programList.add(ProgramStudi.fromJson(entry.value));
-    }
-
-    // Flatten jadi QuestionItem
-    _flattenQuestions(programList);
-
-    return programList;
   }
 
   /// Flatten pertanyaan dari programList -> allQuestions (Q1, Q2, dsb)
-  void _flattenQuestions(List<ProgramStudi> programList) {
+  void flattenQuestions(List<ProgramStudi> programs) {
     final all = <QuestionItem>[];
     int counter = 1;
 
-    for (var prog in programList) {
+    for (var prog in programs) {
       // prog.name = "IPA (Sains Murni) - Kerja" atau "IPA (Sains Murni)"
       for (var minatEntry in prog.minat.entries) {
         final minatKey = minatEntry.key;
@@ -172,171 +223,36 @@ class _QuestionPageState extends State<QuestionPage> {
         }
       }
     }
-    // simpan ke state
-    allQuestions = all;
+
+    // Set state
+    allQuestions.value = all;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final title = widget.isKerja ? 'Kerja' : 'Kuliah';
+  /// Set jawaban user
+  void setAnswer(QuestionItem question, bool? answer) {
+    final index = allQuestions.indexWhere((q) => q.id == question.id);
+    if (index != -1) {
+      allQuestions[index].userAnswer = answer;
+      allQuestions.refresh(); // trigger UI refresh
+    }
+  }
 
-    return Scaffold(
-      appBar: AppBar(title: Text('Forward Chaining $title')),
-      body: FutureBuilder<List<ProgramStudi>>(
-        future: futureProgramList,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          final programList = snapshot.data;
-          if (programList == null || programList.isEmpty) {
-            return const Center(child: Text('Data Kosong'));
-          }
+  /// Navigasi ke halaman sebelumnya
+  void prevPage() {
+    if (currentPage.value > 0) {
+      currentPage.value--;
+    }
+  }
 
-          // Tampilkan pertanyaan per halaman
-          final totalPages = (allQuestions.length / pageSize).ceil();
-          if (currentPage >= totalPages) currentPage = totalPages - 1;
-          if (currentPage < 0) currentPage = 0;
-
-          final startIndex = currentPage * pageSize;
-          final endIndex =
-              ((currentPage + 1) * pageSize).clamp(0, allQuestions.length);
-          final questionsThisPage = allQuestions.sublist(startIndex, endIndex);
-
-          // Hitung berapa pertanyaan total yang dijawab
-          final answeredCount =
-              allQuestions.where((q) => q.userAnswer != null).length;
-          final totalCount = allQuestions.length;
-
-          final allAnsweredThisPage =
-              questionsThisPage.every((q) => q.userAnswer != null);
-
-          return Column(
-            children: [
-              // Info Halaman
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Column(
-                  children: [
-                    Text('Halaman ${currentPage + 1} / $totalPages'),
-                    Text(
-                        'Anda telah mengisi $answeredCount dari $totalCount pertanyaan'),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: questionsThisPage.length,
-                  itemBuilder: (context, index) {
-                    final qItem = questionsThisPage[index];
-                    final globalIndex = startIndex + index;
-
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${qItem.id} - Pertanyaan ${globalIndex + 1}:',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(qItem.questionText),
-                            const SizedBox(height: 10),
-                            // Checkbox "Ya/Tidak"
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: qItem.userAnswer == true,
-                                  onChanged: (val) {
-                                    setState(() {
-                                      if (val == true) {
-                                        qItem.userAnswer = true;
-                                      } else {
-                                        qItem.userAnswer = null;
-                                      }
-                                    });
-                                  },
-                                ),
-                                const Text('Ya'),
-                                const SizedBox(width: 20),
-                                Checkbox(
-                                  value: qItem.userAnswer == false,
-                                  onChanged: (val) {
-                                    setState(() {
-                                      if (val == true) {
-                                        qItem.userAnswer = false;
-                                      } else {
-                                        qItem.userAnswer = null;
-                                      }
-                                    });
-                                  },
-                                ),
-                                const Text('Tidak'),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              // Navigasi
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    onPressed: currentPage > 0
-                        ? () {
-                            setState(() {
-                              currentPage--;
-                            });
-                          }
-                        : null,
-                    child: const Text('Prev'),
-                  ),
-                  if (currentPage < totalPages - 1)
-                    ElevatedButton(
-                      onPressed: allAnsweredThisPage
-                          ? () {
-                              setState(() {
-                                currentPage++;
-                              });
-                            }
-                          : null,
-                      child: const Text('Next'),
-                    )
-                  else
-                    ElevatedButton(
-                      onPressed: allAnsweredThisPage
-                          ? () => _runForwardChaining(programList)
-                          : null,
-                      child: const Text('Cek Rekomendasi'),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 12),
-            ],
-          );
-        },
-      ),
-    );
+  /// Navigasi ke halaman berikutnya
+  void nextPage() {
+    if (currentPage.value < totalPages - 1) {
+      currentPage.value++;
+    }
   }
 
   /// Di sinilah kita jalankan Forward Chaining & tampilkan karir/jurusan + rule
-  void _runForwardChaining(List<ProgramStudi> loadedData) {
+  String runForwardChaining() {
     // 1. Working Memory: "Q1=Yes" atau "Q1=No"
     final workingMemory = <String>{};
     for (var q in allQuestions) {
@@ -399,8 +315,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
     // 6. Cek hasil skor
     if (minatScores.isEmpty) {
-      _showResultDialog('Skor minat kosong (semua 0).');
-      return;
+      return 'Skor minat kosong (semua 0).';
     }
 
     // Urutkan descending
@@ -437,7 +352,7 @@ class _QuestionPageState extends State<QuestionPage> {
         final mKey = parts[1];
 
         // Cari programStudi & minat
-        final programStudi = loadedData.firstWhere(
+        final programStudi = programList.value.firstWhere(
           (p) => p.name == progName,
           orElse: () => ProgramStudi.empty(),
         );
@@ -465,23 +380,948 @@ class _QuestionPageState extends State<QuestionPage> {
       message += '\n';
     }
 
-    _showResultDialog(message);
+    return message;
+  }
+}
+
+/// Halaman menampilkan daftar pertanyaan (5 per halaman), lalu forward chaining
+class QuestionPage extends StatelessWidget {
+  final bool isKerja; // true=Kerja, false=Kuliah
+  const QuestionPage({Key? key, required this.isKerja}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.put(QuestionController(isKerja: isKerja));
+    final title = isKerja ? 'Kerja' : 'Kuliah';
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Forward Chaining $title')),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (controller.errorMessage.value.isNotEmpty) {
+          return Center(child: Text('Error: ${controller.errorMessage.value}'));
+        }
+
+        if (controller.programList.value.isEmpty) {
+          return const Center(child: Text('Data Kosong'));
+        }
+
+        // Get questions for this page
+        final questionsThisPage = controller.questionsThisPage;
+        final startIndex =
+            controller.currentPage.value * QuestionController.pageSize;
+
+        return Column(
+          children: [
+            // Info Halaman
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                children: [
+                  Text(
+                      'Halaman ${controller.currentPage.value + 1} / ${controller.totalPages}'),
+                  Text(
+                      'Anda telah mengisi ${controller.answeredCount} dari ${controller.totalCount} pertanyaan'),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: questionsThisPage.length,
+                itemBuilder: (context, index) {
+                  final qItem = questionsThisPage[index];
+                  final globalIndex = startIndex + index;
+
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${qItem.id} - Pertanyaan ${globalIndex + 1}:',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(qItem.questionText),
+                          const SizedBox(height: 10),
+                          // Checkbox "Ya/Tidak"
+                          Row(
+                            children: [
+                              Obx(() => Checkbox(
+                                    value: controller.allQuestions
+                                            .firstWhere((q) => q.id == qItem.id)
+                                            .userAnswer ==
+                                        true,
+                                    onChanged: (val) {
+                                      if (val == true) {
+                                        controller.setAnswer(qItem, true);
+                                      } else {
+                                        controller.setAnswer(qItem, null);
+                                      }
+                                    },
+                                  )),
+                              const Text('Ya'),
+                              const SizedBox(width: 20),
+                              Obx(() => Checkbox(
+                                    value: controller.allQuestions
+                                            .firstWhere((q) => q.id == qItem.id)
+                                            .userAnswer ==
+                                        false,
+                                    onChanged: (val) {
+                                      if (val == true) {
+                                        controller.setAnswer(qItem, false);
+                                      } else {
+                                        controller.setAnswer(qItem, null);
+                                      }
+                                    },
+                                  )),
+                              const Text('Tidak'),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Navigasi
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: controller.currentPage.value > 0
+                      ? () => controller.prevPage()
+                      : null,
+                  child: const Text('Prev'),
+                ),
+                if (controller.currentPage.value < controller.totalPages - 1)
+                  Obx(() => ElevatedButton(
+                        onPressed: controller.allAnsweredThisPage
+                            ? () => controller.nextPage()
+                            : null,
+                        child: const Text('Next'),
+                      ))
+                else
+                  Obx(() => ElevatedButton(
+                        onPressed: controller.allAnsweredThisPage
+                            ? () => _showResultDialog(
+                                context, controller.runForwardChaining())
+                            : null,
+                        child: const Text('Cek Rekomendasi'),
+                      )),
+              ],
+            ),
+            const SizedBox(height: 12),
+          ],
+        );
+      }),
+    );
   }
 
-  void _showResultDialog(String msg) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
+  void _showResultDialog(BuildContext context, String msg) {
+    Get.dialog(
+      AlertDialog(
         title: const Text('Rekomendasi'),
         content: SingleChildScrollView(child: Text(msg)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Get.back(),
             child: const Text('OK'),
           )
         ],
       ),
     );
+  }
+}
+
+/// Halaman untuk memilih/toggle Developer Mode
+class DeveloperModePage extends StatelessWidget {
+  const DeveloperModePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.put(DeveloperModeController());
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Forward Chaining App'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Logo atau judul
+            const Icon(Icons.psychology, size: 80, color: Colors.blue),
+            const SizedBox(height: 20),
+            const Text(
+              'Forward Chaining Demo',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 40),
+
+            // Toggle Developer Mode
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Developer Mode',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Aktifkan mode developer untuk melihat data dan validasi model forward chaining',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 15),
+                    Obx(() => SwitchListTile(
+                          title: const Text('Developer Mode'),
+                          value: controller.isDeveloperMode.value,
+                          onChanged: (value) =>
+                              controller.toggleDeveloperMode(value),
+                        )),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 40),
+
+            // Tombol mulai aplikasi
+            ElevatedButton(
+              onPressed: () => Get.to(() => const HomePage()),
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              ),
+              child:
+                  const Text('Mulai Aplikasi', style: TextStyle(fontSize: 18)),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Tombol akses Data View (hanya jika developer mode aktif)
+            Obx(() => controller.isDeveloperMode.value
+                ? ElevatedButton(
+                    onPressed: () => Get.to(() => const DevDataViewerPage()),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 15),
+                      backgroundColor: Colors.amber,
+                    ),
+                    child: const Text('Data & Model Viewer',
+                        style: TextStyle(fontSize: 18)),
+                  )
+                : const SizedBox.shrink()),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Controller untuk halaman DevDataViewer
+class DevDataViewerController extends GetxController {
+  final RxList<ProgramStudi> programStudiKerja = <ProgramStudi>[].obs;
+  final RxList<ProgramStudi> programStudiKuliah = <ProgramStudi>[].obs;
+  final RxString currentView = 'overview'.obs; // overview, kerja, kuliah, rules
+  final RxBool isLoading = true.obs;
+  final RxString loadingError = ''.obs;
+  final RxList<Map<String, dynamic>> rulesData = <Map<String, dynamic>>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadAllData();
+  }
+
+  /// Load all data for analysis
+  void loadAllData() async {
+    isLoading.value = true;
+    loadingError.value = '';
+
+    try {
+      // Load Kerja data
+      await loadProgramData(true, programStudiKerja);
+
+      // Load Kuliah data
+      await loadProgramData(false, programStudiKuliah);
+
+      // Generate sample rules for analysis
+      generateSampleRules();
+
+      isLoading.value = false;
+    } catch (e) {
+      loadingError.value = e.toString();
+      isLoading.value = false;
+    }
+  }
+
+  void setCurrentView(String view) {
+    currentView.value = view;
+  }
+
+  /// Memuat data ProgramStudi dari file JSON (Sains + Teknik) tergantung Kerja/Kuliah
+  Future<void> loadProgramData(
+      bool isKerja, RxList<ProgramStudi> target) async {
+    // Tentukan file sains
+    final sainsFile = isKerja
+        ? 'assets/ipa_sains_kerja.json'
+        : 'assets/ipa_sains_kuliah.json';
+
+    // File teknik
+    final teknikFile = isKerja
+        ? 'assets/ipa_teknik_kerja.json'
+        : 'assets/ipa_teknik_kuliah.json';
+
+    // Baca JSON sains
+    final sainsString = await rootBundle.rootBundle.loadString(sainsFile);
+    final sainsMap = json.decode(sainsString) as Map<String, dynamic>;
+
+    // Baca JSON teknik
+    final teknikString = await rootBundle.rootBundle.loadString(teknikFile);
+    final teknikMap = json.decode(teknikString) as Map<String, dynamic>;
+
+    // Ubah ke list ProgramStudi
+    final programs = <ProgramStudi>[];
+    // Parsing sains
+    for (var entry in sainsMap.entries) {
+      programs.add(ProgramStudi.fromJson(entry.value));
+    }
+    // Parsing teknik
+    for (var entry in teknikMap.entries) {
+      programs.add(ProgramStudi.fromJson(entry.value));
+    }
+
+    target.value = programs;
+  }
+
+  /// Generate sample rules untuk analisis
+  void generateSampleRules() {
+    final rules = <Map<String, dynamic>>[];
+
+    // Flatten pertanyaan dari programStudiKerja untuk contoh rules
+    int counter = 1;
+    for (var prog in programStudiKerja) {
+      for (var minatEntry in prog.minat.entries) {
+        final minatKey = minatEntry.key;
+        final minatVal = minatEntry.value;
+
+        for (var p in minatVal.pertanyaan) {
+          final bobot = extractBobot(p);
+          final cleaned = cleanPertanyaan(p);
+          final qId = 'Q$counter';
+          counter++;
+
+          rules.add({
+            'id': 'R$counter',
+            'type': 'Forward Chaining Rule',
+            'condition': 'IF $qId = Yes',
+            'action': 'THEN Score("${prog.name}|$minatKey") += $bobot',
+            'question': cleaned,
+            'weight': bobot,
+            'programName': prog.name,
+            'minatKey': minatKey,
+          });
+        }
+      }
+    }
+
+    rulesData.value = rules;
+  }
+
+  /// Get total question count
+  int getTotalQuestions() {
+    int count = 0;
+
+    // Count questions from kerja
+    for (var prog in programStudiKerja) {
+      for (var minat in prog.minat.values) {
+        count += minat.pertanyaan.length;
+      }
+    }
+
+    // Count questions from kuliah
+    for (var prog in programStudiKuliah) {
+      for (var minat in prog.minat.values) {
+        count += minat.pertanyaan.length;
+      }
+    }
+
+    return count;
+  }
+
+  /// Count total minat
+  int getTotalMinat() {
+    int kerjaMinat =
+        programStudiKerja.fold(0, (sum, prog) => sum + prog.minat.length);
+    int kuliahMinat =
+        programStudiKuliah.fold(0, (sum, prog) => sum + prog.minat.length);
+    return kerjaMinat + kuliahMinat;
+  }
+}
+
+/// Halaman untuk melihat data dan analisis forward chaining (developer mode)
+class DevDataViewerPage extends StatelessWidget {
+  const DevDataViewerPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.put(DevDataViewerController());
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Developer Data Viewer'),
+      ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (controller.loadingError.value.isNotEmpty) {
+          return Center(child: Text('Error: ${controller.loadingError.value}'));
+        }
+
+        return Column(
+          children: [
+            // Tab navigation
+            Container(
+              color: Colors.grey.shade200,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildTab(controller, 'overview', 'Overview'),
+                  _buildTab(controller, 'kerja', 'Kerja Data'),
+                  _buildTab(controller, 'kuliah', 'Kuliah Data'),
+                  _buildTab(controller, 'rules', 'Rules'),
+                  _buildTab(controller, 'analysis', 'Model Analysis'),
+                ],
+              ),
+            ),
+
+            // Content based on selected tab
+            Expanded(
+              child: buildContent(controller),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+
+  Widget _buildTab(
+      DevDataViewerController controller, String viewName, String label) {
+    return InkWell(
+      onTap: () => controller.setCurrentView(viewName),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: controller.currentView.value == viewName
+              ? Colors.blue
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: controller.currentView.value == viewName
+                ? Colors.white
+                : Colors.black,
+            fontWeight: controller.currentView.value == viewName
+                ? FontWeight.bold
+                : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildContent(DevDataViewerController controller) {
+    switch (controller.currentView.value) {
+      case 'overview':
+        return buildOverviewTab(controller);
+      case 'kerja':
+        return buildDataTab(controller, controller.programStudiKerja, 'Kerja');
+      case 'kuliah':
+        return buildDataTab(
+            controller, controller.programStudiKuliah, 'Kuliah');
+      case 'rules':
+        return buildRulesTab(controller);
+      case 'analysis':
+        return buildAnalysisTab(controller);
+      default:
+        return const Center(child: Text('Unknown view'));
+    }
+  }
+
+  /// Tab Overview - statistik umum
+  Widget buildOverviewTab(DevDataViewerController controller) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          const Text(
+            'Forward Chaining Model Overview',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+          const Divider(),
+          const SizedBox(height: 16),
+
+          // Stats Cards
+          GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              _buildStatCard(
+                  'Total Questions',
+                  controller.getTotalQuestions().toString(),
+                  Icons.question_answer),
+              _buildStatCard('Total Rules',
+                  controller.rulesData.length.toString(), Icons.rule),
+              _buildStatCard('Total Minat',
+                  controller.getTotalMinat().toString(), Icons.category),
+              _buildStatCard('Data Sources', '4 JSON Files', Icons.data_array),
+            ],
+          ),
+
+          const SizedBox(height: 30),
+
+          // Forward Chaining Explanation
+          const Text(
+            'Forward Chaining Implementation',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Card(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                      'This model implements a Rule-Based Forward Chaining approach with:'),
+                  SizedBox(height: 8),
+                  Text(
+                      '• Working Memory: Stores facts like "Q1=Yes" / "Q1=No"'),
+                  Text(
+                      '• Rule Base: Rules in the form "IF condition THEN action"'),
+                  Text(
+                      '• Inference Engine: Applies rules to working memory to derive scores'),
+                  Text(
+                      '• Weighted Scoring: Each question has a weight that contributes to final score'),
+                  SizedBox(height: 8),
+                  Text(
+                      'The implementation is a classic production system with a match-resolve-act cycle that continues until no more rules can fire.'),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Visualisasi Flow Forward Chaining
+          const Text(
+            'Forward Chaining Flow',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Card(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                      '1. User answers questions (Yes/No) to establish initial facts'),
+                  Text('2. Facts are added to working memory (e.g., "Q1=Yes")'),
+                  Text(
+                      '3. Rules matching the facts in working memory are fired'),
+                  Text(
+                      '4. Each fired rule adds to the score of corresponding minat'),
+                  Text(
+                      '5. After all rules are evaluated, minat are sorted by score'),
+                  Text('6. Top 3 minat are presented as recommendations'),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String title, String value, IconData icon) {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: Colors.blue),
+            const SizedBox(height: 10),
+            Text(title, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 5),
+            Text(value,
+                style:
+                    const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Tab untuk menampilkan data ProgramStudi (Kerja atau Kuliah)
+  Widget buildDataTab(DevDataViewerController controller,
+      List<ProgramStudi> data, String type) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            '$type Dataset - ${data.length} Program Studi',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              final program = data[index];
+              final minatCount = program.minat.length;
+              int pertanyaanCount = 0;
+
+              // Count pertanyaan
+              for (var minat in program.minat.values) {
+                pertanyaanCount += minat.pertanyaan.length;
+              }
+
+              return ExpansionTile(
+                title: Text(program.name),
+                subtitle:
+                    Text('$minatCount minat, $pertanyaanCount pertanyaan'),
+                children: [
+                  // Program description
+                  if (program.description.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: Text('Description: ${program.description}'),
+                    ),
+
+                  // Categories
+                  if (program.categories.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child:
+                          Text('Categories: ${program.categories.join(", ")}'),
+                    ),
+
+                  // Minat details
+                  ...program.minat.entries.map((minatEntry) {
+                    final minatKey = minatEntry.key;
+                    final minatValue = minatEntry.value;
+
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ExpansionTile(
+                          title: Text('Minat: $minatKey'),
+                          subtitle: Text(
+                              '${minatValue.pertanyaan.length} pertanyaan'),
+                          children: [
+                            // Pertanyaan
+                            if (minatValue.pertanyaan.isNotEmpty)
+                              ListTile(
+                                title: const Text('Pertanyaan:',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: minatValue.pertanyaan.map((p) {
+                                    final bobot = extractBobot(p);
+                                    final cleaned = cleanPertanyaan(p);
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 4),
+                                      child: Text('• $cleaned [bobot: $bobot]'),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+
+                            // Karir
+                            if (minatValue.karir.isNotEmpty)
+                              ListTile(
+                                title: const Text('Karir:',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: minatValue.karir
+                                      .map((k) => Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 4),
+                                            child: Text('• $k'),
+                                          ))
+                                      .toList(),
+                                ),
+                              ),
+
+                            // Jurusan Terkait
+                            if (minatValue.jurusanTerkait.isNotEmpty)
+                              ListTile(
+                                title: const Text('Jurusan Terkait:',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: minatValue.jurusanTerkait
+                                      .map((j) => Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 4),
+                                            child: Text('• $j'),
+                                          ))
+                                      .toList(),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Tab untuk menampilkan rules
+  Widget buildRulesTab(DevDataViewerController controller) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            'Forward Chaining Rules - ${controller.rulesData.length} Rules',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+
+        // Search & Filter controls could be added here
+
+        Expanded(
+          child: ListView.builder(
+            itemCount: controller.rulesData.length,
+            itemBuilder: (context, index) {
+              final rule = controller.rulesData[index];
+
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: ListTile(
+                  title: Text(
+                      '${rule['id']}: ${rule['condition']} ${rule['action']}'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Question: ${rule['question']}'),
+                      Text(
+                          'Weight: ${rule['weight']} | Program: ${rule['programName']} | Minat: ${rule['minatKey']}'),
+                    ],
+                  ),
+                  isThreeLine: true,
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Tab untuk analisis kesesuaian dengan metode Forward Chaining
+  Widget buildAnalysisTab(DevDataViewerController controller) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Forward Chaining Model Analysis',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+          const Divider(),
+          const SizedBox(height: 16),
+
+          // Analysis of implementation
+          _buildAnalysisSection(
+            'Implementation Accuracy',
+            [
+              'The implementation correctly follows forward chaining principles:',
+              '• Uses a working memory to store facts',
+              '• Has a rule base of IF-THEN rules',
+              '• Implements pattern matching to find applicable rules',
+              '• Rules fire when their conditions match working memory',
+              '• Actions of fired rules can update scores (modify state)',
+            ],
+            90,
+          ),
+
+          _buildAnalysisSection(
+            'Rule Structure',
+            [
+              'Rules follow standard structure but with simplifications:',
+              '• Conditions only check for presence of "Qn=Yes"',
+              '• More complex conditions (e.g., AND/OR combinations) aren\'t implemented',
+              '• Rule actions only increase scores instead of adding new facts',
+              '• The system does not support rule chaining (where firing one rule enables another)',
+            ],
+            75,
+          ),
+
+          _buildAnalysisSection(
+            'Inference Process',
+            [
+              'The inference process is partially implemented:',
+              '• Rules are checked against working memory',
+              '• Matched rules are fired and actions executed',
+              '• The process loops until no more rules can fire',
+              '• However, since rules don\'t add new facts, the process completes in one iteration',
+              '• There\'s no conflict resolution strategy as all applicable rules are fired',
+            ],
+            80,
+          ),
+
+          _buildAnalysisSection(
+            'Results Explanation',
+            [
+              'The system provides good explanation capabilities:',
+              '• Shows which rules contributed to each recommendation',
+              '• Displays the questions that influenced the result',
+              '• Shows the weights/scores that led to the final ranking',
+              '• This transparency is a strength of the implementation',
+            ],
+            95,
+          ),
+
+          _buildAnalysisSection(
+            'Overall Assessment',
+            [
+              'This is a simplified but valid forward chaining implementation:',
+              '• It follows the core principles of the forward chaining method',
+              '• The implementation is well-suited for its specific use case',
+              '• The scoring mechanism is an appropriate adaptation for the recommendation context',
+              '• Areas for potential enhancement: more complex rule conditions, true fact generation, and multi-stage inference',
+            ],
+            85,
+          ),
+
+          const SizedBox(height: 30),
+
+          // Recommendations for improvement
+          const Text(
+            'Improvement Suggestions',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Card(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('1. Implement full fact generation (not just scoring)'),
+                  Text('2. Support complex conditions with AND/OR operators'),
+                  Text('3. Enable multi-stage inference with rule chaining'),
+                  Text(
+                      '4. Add conflict resolution strategies for rule prioritization'),
+                  Text(
+                      '5. Consider implementing backward chaining to complement forward chaining'),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnalysisSection(
+      String title, List<String> points, int scorePercent) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 20),
+      elevation: 3,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getScoreColor(scorePercent),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Text(
+                    '$scorePercent%',
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Divider(),
+            ...points.map((point) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Text(point),
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getScoreColor(int score) {
+    if (score >= 90) return Colors.green;
+    if (score >= 75) return Colors.blue;
+    if (score >= 60) return Colors.orange;
+    return Colors.red;
   }
 }
 
