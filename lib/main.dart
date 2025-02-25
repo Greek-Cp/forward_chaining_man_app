@@ -36,17 +36,26 @@ class DeveloperModeController extends GetxController {
   }
 }
 
-/// Controller untuk HomePage
 class HomeController extends GetxController {
   final Rx<bool?> pilihan =
       Rx<bool?>(null); // null=belum pilih; true=Kerja; false=Kuliah
+  final RxString selectedKode =
+      "".obs; // Menyimpan kode pilihan yang dipilih user
 
-  void setPilihan(bool? val) {
-    pilihan.value = val;
+  void setPilihan(String kode) {
+    if (selectedKode.value == kode)
+      return; // Jika memilih yang sama, tidak berubah
+    selectedKode.value = kode;
+
+    // Logika pemilihan: Kuliah atau Kerja
+    if (kode == "E01" || kode == "E02" || kode == "E03") {
+      pilihan.value = false; // Kuliah
+    } else if (kode == "E04" || kode == "E05") {
+      pilihan.value = true; // Kerja
+    }
   }
 }
 
-/// Halaman untuk memilih Kerja atau Kuliah
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -56,38 +65,134 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pilih Kerja atau Kuliah'),
+        title: const Text('Pilih Rencana Anda'),
+        backgroundColor: Colors.blueAccent,
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Radio: Kerja
-            Obx(() => RadioListTile<bool>(
-                  title: const Text('Kerja'),
-                  value: true,
-                  groupValue: controller.pilihan.value,
-                  onChanged: (val) => controller.setPilihan(val),
-                )),
-            // Radio: Kuliah
-            Obx(() => RadioListTile<bool>(
-                  title: const Text('Kuliah'),
-                  value: false,
-                  groupValue: controller.pilihan.value,
-                  onChanged: (val) => controller.setPilihan(val),
-                )),
+            const Text(
+              'Pilih kondisi ekonomi Anda:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView(
+                children: [
+                  Obx(() => buildOptionCard(
+                        title:
+                            "Saya memiliki kondisi ekonomi cukup untuk kuliah",
+                        kode: "E01",
+                        icon: Icons.school,
+                        controller: controller,
+                      )),
+                  Obx(() => buildOptionCard(
+                        title:
+                            "Saya perlu mempertimbangkan biaya karena ekonomi terbatas",
+                        kode: "E02",
+                        icon: Icons.attach_money,
+                        controller: controller,
+                      )),
+                  Obx(() => buildOptionCard(
+                        title: "Saya berminat kuliah tapi mencari beasiswa",
+                        kode: "E03",
+                        icon: Icons.card_giftcard,
+                        controller: controller,
+                      )),
+                  Obx(() => buildOptionCard(
+                        title: "Saya lebih memilih bekerja atau usaha",
+                        kode: "E04",
+                        icon: Icons.work,
+                        controller: controller,
+                      )),
+                  Obx(() => buildOptionCard(
+                        title: "Saya ingin bekerja dulu lalu kuliah nanti",
+                        kode: "E05",
+                        icon: Icons.timeline,
+                        controller: controller,
+                      )),
+                ],
+              ),
+            ),
             const SizedBox(height: 20),
-            Obx(() => ElevatedButton(
-                  onPressed: controller.pilihan.value == null
-                      ? null
-                      : () {
-                          // Bawa user ke halaman pertanyaan
-                          Get.to(() =>
-                              QuestionPage(isKerja: controller.pilihan.value!));
-                        },
-                  child: const Text('Lanjut'),
+            Obx(() => SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: controller.selectedKode.value.isEmpty
+                        ? null
+                        : () {
+                            Get.to(() => QuestionPage(
+                                isKerja: controller.pilihan.value!));
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'Lanjut',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
                 )),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Widget untuk membuat tampilan pilihan lebih menarik
+  Widget buildOptionCard({
+    required String title,
+    required String kode,
+    required IconData icon,
+    required HomeController controller,
+  }) {
+    return GestureDetector(
+      onTap: () => controller.setPilihan(kode),
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: controller.selectedKode.value == kode
+                ? Colors.blueAccent
+                : Colors.grey.shade300,
+            width: 2,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 30,
+                color: controller.selectedKode.value == kode
+                    ? Colors.blueAccent
+                    : Colors.grey,
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: controller.selectedKode.value == kode
+                        ? Colors.blueAccent
+                        : Colors.black,
+                  ),
+                ),
+              ),
+              if (controller.selectedKode.value == kode)
+                const Icon(Icons.check_circle, color: Colors.blueAccent),
+            ],
+          ),
         ),
       ),
     );
@@ -148,6 +253,7 @@ class QuestionController extends GetxController {
 
   /// Memuat data ProgramStudi dari file JSON (Sains + Teknik) tergantung Kerja/Kuliah
   Future<void> loadProgramData(bool isKerja) async {
+    // Implementation unchanged
     isLoading.value = true;
     errorMessage.value = '';
 
@@ -195,6 +301,7 @@ class QuestionController extends GetxController {
 
   /// Flatten pertanyaan dari programList -> allQuestions (Q1, Q2, dsb)
   void flattenQuestions(List<ProgramStudi> programs) {
+    // Implementation unchanged
     final all = <QuestionItem>[];
     int counter = 1;
 
@@ -251,15 +358,19 @@ class QuestionController extends GetxController {
     }
   }
 
-  /// Di sinilah kita jalankan Forward Chaining & tampilkan karir/jurusan + rule
-  String runForwardChaining() {
+  /// Modified: Return RecommendationResult object instead of a string
+  RecommendationResult runForwardChaining() {
     // 1. Working Memory: "Q1=Yes" atau "Q1=No"
+    final workingMemoryList = <String>[];
     final workingMemory = <String>{};
+
     for (var q in allQuestions) {
       if (q.userAnswer == true) {
         workingMemory.add('${q.id}=Yes'); // misal "Q1=Yes"
-      } else {
+        workingMemoryList.add('${q.id}=Yes');
+      } else if (q.userAnswer == false) {
         workingMemory.add('${q.id}=No'); // "Q1=No" (opsional)
+        workingMemoryList.add('${q.id}=No');
       }
     }
 
@@ -315,7 +426,11 @@ class QuestionController extends GetxController {
 
     // 6. Cek hasil skor
     if (minatScores.isEmpty) {
-      return 'Skor minat kosong (semua 0).';
+      // Jika tidak ada hasil, kembalikan objek kosong
+      return RecommendationResult(
+        workingMemory: workingMemoryList,
+        recommendations: [],
+      );
     }
 
     // Urutkan descending
@@ -324,26 +439,13 @@ class QuestionController extends GetxController {
     // Ambil top 3
     final top3 = sorted.take(3).toList();
 
-    // 7. Buat output, sekalian lookup ke loadedData untuk dapat karir/jurusan
-    String message = 'HASIL FORWARD CHAINING:\n\n';
-    message += 'Working Memory (fakta): ${workingMemory.join(', ')}\n\n';
+    // 7. Buat list rekomendasi
+    final recommendations = <RecommendationItem>[];
 
-    message += 'Top 3 Rekomendasi:\n';
     for (int i = 0; i < top3.length; i++) {
       final minatKey =
           top3[i].key; // ex: "IPA (Sains Murni) - Kerja|Kedokteran"
       final score = top3[i].value;
-
-      message += '${i + 1}. $minatKey (Skor: $score)\n';
-
-      // Tampilkan rule-rule yang menambah skor di minatKey ini
-      final contribRules = minatContrib[minatKey] ?? [];
-      if (contribRules.isNotEmpty) {
-        message += '  RULES YANG:\n';
-        for (var rDesc in contribRules) {
-          message += '   - $rDesc\n';
-        }
-      }
 
       // Split "IPA (Sains Murni) - Kerja" | "Kedokteran"
       final parts = minatKey.split('|');
@@ -357,26 +459,75 @@ class QuestionController extends GetxController {
           orElse: () => ProgramStudi.empty(),
         );
         final minatObj = programStudi.minat[mKey];
-        if (minatObj != null) {
-          // Tampilkan karir
-          if (minatObj.karir.isNotEmpty) {
-            message += '  Karir:\n';
-            for (var c in minatObj.karir) {
-              message += '   - $c\n';
-            }
-          } else {
-            message += '  Karir: (Tidak ada data)\n';
-          }
 
-          // Tampilkan jurusan (jika ada)
-          if (minatObj.jurusanTerkait.isNotEmpty) {
-            message += '  Jurusan Terkait:\n';
-            for (var j in minatObj.jurusanTerkait) {
-              message += '   - $j\n';
-            }
-          }
+        if (minatObj != null) {
+          // Dapatkan careers dan majors dari minatObj
+          final careers = minatObj.karir;
+          final majors = minatObj.jurusanTerkait;
+
+          // Dapatkan rules dari minatContrib
+          final rules = minatContrib[minatKey] ?? [];
+
+          // Add to recommendations using user's existing RecommendationItem structure
+          recommendations.add(
+            RecommendationItem(
+              title: minatKey,
+              score: score,
+              careers: careers,
+              majors: majors,
+              rules: rules,
+              index: i,
+            ),
+          );
         }
       }
+    }
+
+    return RecommendationResult(
+      workingMemory: workingMemoryList,
+      recommendations: recommendations,
+    );
+  }
+
+  /// Still needed for legacy reasons - converts the RecommendationResult to a string
+  String runForwardChainingAsString() {
+    final result = runForwardChaining();
+
+    // Convert to string format (legacy format)
+    String message = 'HASIL FORWARD CHAINING:\n\n';
+    message += 'Working Memory (fakta): ${result.workingMemory.join(', ')}\n\n';
+
+    message += 'Top 3 Rekomendasi:\n';
+    for (int i = 0; i < result.recommendations.length; i++) {
+      final rec = result.recommendations[i];
+      message += '${i + 1}. ${rec.title} (Skor: ${rec.score})\n';
+
+      // Rules
+      if (rec.rules.isNotEmpty) {
+        message += '  RULES YANG:\n';
+        for (var rule in rec.rules) {
+          message += '   - $rule\n';
+        }
+      }
+
+      // Careers
+      if (rec.careers.isNotEmpty) {
+        message += '  Karir:\n';
+        for (var career in rec.careers) {
+          message += '   - $career\n';
+        }
+      } else {
+        message += '  Karir: (Tidak ada data)\n';
+      }
+
+      // Majors
+      if (rec.majors.isNotEmpty) {
+        message += '  Jurusan Terkait:\n';
+        for (var major in rec.majors) {
+          message += '   - $major\n';
+        }
+      }
+
       message += '\n';
     }
 
@@ -384,7 +535,508 @@ class QuestionController extends GetxController {
   }
 }
 
-/// Halaman menampilkan daftar pertanyaan (5 per halaman), lalu forward chaining
+class RecommendationResultsScreen extends StatelessWidget {
+  final RecommendationResult result;
+  final String rawMessage; // Optional: for backward compatibility
+
+  const RecommendationResultsScreen({
+    required this.result,
+    this.rawMessage = '',
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Hasil Rekomendasi',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.blue.shade800,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade800, Colors.blue.shade500],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Berdasarkan jawaban Anda, berikut adalah rekomendasi minat dan karir:',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Expanded(
+                child: result.recommendations.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                        itemCount: result.recommendations.length,
+                        padding: const EdgeInsets.all(16.0),
+                        itemBuilder: (context, index) {
+                          final item = result.recommendations[index];
+                          return RecommendationCard(item: item);
+                        },
+                      ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    _showRawResults(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.blue.shade800,
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Lihat Detail Forward Chaining',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_off,
+            size: 80,
+            color: Colors.white.withOpacity(0.7),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Tidak ada rekomendasi yang cocok',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Coba jawab pertanyaan dengan pola yang berbeda',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.8),
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRawResults(BuildContext context) {
+    // Use raw message if available, otherwise generate it
+    final detailedText =
+        rawMessage.isNotEmpty ? rawMessage : _generateDetailedText();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        maxChildSize: 0.9,
+        minChildSize: 0.5,
+        expand: false,
+        builder: (context, scrollController) => Container(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 50,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    margin: const EdgeInsets.only(bottom: 16),
+                  ),
+                ),
+                Text(
+                  'Detail Forward Chaining',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SelectableText(
+                  detailedText,
+                  style: TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper to generate detailed text from the result object if needed
+  String _generateDetailedText() {
+    String text = 'HASIL FORWARD CHAINING:\n\n';
+    text += 'Working Memory (fakta): ${result.workingMemory.join(', ')}\n\n';
+
+    text += 'Top ${result.recommendations.length} Rekomendasi:\n';
+    for (int i = 0; i < result.recommendations.length; i++) {
+      final rec = result.recommendations[i];
+      text += '${i + 1}. ${rec.title} (Skor: ${rec.score})\n';
+
+      // Rules
+      if (rec.rules.isNotEmpty) {
+        text += '  RULES YANG:\n';
+        for (var rule in rec.rules) {
+          text += '   - $rule\n';
+        }
+      }
+
+      // Careers
+      if (rec.careers.isNotEmpty) {
+        text += '  Karir:\n';
+        for (var career in rec.careers) {
+          text += '   - $career\n';
+        }
+      } else {
+        text += '  Karir: (Tidak ada data)\n';
+      }
+
+      // Majors
+      if (rec.majors.isNotEmpty) {
+        text += '  Jurusan Terkait:\n';
+        for (var major in rec.majors) {
+          text += '   - $major\n';
+        }
+      }
+
+      text += '\n';
+    }
+
+    return text;
+  }
+}
+
+// Models for the recommendation results
+class RecommendationResult {
+  final List<String> workingMemory;
+  final List<RecommendationItem> recommendations;
+
+  RecommendationResult({
+    required this.workingMemory,
+    required this.recommendations,
+  });
+}
+
+// Using your existing RecommendationItem class
+class RecommendationItem {
+  final String title;
+  final int score;
+  final List<String> careers;
+  final List<String> majors;
+  final List<String> rules;
+  final int index;
+
+  RecommendationItem({
+    required this.title,
+    required this.score,
+    required this.careers,
+    required this.majors,
+    required this.rules,
+    required this.index,
+  });
+}
+
+class RecommendationCard extends StatefulWidget {
+  final RecommendationItem item;
+
+  const RecommendationCard({
+    required this.item,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<RecommendationCard> createState() => _RecommendationCardState();
+}
+
+class _RecommendationCardState extends State<RecommendationCard> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // Generate medal color based on index
+    final medalColors = [
+      const Color(0xFFFFD700), // Gold
+      const Color(0xFFC0C0C0), // Silver
+      const Color(0xFFCD7F32), // Bronze
+    ];
+
+    final medalColor = widget.item.index < medalColors.length
+        ? medalColors[widget.item.index]
+        : Colors.grey;
+
+    // Parse the title to split program and concentration
+    final parts = widget.item.title.split('|');
+    final program = parts[0].trim();
+    final concentration = parts.length > 1 ? parts[1].trim() : '';
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          // Card header with medal
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: medalColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${widget.item.index + 1}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        concentration,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        program,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade700,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Skor: ${widget.item.score}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Card content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Careers section
+                if (widget.item.careers.isNotEmpty) ...[
+                  _buildSectionTitle('Karir yang Cocok:', Icons.work),
+                  const SizedBox(height: 8),
+                  _buildItemsList(widget.item.careers),
+                  const SizedBox(height: 16),
+                ],
+
+                // Majors section
+                if (widget.item.majors.isNotEmpty) ...[
+                  _buildSectionTitle('Jurusan Terkait:', Icons.school),
+                  const SizedBox(height: 8),
+                  _buildItemsList(widget.item.majors),
+                  const SizedBox(height: 16),
+                ],
+
+                // Rules section (expandable)
+                if (widget.item.rules.isNotEmpty) ...[
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _expanded = !_expanded;
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        _buildSectionTitle('Reasoning:', Icons.psychology),
+                        const Spacer(),
+                        Icon(
+                          _expanded ? Icons.expand_less : Icons.expand_more,
+                          color: Colors.blue.shade700,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (_expanded) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: widget.item.rules.map((rule) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Text(
+                              rule,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade800,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: Colors.blue.shade700,
+          size: 20,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildItemsList(List<String> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: items.map((item) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '•',
+                style: TextStyle(
+                  color: Colors.blue.shade700,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  item,
+                  style: TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+// Helper function to replace the simple dialog with our new UI
+
+void showRecommendationResultsGetx(RecommendationResult result,
+    {String rawMessage = ''}) {
+  Get.to(() => RecommendationResultsScreen(
+        result: result,
+        rawMessage: rawMessage,
+      ));
+}
+
 class QuestionPage extends StatelessWidget {
   final bool isKerja; // true=Kerja, false=Kuliah
   const QuestionPage({Key? key, required this.isKerja}) : super(key: key);
@@ -392,10 +1044,17 @@ class QuestionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(QuestionController(isKerja: isKerja));
-    final title = isKerja ? 'Kerja' : 'Kuliah';
 
     return Scaffold(
-      appBar: AppBar(title: Text('Forward Chaining $title')),
+      appBar: AppBar(
+        title: const Text('Kuisioner'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Get.back(),
+        ),
+      ),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -409,60 +1068,89 @@ class QuestionPage extends StatelessWidget {
           return const Center(child: Text('Data Kosong'));
         }
 
-        // Get questions for this page
         final questionsThisPage = controller.questionsThisPage;
         final startIndex =
             controller.currentPage.value * QuestionController.pageSize;
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Info Halaman
+            // Progress Kuisioner
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                      'Halaman ${controller.currentPage.value + 1} / ${controller.totalPages}'),
-                  Text(
-                      'Anda telah mengisi ${controller.answeredCount} dari ${controller.totalCount} pertanyaan'),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.yellow[700],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '${controller.answeredCount}/${controller.totalCount} Pertanyaan',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  LinearProgressIndicator(
+                    value: controller.answeredCount / controller.totalCount,
+                    backgroundColor: Colors.grey[300],
+                    color: Colors.yellow[700],
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Jawab dengan jujur pertanyaan di bawah ini.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
+
+            // Daftar Pertanyaan
             Expanded(
               child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: questionsThisPage.length,
                 itemBuilder: (context, index) {
                   final qItem = questionsThisPage[index];
                   final globalIndex = startIndex + index;
 
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${qItem.id} - Pertanyaan ${globalIndex + 1}:',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            left: BorderSide(color: Colors.blue, width: 4),
                           ),
-                          const SizedBox(height: 5),
-                          Text(qItem.questionText),
-                          const SizedBox(height: 10),
-                          // Checkbox "Ya/Tidak"
-                          Row(
-                            children: [
-                              Obx(() => Checkbox(
-                                    value: controller.allQuestions
-                                            .firstWhere((q) => q.id == qItem.id)
-                                            .userAnswer ==
-                                        true,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${globalIndex + 1}. ${qItem.questionText}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Obx(() {
+                              final selectedAnswer = controller.allQuestions
+                                  .firstWhere((q) => q.id == qItem.id)
+                                  .userAnswer;
+
+                              return Column(
+                                children: [
+                                  CheckboxListTile(
+                                    activeColor: Colors.blueAccent,
+                                    title: const Text('Ya'),
+                                    value: selectedAnswer == true,
                                     onChanged: (val) {
                                       if (val == true) {
                                         controller.setAnswer(qItem, true);
@@ -470,14 +1158,13 @@ class QuestionPage extends StatelessWidget {
                                         controller.setAnswer(qItem, null);
                                       }
                                     },
-                                  )),
-                              const Text('Ya'),
-                              const SizedBox(width: 20),
-                              Obx(() => Checkbox(
-                                    value: controller.allQuestions
-                                            .firstWhere((q) => q.id == qItem.id)
-                                            .userAnswer ==
-                                        false,
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                  ),
+                                  CheckboxListTile(
+                                    activeColor: Colors.blueAccent,
+                                    title: const Text('Tidak'),
+                                    value: selectedAnswer == false,
                                     onChanged: (val) {
                                       if (val == true) {
                                         controller.setAnswer(qItem, false);
@@ -485,45 +1172,80 @@ class QuestionPage extends StatelessWidget {
                                         controller.setAnswer(qItem, null);
                                       }
                                     },
-                                  )),
-                              const Text('Tidak'),
-                            ],
-                          ),
-                        ],
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                  ),
+                                ],
+                              );
+                            }),
+                          ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 10),
+                    ],
                   );
                 },
               ),
             ),
-            // Navigasi
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: controller.currentPage.value > 0
-                      ? () => controller.prevPage()
-                      : null,
-                  child: const Text('Prev'),
-                ),
-                if (controller.currentPage.value < controller.totalPages - 1)
-                  Obx(() => ElevatedButton(
-                        onPressed: controller.allAnsweredThisPage
-                            ? () => controller.nextPage()
-                            : null,
-                        child: const Text('Next'),
-                      ))
-                else
-                  Obx(() => ElevatedButton(
-                        onPressed: controller.allAnsweredThisPage
-                            ? () => _showResultDialog(
-                                context, controller.runForwardChaining())
-                            : null,
-                        child: const Text('Cek Rekomendasi'),
-                      )),
-              ],
+
+            // Tombol Navigasi
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: controller.currentPage.value > 0
+                        ? () => controller.prevPage()
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 24),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Kembali',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  Obx(() {
+                    bool canProceed = controller.allAnsweredThisPage;
+                    return ElevatedButton(
+                      onPressed: canProceed
+                          ? () {
+                              if (controller.currentPage.value <
+                                  controller.totalPages - 1) {
+                                controller.nextPage();
+                              } else {
+                                final results = controller.runForwardChaining();
+
+                                showRecommendationResultsGetx(results);
+                              }
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            canProceed ? Colors.blueAccent : Colors.grey[400],
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 24),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        controller.currentPage.value < controller.totalPages - 1
+                            ? 'Lanjut'
+                            : 'Cek Rekomendasi',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }),
+                ],
+              ),
             ),
-            const SizedBox(height: 12),
           ],
         );
       }),
