@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   get: ^4.6.6
+  url_launcher: ^6.3.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -26,3 +27,4 @@ flutter:
     - assets/ipa_teknik_kerja.json
     - assets/ipa_sains_kuliah.json
     - assets/ipa_teknik_kuliah.json
+    - assets/
