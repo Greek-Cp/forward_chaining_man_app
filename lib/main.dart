@@ -1,16 +1,26 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' as rootBundle;
 import 'package:flutter/services.dart';
+import 'package:forward_chaining_man_app/app/views/page_intro.dart';
+import 'package:forward_chaining_man_app/app/views/page_login.dart';
+import 'package:forward_chaining_man_app/app/views/page_profile.dart';
 import 'package:get/get.dart';
 import 'dart:math' as math;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:intl/intl.dart' as intl;
 
 import 'package:url_launcher/url_launcher.dart';
 
 // Global flag for developer mode
 bool developerMode = false;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
@@ -984,7 +994,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const DeveloperModePage(),
+      home: const IntroPage(),
     );
   }
 }
@@ -1866,6 +1876,84 @@ class QuestionController extends GetxController {
       workingMemory: workingMemoryList,
       recommendations: recommendations,
     );
+  }
+
+  Future<void> saveResultsToFirestore(RecommendationResult results) async {
+    try {
+      // Get current user
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        Get.snackbar(
+          'Error',
+          'Kamu perlu login untuk menyimpan hasil',
+          backgroundColor: Colors.red.shade100,
+          colorText: Colors.red.shade800,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      // Prepare data to save
+      final timestamp = DateTime.now();
+      final userAnswers = allQuestions
+          .map((q) => {
+                'questionId': q.id,
+                'question': q.questionText,
+                'rawQuestion': q.rawQuestionText,
+                'answer': q.userAnswer,
+                'programName': q.programName,
+                'minatKey': q.minatKey,
+                'bobot': q.bobot,
+              })
+          .toList();
+
+      // Format recommendations for Firestore
+      final recommendationsData = results.recommendations
+          .map((rec) => {
+                'title': rec.title,
+                'score': rec.score,
+                'careers': rec.careers,
+                'majors': rec.majors,
+                'rules': rec.rules,
+                'index': rec.index,
+              })
+          .toList();
+
+      // Save to Firestore
+      await FirebaseFirestore.instance
+          .collection('recommendation_history')
+          .add({
+        'userId': user.uid,
+        'userEmail': user.email,
+        'userName': user.displayName,
+        'timestamp': FieldValue.serverTimestamp(),
+        'formattedTimestamp': timestamp.toString(),
+        'isKerja': isKerja,
+        'questionMode': isKerja ? 'Rekomendasi Karir' : 'Rekomendasi Kuliah',
+        'userAnswers': userAnswers,
+        'workingMemory': results.workingMemory,
+        'recommendations': recommendationsData,
+        'totalQuestions': totalCount,
+        'answeredQuestions': answeredCount,
+      });
+
+      Get.snackbar(
+        'Berhasil',
+        'Hasil rekomendasi telah disimpan',
+        backgroundColor: Colors.green.shade100,
+        colorText: Colors.green.shade800,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      print('Error saving results: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal menyimpan hasil: ${e.toString()}',
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade800,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   /// Still needed for legacy reasons - converts the RecommendationResult to a string
@@ -3408,8 +3496,13 @@ class QuestionPage extends StatelessWidget {
                                           } else {
                                             final results =
                                                 controller.runForwardChaining();
-                                            showRecommendationResultsGetx(
-                                                results);
+                                            controller
+                                                .saveResultsToFirestore(results)
+                                                .then((_) {
+                                              // Then show results to user
+                                              showRecommendationResultsGetx(
+                                                  results);
+                                            });
                                           }
                                         }
                                       : null,
@@ -3522,12 +3615,1456 @@ class QuestionPage extends StatelessWidget {
 
 /// Halaman untuk memilih/toggle Developer Mode dengan desain yang lebih modern dan menarik
 /// Fixed version to prevent overflow
+
+class RecommendationHistoryPage extends StatelessWidget {
+  const RecommendationHistoryPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final User? currentUser = FirebaseAuth.instance.currentUser;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Riwayat Rekomendasi'),
+        backgroundColor: Colors.indigo.shade800,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () {
+              // Refresh action
+              Get.snackbar(
+                'Refresh',
+                'Menyegarkan data...',
+                backgroundColor: Colors.indigo.shade100,
+                colorText: Colors.indigo.shade800,
+                snackPosition: SnackPosition.BOTTOM,
+                duration: const Duration(seconds: 1),
+              );
+            },
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.indigo.shade800,
+              Colors.blue.shade800,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('recommendation_history')
+                .where('userId', isEqualTo: currentUser?.uid)
+                .orderBy('timestamp', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline,
+                          color: Colors.white, size: 48),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Error: ${snapshot.error}',
+                        style: const TextStyle(color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.history,
+                          color: Colors.white.withOpacity(0.7), size: 64),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Belum ada riwayat rekomendasi',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Mulai aplikasi untuk mendapatkan rekomendasi karir atau kuliah',
+                        style: TextStyle(color: Colors.white70),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Get.back(); // Go back to previous screen
+                        },
+                        icon: const Icon(Icons.arrow_back),
+                        label: const Text('Kembali'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.indigo.shade800,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              // Group by date for better organization
+              final Map<String, List<DocumentSnapshot>> groupedHistory = {};
+
+              for (var doc in snapshot.data!.docs) {
+                final data = doc.data() as Map<String, dynamic>;
+                final timestamp = data['timestamp'] as Timestamp?;
+
+                if (timestamp != null) {
+                  final date =
+                      intl.DateFormat('yyyy-MM-dd').format(timestamp.toDate());
+                  if (!groupedHistory.containsKey(date)) {
+                    groupedHistory[date] = [];
+                  }
+                  groupedHistory[date]!.add(doc);
+                } else {
+                  final date = 'Tidak ada tanggal';
+                  if (!groupedHistory.containsKey(date)) {
+                    groupedHistory[date] = [];
+                  }
+                  groupedHistory[date]!.add(doc);
+                }
+              }
+
+              // Sort dates in descending order
+              final sortedDates = groupedHistory.keys.toList()
+                ..sort((a, b) => b.compareTo(a));
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: sortedDates.length,
+                itemBuilder: (context, dateIndex) {
+                  final date = sortedDates[dateIndex];
+                  final docs = groupedHistory[date]!;
+
+                  // Format the date for display
+                  String formattedDate;
+                  try {
+                    final DateTime parsedDate = DateTime.parse(date);
+                    formattedDate =
+                        intl.DateFormat('EEEE, d MMMM yyyy', 'id_ID')
+                            .format(parsedDate);
+                  } catch (e) {
+                    formattedDate = date;
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Date header
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8, bottom: 8),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today,
+                              size: 16,
+                              color: Colors.amber.shade300,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              formattedDate,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // History items for this date
+                      ...docs.map((doc) => _buildHistoryItem(doc)),
+
+                      // Add space between date groups
+                      const SizedBox(height: 16),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHistoryItem(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    // Extract data
+    final timestamp = data['timestamp'] as Timestamp?;
+    final time = timestamp != null
+        ? intl.DateFormat('HH:mm').format(timestamp.toDate())
+        : '';
+    final questionMode = data['questionMode'] ?? 'Tidak diketahui';
+
+    // Get top recommendation if available
+    String topRecommendation = 'Tidak ada rekomendasi';
+    String secondRecommendation = '';
+    List<dynamic> recommendationsList = [];
+
+    if (data['recommendations'] != null &&
+        (data['recommendations'] as List).isNotEmpty) {
+      recommendationsList = data['recommendations'] as List;
+      if (recommendationsList.isNotEmpty) {
+        topRecommendation =
+            recommendationsList[0]['title'] ?? 'Tidak ada judul';
+        if (recommendationsList.length > 1) {
+          secondRecommendation = recommendationsList[1]['title'] ?? '';
+        }
+      }
+    }
+
+    // Calculate answer percentage
+    final totalQuestions = data['totalQuestions'] ?? 0;
+    final answeredQuestions = data['answeredQuestions'] ?? 0;
+    final double answerPercentage =
+        totalQuestions > 0 ? (answeredQuestions / totalQuestions * 100) : 0;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.1),
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            // Navigate to detail page
+            Get.to(() => RecommendationDetailPage(
+                  data: data,
+                  documentId: doc.id,
+                ));
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Mode icon
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: questionMode.contains('Karir')
+                            ? Colors.orange.withOpacity(0.2)
+                            : Colors.green.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        questionMode.contains('Karir')
+                            ? Icons.work_outline
+                            : Icons.school_outlined,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Content
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header with type and time
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  questionMode,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                time,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          // Progress bar
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: LinearProgressIndicator(
+                                    value: answerPercentage / 100,
+                                    backgroundColor:
+                                        Colors.white.withOpacity(0.1),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white.withOpacity(0.7),
+                                    ),
+                                    minHeight: 6,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                '$answeredQuestions/$totalQuestions',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // Recommendations
+                const Text(
+                  'Rekomendasi Utama:',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  topRecommendation,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                if (secondRecommendation.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Rekomendasi Lainnya:',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    secondRecommendation,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 12),
+
+                // Action button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Detail',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 12,
+                            color: Colors.white.withOpacity(0.7),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailTabController extends GetxController {
+  // Current tab index (0: Recommendations, 1: Answers, 2: Rules)
+  final RxInt currentTab = 0.obs;
+
+  void setTab(int index) {
+    currentTab.value = index;
+  }
+}
+
+class RecommendationDetailPage extends StatelessWidget {
+  final Map<String, dynamic> data;
+  final String documentId;
+
+  const RecommendationDetailPage({
+    Key? key,
+    required this.data,
+    required this.documentId,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Extract basic data
+    final questionMode = data['questionMode'] ?? 'Tidak diketahui';
+    final timestamp = data['timestamp'] as Timestamp?;
+    final formattedDate = timestamp != null
+        ? intl.DateFormat('dd MMMM yyyy, HH:mm').format(timestamp.toDate())
+        : 'Tidak ada tanggal';
+    final totalQuestions = data['totalQuestions'] ?? 0;
+    final answeredQuestions = data['answeredQuestions'] ?? 0;
+
+    // Controller for tab view
+    final tabController = Get.put(_DetailTabController());
+
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Custom app bar with gradient
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    questionMode.contains('Karir')
+                        ? Colors.orange.shade700
+                        : Colors.green.shade700,
+                    Colors.indigo.shade900,
+                  ],
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Top bar with back button and actions
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon:
+                              const Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () => Get.back(),
+                        ),
+                        Expanded(
+                          child: Text(
+                            questionMode,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.share, color: Colors.white),
+                          onPressed: () => _shareResults(),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline,
+                              color: Colors.white),
+                          onPressed: () => _confirmDelete(context),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Date and stats info
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Date row
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today,
+                              color: Colors.white.withOpacity(0.7),
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              formattedDate,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Stats cards
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: Icons.question_answer_rounded,
+                                title: 'Pertanyaan',
+                                value: '$answeredQuestions/$totalQuestions',
+                                color: Colors.white.withOpacity(0.15),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: Icons.lightbulb_outline,
+                                title: 'Rekomendasi',
+                                value: (data['recommendations'] as List?)
+                                        ?.length
+                                        .toString() ??
+                                    '0',
+                                color: Colors.white.withOpacity(0.15),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Tab bar
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                      child: Obx(() => Row(
+                            children: [
+                              _buildTabButton(
+                                title: 'Rekomendasi',
+                                isActive: tabController.currentTab.value == 0,
+                                onTap: () => tabController.setTab(0),
+                              ),
+                              const SizedBox(width: 16),
+                              _buildTabButton(
+                                title: 'Jawaban',
+                                isActive: tabController.currentTab.value == 1,
+                                onTap: () => tabController.setTab(1),
+                              ),
+                              const SizedBox(width: 16),
+                              _buildTabButton(
+                                title: 'Rules',
+                                isActive: tabController.currentTab.value == 2,
+                                onTap: () => tabController.setTab(2),
+                              ),
+                            ],
+                          )),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Tab content
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                child: Obx(() {
+                  switch (tabController.currentTab.value) {
+                    case 0:
+                      return _buildRecommendationsTab();
+                    case 1:
+                      return _buildAnswersTab();
+                    case 2:
+                      return _buildRulesTab();
+                    default:
+                      return _buildRecommendationsTab();
+                  }
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required String title,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabButton({
+    required String title,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: isActive ? Colors.indigo.shade800 : Colors.grey.shade500,
+              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            height: 3,
+            width: 40,
+            decoration: BoxDecoration(
+              color: isActive ? Colors.indigo.shade800 : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // RECOMMENDATION TAB
+  Widget _buildRecommendationsTab() {
+    final recommendations = data['recommendations'] as List? ?? [];
+
+    if (recommendations.isEmpty) {
+      return _buildEmptyState(
+        icon: Icons.lightbulb_outline,
+        message: 'Tidak ada rekomendasi yang tersedia',
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: recommendations.length,
+      itemBuilder: (context, index) {
+        final recommendation = recommendations[index];
+        final title = recommendation['title'] ?? 'Tidak ada judul';
+        final score = recommendation['score'] ?? 0;
+        final careers = recommendation['careers'] as List? ?? [];
+        final majors = recommendation['majors'] as List? ?? [];
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Recommendation header
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color:
+                      index == 0 ? Colors.amber.shade50 : Colors.grey.shade50,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey.shade200),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: index == 0 ? Colors.amber : Colors.grey,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${index + 1}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.indigo.shade800,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: index == 0
+                            ? Colors.amber.shade100
+                            : Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'Skor: $score',
+                        style: TextStyle(
+                          color: index == 0
+                              ? Colors.amber.shade900
+                              : Colors.grey.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Careers
+              if (careers.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Karir:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.indigo.shade800,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...careers
+                          .map((career) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.work_outline,
+                                      size: 16,
+                                      color: Colors.orange.shade400,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        career.toString(),
+                                        style: const TextStyle(
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ))
+                          .toList(),
+                    ],
+                  ),
+                ),
+                if (majors.isNotEmpty)
+                  Divider(color: Colors.grey.shade200, height: 1),
+              ],
+
+              // Majors
+              if (majors.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Jurusan Terkait:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.indigo.shade800,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...majors
+                          .map((major) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.school_outlined,
+                                      size: 16,
+                                      color: Colors.green.shade400,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        major.toString(),
+                                        style: const TextStyle(
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ))
+                          .toList(),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ANSWERS TAB
+  Widget _buildAnswersTab() {
+    final userAnswers = data['userAnswers'] as List? ?? [];
+
+    if (userAnswers.isEmpty) {
+      return _buildEmptyState(
+        icon: Icons.question_answer_outlined,
+        message: 'Tidak ada jawaban yang tersedia',
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: userAnswers.length,
+      itemBuilder: (context, index) {
+        final answer = userAnswers[index];
+        final questionId = answer['questionId'] ?? '';
+        final question = answer['question'] ?? '';
+        final userAnswer = answer['answer'];
+        final programName = answer['programName'] ?? '';
+        final minatKey = answer['minatKey'] ?? '';
+
+        String answerText;
+        Color answerColor;
+        IconData answerIcon;
+
+        if (userAnswer == true) {
+          answerText = 'Ya';
+          answerColor = Colors.green.shade800;
+          answerIcon = Icons.check_circle;
+        } else if (userAnswer == false) {
+          answerText = 'Tidak';
+          answerColor = Colors.red.shade800;
+          answerIcon = Icons.cancel;
+        } else {
+          answerText = 'Tidak Dijawab';
+          answerColor = Colors.grey.shade800;
+          answerIcon = Icons.help;
+        }
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Question ID and category
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.indigo.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        questionId,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.indigo.shade800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '$programName - $minatKey',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // Question text
+                Text(
+                  question,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Answer
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: userAnswer == true
+                        ? Colors.green.shade50
+                        : userAnswer == false
+                            ? Colors.red.shade50
+                            : Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: userAnswer == true
+                          ? Colors.green.shade200
+                          : userAnswer == false
+                              ? Colors.red.shade200
+                              : Colors.grey.shade200,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        answerIcon,
+                        size: 14,
+                        color: answerColor,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Jawaban: $answerText',
+                        style: TextStyle(
+                          color: answerColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // RULES TAB
+  Widget _buildRulesTab() {
+    final workingMemory = data['workingMemory'] as List? ?? [];
+    final recommendations = data['recommendations'] as List? ?? [];
+
+    if (workingMemory.isEmpty && recommendations.isEmpty) {
+      return _buildEmptyState(
+        icon: Icons.code,
+        message: 'Tidak ada rules yang tersedia',
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // Working memory
+        if (workingMemory.isNotEmpty) ...[
+          Text(
+            'Working Memory:',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.indigo.shade800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: workingMemory
+                  .map((memory) => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.indigo.shade100,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          memory.toString(),
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                            color: Colors.indigo.shade800,
+                          ),
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+
+        // Rules per recommendation
+        if (recommendations.isNotEmpty) ...[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Rules by Recommendation:',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.indigo.shade800,
+                ),
+              ),
+              // Copy button
+              IconButton(
+                onPressed: () => _copyRulesToClipboard(),
+                icon: Icon(Icons.copy, color: Colors.indigo.shade600, size: 20),
+                tooltip: 'Salin Rules',
+                constraints: const BoxConstraints(),
+                padding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ...recommendations.asMap().entries.map((entry) {
+            final index = entry.key;
+            final recommendation = entry.value;
+            final title = recommendation['title'] ?? 'Tidak ada judul';
+            final rules = recommendation['rules'] as List? ?? [];
+
+            if (rules.isEmpty) return const SizedBox.shrink();
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Recommendation header
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: index == 0
+                          ? Colors.amber.shade50
+                          : Colors.grey.shade50,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey.shade200),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: index == 0 ? Colors.amber : Colors.grey,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${index + 1}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.indigo.shade800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Rules
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: rules
+                          .map((rule) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade50,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border:
+                                        Border.all(color: Colors.grey.shade200),
+                                  ),
+                                  child: Text(
+                                    rule.toString(),
+                                    style: TextStyle(
+                                      fontFamily: 'monospace',
+                                      fontSize: 12,
+                                      color: Colors.grey.shade800,
+                                    ),
+                                  ),
+                                ),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ],
+      ],
+    );
+  }
+
+  // Empty state widget
+  Widget _buildEmptyState({
+    required IconData icon,
+    required String message,
+  }) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 64,
+            color: Colors.grey.shade300,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 16,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper functions
+  void _shareResults() {
+    // Format a shareable text
+    final buffer = StringBuffer();
+
+    // Basic info
+    final questionMode = data['questionMode'] ?? 'Tidak diketahui';
+    final timestamp = data['timestamp'] as Timestamp?;
+    final formattedDate = timestamp != null
+        ? intl.DateFormat('dd MMMM yyyy, HH:mm').format(timestamp.toDate())
+        : 'Tidak ada tanggal';
+
+    buffer.writeln('Hasil Rekomendasi - $questionMode');
+    buffer.writeln('Tanggal: $formattedDate');
+    buffer.writeln('');
+
+    // Recommendations
+    final recommendations = data['recommendations'] as List? ?? [];
+    if (recommendations.isNotEmpty) {
+      buffer.writeln('TOP REKOMENDASI:');
+      for (int i = 0; i < recommendations.length; i++) {
+        final rec = recommendations[i];
+        final title = rec['title'] ?? 'Tidak ada judul';
+        final score = rec['score'] ?? 0;
+        buffer.writeln('${i + 1}. $title (Skor: $score)');
+      }
+    }
+
+    final shareText = buffer.toString();
+
+    // Share the text
+    Clipboard.setData(ClipboardData(text: shareText));
+    Get.snackbar(
+      'Disalin',
+      'Hasil rekomendasi telah disalin ke clipboard',
+      backgroundColor: Colors.green.shade100,
+      colorText: Colors.green.shade800,
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void _copyRulesToClipboard() {
+    // Format all rules as text
+    final buffer = StringBuffer();
+
+    // Working memory
+    final workingMemory = data['workingMemory'] as List? ?? [];
+    if (workingMemory.isNotEmpty) {
+      buffer.writeln('WORKING MEMORY:');
+      buffer.writeln(workingMemory.join(', '));
+      buffer.writeln('');
+    }
+
+    // Rules by recommendation
+    final recommendations = data['recommendations'] as List? ?? [];
+    if (recommendations.isNotEmpty) {
+      buffer.writeln('RULES BY RECOMMENDATION:');
+      for (int i = 0; i < recommendations.length; i++) {
+        final rec = recommendations[i];
+        final title = rec['title'] ?? 'Tidak ada judul';
+        final rules = rec['rules'] as List? ?? [];
+
+        if (rules.isNotEmpty) {
+          buffer.writeln('${i + 1}. $title:');
+          for (final rule in rules) {
+            buffer.writeln('   $rule');
+          }
+          buffer.writeln('');
+        }
+      }
+    }
+
+    final rulesText = buffer.toString();
+
+    // Copy to clipboard
+    Clipboard.setData(ClipboardData(text: rulesText));
+    Get.snackbar(
+      'Disalin',
+      'Rules telah disalin ke clipboard',
+      backgroundColor: Colors.green.shade100,
+      colorText: Colors.green.shade800,
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hapus Riwayat'),
+        content: const Text(
+          'Apakah Anda yakin ingin menghapus riwayat rekomendasi ini?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteRecommendation();
+            },
+            icon: const Icon(Icons.delete),
+            label: const Text('Hapus'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteRecommendation() async {
+    try {
+      // Delete from Firestore
+      await FirebaseFirestore.instance
+          .collection('recommendation_history')
+          .doc(documentId)
+          .delete();
+
+      // Show success message and go back
+      Get.back();
+      Get.snackbar(
+        'Berhasil',
+        'Riwayat rekomendasi telah dihapus',
+        backgroundColor: Colors.green.shade100,
+        colorText: Colors.green.shade800,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal menghapus riwayat: ${e.toString()}',
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade800,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+}
+
 class DeveloperModePage extends StatelessWidget {
   const DeveloperModePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(DeveloperModeController());
+    final User? currentUser = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
       body: Container(
@@ -3541,19 +5078,76 @@ class DeveloperModePage extends StatelessWidget {
             ],
           ),
         ),
+        // Use a ListView as the main container instead of Column + SingleChildScrollView
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: GestureDetector(
+          child: ListView(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+            children: [
+              // Top bar with buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Profile button
+                  GestureDetector(
+                    onTap: () {
+                      Get.to(() => const ProfilePage());
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                        border: Border.all(
+                          color: Colors.indigo.shade100,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          currentUser?.photoURL != null
+                              ? CircleAvatar(
+                                  radius: 14,
+                                  backgroundImage:
+                                      NetworkImage(currentUser!.photoURL!),
+                                )
+                              : CircleAvatar(
+                                  radius: 14,
+                                  backgroundColor: Colors.indigo.shade100,
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.indigo.shade700,
+                                    size: 16,
+                                  ),
+                                ),
+                          const SizedBox(width: 6),
+                          Text(
+                            "Profil",
+                            style: TextStyle(
+                              color: Colors.indigo.shade700,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // About button
+                  GestureDetector(
                     onTap: () {
                       Get.to(() => AboutPage());
                     },
                     child: Container(
-                      margin: const EdgeInsets.all(16),
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.9),
@@ -3591,13 +5185,18 @@ class DeveloperModePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 30), // Reduced height
-                // App Logo and Title
-                Center(
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              // App Logo with Hero animation - centered
+              Center(
+                child: Hero(
+                  tag: 'app_logo',
                   child: Container(
-                    width: 100, // Reduced size
-                    height: 100, // Reduced size
+                    width: 100,
+                    height: 100,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(25),
@@ -3612,111 +5211,294 @@ class DeveloperModePage extends StatelessWidget {
                     child: const Center(
                       child: Icon(
                         Icons.psychology,
-                        size: 60, // Reduced size
+                        size: 60,
                         color: Colors.indigo,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20), // Reduced height
-                const Text(
-                  'Forward Chaining',
-                  style: TextStyle(
-                    fontSize: 28, // Reduced size
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 1.2,
+              ),
+
+              const SizedBox(height: 20),
+
+              // App Title - centered
+              Center(
+                child: TweenAnimationBuilder(
+                  tween: Tween<double>(begin: 0.8, end: 1),
+                  duration: const Duration(milliseconds: 800),
+                  curve: Curves.easeOutQuad,
+                  builder: (context, double value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: child,
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Forward Chaining',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Sistem Rekomendasi Karir & Kuliah',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white70,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+              ),
 
-                const Text(
-                  'Sistem Rekomendasi Karir & Kuliah',
-                  style: TextStyle(
-                    fontSize: 15, // Reduced size
-                    color: Colors.white70,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 30), // Reduced height
+              const SizedBox(height: 24),
 
-                // Main Content Area - Using Flexible instead of Expanded to prevent overflow
-                Flexible(
-                  child: Container(
+              // User welcome section
+              FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('students')
+                    .doc(currentUser?.uid)
+                    .get(),
+                builder: (context, snapshot) {
+                  String userName = "Siswa";
+                  String userClass = "";
+
+                  if (snapshot.hasData && snapshot.data!.exists) {
+                    final userData =
+                        snapshot.data!.data() as Map<String, dynamic>;
+                    userName = userData['name'] ?? "Siswa";
+                    userClass = userData['class'] ?? "";
+                  }
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.waving_hand_rounded,
+                          color: Colors.amber.shade300,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Hai, $userName!',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              if (userClass.isNotEmpty)
+                                Text(
+                                  'Kelas $userClass',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                    child: SingleChildScrollView(
-                      // Add scroll to prevent overflow
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0), // Reduced padding
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 12), // Reduced height
-                            Text(
-                              'Selamat Datang!',
-                              style: TextStyle(
-                                fontSize: 20, // Reduced size
-                                fontWeight: FontWeight.bold,
-                                color: Colors.indigo.shade800,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Aplikasi ini akan membantumu menemukan program studi dan karir yang paling sesuai dengan minatmu.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14, // Reduced size
-                                color: Colors.black54,
-                                height: 1.4,
-                              ),
-                            ),
-                            const SizedBox(height: 20), // Reduced height
+                  );
+                },
+              ),
 
-                            // Developer Mode Card
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade50,
+              const SizedBox(height: 16),
+
+              // User Recommendation History
+              if (currentUser != null) ...[
+                // Recommendation History Section
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.history,
+                            color: Colors.amber.shade200,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Riwayat Rekomendasi',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const Spacer(),
+                          TextButton(
+                            onPressed: () {
+                              Get.to(() => const RecommendationHistoryPage());
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              backgroundColor: Colors.blue.withOpacity(0.2),
+                              shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Colors.grey.shade300,
-                                  width: 1,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.indigo.withOpacity(0.05),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(
-                                    16.0), // Reduced padding
-                                child: Column(
-                                  children: [
-                                    Row(
+                            ),
+                            child: const Text(
+                              'Lihat Semua',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 170, // Fixed height for the history list
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection('recommendation_history')
+                              .where('userId', isEqualTo: currentUser.uid)
+                              .orderBy('timestamp', descending: true)
+                              .limit(5)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white70),
+                                  strokeWidth: 2,
+                                ),
+                              );
+                            }
+
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  'Error: ${snapshot.error}',
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                              );
+                            }
+
+                            if (!snapshot.hasData ||
+                                snapshot.data!.docs.isEmpty) {
+                              return Container(
+                                height: 170,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'Belum ada riwayat rekomendasi.\nMulai aplikasi untuk mendapatkan rekomendasi.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return ListView.builder(
+                              padding: EdgeInsets.zero,
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                final doc = snapshot.data!.docs[index];
+                                final data = doc.data() as Map<String, dynamic>;
+
+                                // Extract recommendation data
+                                String questionMode =
+                                    data['questionMode'] ?? 'Tidak diketahui';
+                                final timestamp =
+                                    data['timestamp'] as Timestamp?;
+                                final formattedDate = timestamp != null
+                                    ? intl.DateFormat('dd/MM/yyyy HH:mm')
+                                        .format(timestamp.toDate())
+                                    : 'Tidak ada tanggal';
+
+                                // Get top recommendation if available
+                                String topRecommendation =
+                                    'Tidak ada rekomendasi';
+                                if (data['recommendations'] != null &&
+                                    (data['recommendations'] as List)
+                                        .isNotEmpty) {
+                                  final recommendations =
+                                      data['recommendations'] as List;
+                                  if (recommendations.isNotEmpty) {
+                                    topRecommendation = recommendations[0]
+                                            ['title'] ??
+                                        'Tidak ada judul';
+                                  }
+                                }
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    // Navigate to recommendation detail
+                                    Get.to(() => RecommendationDetailPage(
+                                          data: data,
+                                          documentId: doc.id,
+                                        ));
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 8),
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.1),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
                                       children: [
                                         Container(
-                                          padding: const EdgeInsets.all(
-                                              8), // Reduced padding
+                                          width: 40,
+                                          height: 40,
                                           decoration: BoxDecoration(
-                                            color: Colors.orange.shade100,
+                                            color: questionMode
+                                                    .contains('Karir')
+                                                ? Colors.orange.withOpacity(0.2)
+                                                : Colors.green.withOpacity(0.2),
                                             borderRadius:
-                                                BorderRadius.circular(10),
+                                                BorderRadius.circular(8),
                                           ),
-                                          child: Icon(
-                                            Icons.code,
-                                            size: 20, // Reduced size
-                                            color: Colors.orange.shade800,
+                                          child: Center(
+                                            child: Icon(
+                                              questionMode.contains('Karir')
+                                                  ? Icons.work
+                                                  : Icons.school,
+                                              color:
+                                                  questionMode.contains('Karir')
+                                                      ? Colors.orange.shade300
+                                                      : Colors.green.shade300,
+                                              size: 20,
+                                            ),
                                           ),
                                         ),
                                         const SizedBox(width: 12),
@@ -3726,117 +5508,373 @@ class DeveloperModePage extends StatelessWidget {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'Mode Developer',
-                                                style: TextStyle(
-                                                  fontSize: 16, // Reduced size
+                                                topRecommendation,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.indigo.shade800,
                                                 ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
-                                              const SizedBox(height: 2),
-                                              const Text(
-                                                'Akses data & model AI',
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                '$questionMode • $formattedDate',
                                                 style: TextStyle(
-                                                  fontSize: 12, // Reduced size
-                                                  color: Colors.black54,
+                                                  color: Colors.white
+                                                      .withOpacity(0.7),
+                                                  fontSize: 12,
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
+                                        Icon(
+                                          Icons.chevron_right,
+                                          color: Colors.white.withOpacity(0.5),
+                                          size: 20,
+                                        ),
                                       ],
                                     ),
-                                    const SizedBox(height: 12),
-                                    const Text(
-                                      'Aktifkan mode developer untuk melihat data dan validasi model forward chaining yang digunakan dalam sistem rekomendasi.',
-                                      style: TextStyle(
-                                        fontSize: 13, // Reduced size
-                                        color: Colors.black54,
-                                        height: 1.4,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Obx(() => Container(
-                                          decoration: BoxDecoration(
-                                            color:
-                                                controller.isDeveloperMode.value
-                                                    ? Colors.indigo.shade50
-                                                    : Colors.grey.shade100,
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child: SwitchListTile(
-                                            title: Text(
-                                              controller.isDeveloperMode.value
-                                                  ? 'Developer Mode Aktif'
-                                                  : 'Developer Mode Nonaktif',
-                                              style: TextStyle(
-                                                fontSize: 14, // Reduced size
-                                                fontWeight: FontWeight.w500,
-                                                color: controller
-                                                        .isDeveloperMode.value
-                                                    ? Colors.indigo.shade800
-                                                    : Colors.black54,
-                                              ),
-                                            ),
-                                            value: controller
-                                                .isDeveloperMode.value,
-                                            onChanged: (value) => controller
-                                                .toggleDeveloperMode(value),
-                                            activeColor: Colors.indigo,
-                                            activeTrackColor:
-                                                Colors.indigo.shade300,
-                                            inactiveThumbColor:
-                                                Colors.grey.shade400,
-                                            inactiveTrackColor:
-                                                Colors.grey.shade300,
-                                            secondary: Icon(
-                                              controller.isDeveloperMode.value
-                                                  ? Icons.visibility
-                                                  : Icons.visibility_off,
-                                              color: controller
-                                                      .isDeveloperMode.value
-                                                  ? Colors.indigo
-                                                  : Colors.grey.shade500,
-                                              size: 20, // Reduced size
-                                            ),
-                                            dense:
-                                                true, // Make switch more compact
-                                          ),
-                                        )),
-                                  ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Main Content Area - Now directly in ListView, no nested scrolling
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 12),
+                    // Welcome message with visually distinct styling
+                    Center(
+                      child: Text(
+                        'Selamat Datang!',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.indigo.shade800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Subtitle with improved styling
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: const Text(
+                        'Aplikasi ini akan membantumu menemukan program studi dan karir yang paling sesuai dengan minatmu.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black54,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Visual indicator to show content continues - arrow indicator
+                    Center(
+                      child: Icon(
+                        Icons.keyboard_double_arrow_down,
+                        color: Colors.indigo.shade200,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Developer Mode Card with improved visual cues
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.indigo.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange.shade100,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(
+                                    Icons.code,
+                                    size: 20,
+                                    color: Colors.orange.shade800,
+                                  ),
                                 ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Mode Developer',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.indigo.shade800,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      const Text(
+                                        'Akses data & model AI',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Aktifkan mode developer untuk melihat data dan validasi model forward chaining yang digunakan dalam sistem rekomendasi.',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.black54,
+                                height: 1.4,
                               ),
                             ),
+                            const SizedBox(height: 12),
+                            Obx(() => Container(
+                                  decoration: BoxDecoration(
+                                    color: controller.isDeveloperMode.value
+                                        ? Colors.indigo.shade50
+                                        : Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: SwitchListTile(
+                                    title: Text(
+                                      controller.isDeveloperMode.value
+                                          ? 'Developer Mode Aktif'
+                                          : 'Developer Mode Nonaktif',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: controller.isDeveloperMode.value
+                                            ? Colors.indigo.shade800
+                                            : Colors.black54,
+                                      ),
+                                    ),
+                                    value: controller.isDeveloperMode.value,
+                                    onChanged: (value) =>
+                                        controller.toggleDeveloperMode(value),
+                                    activeColor: Colors.indigo,
+                                    activeTrackColor: Colors.indigo.shade300,
+                                    inactiveThumbColor: Colors.grey.shade400,
+                                    inactiveTrackColor: Colors.grey.shade300,
+                                    secondary: Icon(
+                                      controller.isDeveloperMode.value
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: controller.isDeveloperMode.value
+                                          ? Colors.indigo
+                                          : Colors.grey.shade500,
+                                      size: 20,
+                                    ),
+                                    dense: true,
+                                  ),
+                                )),
+                          ],
+                        ),
+                      ),
+                    ),
 
-                            const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                            // Buttons
-                            ElevatedButton(
-                              onPressed: () => Get.to(() => const HomePage()),
+                    // User tips card with action indicator
+                    Stack(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.blue.shade100,
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.shade100,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Icon(
+                                      Icons.lightbulb_outline,
+                                      size: 20,
+                                      color: Colors.blue.shade800,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'Tips Penggunaan',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue.shade800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'Jawab pertanyaan dengan jujur untuk mendapatkan rekomendasi karir dan program studi yang paling sesuai dengan minat dan bakatmu.',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.black54,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Subtle indicator to show this is important
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade400,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Action Buttons - with enhanced styling and visual cues
+                    // Primary Button
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.indigo.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () => Get.to(() => const HomePage()),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigo.shade800,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 16),
+                          minimumSize: const Size(double.infinity, 56),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.play_arrow_rounded, size: 24),
+                            SizedBox(width: 12),
+                            Text(
+                              'Mulai Aplikasi',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Developer mode button with attention-grabbing styling
+                    Obx(() => controller.isDeveloperMode.value
+                        ? Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.orange.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () =>
+                                  Get.to(() => const DevDataViewerPage()),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.indigo.shade800,
+                                backgroundColor: Colors.orange.shade600,
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 14), // Reduced padding
-                                minimumSize: const Size(
-                                    double.infinity, 50), // Reduced height
+                                    horizontal: 20, vertical: 16),
+                                minimumSize: const Size(double.infinity, 56),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
                                 elevation: 0,
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.play_arrow_rounded,
-                                      size: 20), // Reduced size
-                                  SizedBox(width: 8),
+                                children: const [
+                                  Icon(Icons.data_array, size: 22),
+                                  SizedBox(width: 12),
                                   Text(
-                                    'Mulai Aplikasi',
+                                    'Data & Model Viewer',
                                     style: TextStyle(
-                                      fontSize: 15, // Reduced size
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 0.5,
                                     ),
@@ -3844,57 +5882,29 @@ class DeveloperModePage extends StatelessWidget {
                                 ],
                               ),
                             ),
+                          )
+                        : const SizedBox.shrink()),
 
-                            const SizedBox(height: 16), // Reduced height
+                    const SizedBox(height: 16),
 
-                            // Developer mode button (only visible when dev mode is active)
-                            Obx(() => controller.isDeveloperMode.value
-                                ? ElevatedButton(
-                                    onPressed: () =>
-                                        Get.to(() => const DevDataViewerPage()),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.orange.shade600,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20,
-                                          vertical: 14), // Reduced padding
-                                      minimumSize: const Size(double.infinity,
-                                          50), // Reduced height
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      elevation: 0,
-                                    ),
-                                    child: const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.data_array,
-                                            size: 18), // Reduced size
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'Data & Model Viewer',
-                                          style: TextStyle(
-                                            fontSize: 15, // Reduced size
-                                            fontWeight: FontWeight.bold,
-                                            letterSpacing: 0.5,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : const SizedBox.shrink()),
-
-                            const SizedBox(height: 10),
-                          ],
+                    // Footer attribution
+                    Center(
+                      child: Text(
+                        'v1.0.0',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade400,
                         ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                  ],
                 ),
-                const SizedBox(height: 16), // Reduced height
-              ],
-            ),
+              ),
+
+              // Bottom spacing
+              const SizedBox(height: 24),
+            ],
           ),
         ),
       ),

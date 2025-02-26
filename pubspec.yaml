@@ -7,10 +7,19 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
+  cloud_firestore: ^5.6.4
+  firebase_auth: ^5.5.0
+  fl_chart: ^0.69.0
   flutter:
     sdk: flutter
+  flutter_svg: ^2.0.17
   get: ^4.6.6
+  google_sign_in: ^6.2.2
+  intl: ^0.20.2
+  lottie: ^3.2.0
+  shared_preferences: ^2.5.2
   url_launcher: ^6.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

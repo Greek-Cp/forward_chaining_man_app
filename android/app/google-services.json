@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1072369607324",
+    "project_id": "sirekomendasi-dc7de",
+    "storage_bucket": "sirekomendasi-dc7de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1072369607324:android:ed7767d8870c32e96f4359",
+        "android_client_info": {
+          "package_name": "com.example.forward_chaining_man_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1072369607324-ul5feal98a8o8g9fo23ddp7ob886ermd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIHdD_rH3YSfuZYcNKFd1YCMTXxYb6gdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1072369607324-ul5feal98a8o8g9fo23ddp7ob886ermd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
