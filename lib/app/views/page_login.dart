@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forward_chaining_man_app/app/views/student/page_student_dashboard.dart';
 import 'package:forward_chaining_man_app/main.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,7 +51,6 @@ class StudentLoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    checkExistingSession();
     checkValidClass();
   }
 
@@ -75,7 +75,7 @@ class StudentLoginController extends GetxController {
           // Save login session
           await saveLoginSession(currentUser.uid);
           // Navigate to main app
-          Get.offAll(() => const DeveloperModePage());
+          Get.offAll(() => const PageStudentDashboard());
         } else {
           // User authenticated but no profile exists
           if (currentUser.displayName != null) {
@@ -139,7 +139,7 @@ class StudentLoginController extends GetxController {
         // Save login session
         await saveLoginSession(userCredential.user!.uid);
         // Navigate to main app
-        Get.offAll(() => const DeveloperModePage());
+        Get.offAll(() => const PageStudentDashboard());
       }
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -215,7 +215,7 @@ class StudentLoginController extends GetxController {
         await saveLoginSession(userCredential.user!.uid);
 
         // Navigate to main app
-        Get.offAll(() => const DeveloperModePage());
+        Get.offAll(() => const PageStudentDashboard());
       }
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -281,7 +281,7 @@ class StudentLoginController extends GetxController {
           await saveLoginSession(user.uid);
 
           // Navigate to main app
-          Get.offAll(() => const DeveloperModePage());
+          Get.offAll(() => const PageStudentDashboard());
         } else {
           // New user - need to complete profile
           // Pre-fill name from Google account
@@ -343,7 +343,7 @@ class StudentLoginController extends GetxController {
       await saveLoginSession(currentUser.uid);
 
       // Navigate to main app
-      Get.offAll(() => const DeveloperModePage());
+      Get.offAll(() => const PageStudentDashboard());
     } catch (e) {
       errorMessage.value = 'Gagal menyimpan profil: ${e.toString()}';
     } finally {
@@ -353,11 +353,12 @@ class StudentLoginController extends GetxController {
 }
 
 class StudentLoginPage extends StatelessWidget {
-  const StudentLoginPage({Key? key}) : super(key: key);
+  String routeName = "/StudentLoginPage";
+  StudentLoginPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(StudentLoginController());
+    final controller = Get.find<StudentLoginController>();
 
     return Scaffold(
       body: Container(

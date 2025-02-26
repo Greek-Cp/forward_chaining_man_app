@@ -569,7 +569,7 @@ class _IntroPageState extends State<IntroPage>
           onTap: () {
             _saveRole('student');
             Get.to(
-              () => const StudentLoginPage(),
+              () => StudentLoginPage(),
               transition: Transition.rightToLeft,
               duration: const Duration(milliseconds: 400),
             );

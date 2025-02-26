@@ -59,7 +59,7 @@ class ProfileController extends GetxController {
 
       User? currentUser = _auth.currentUser;
       if (currentUser == null) {
-        Get.offAll(() => const StudentLoginPage());
+        Get.offAll(() => StudentLoginPage());
         return;
       }
 
@@ -164,7 +164,7 @@ class ProfileController extends GetxController {
       await _auth.signOut();
 
       // Navigate to login page
-      Get.offAll(() => const StudentLoginPage());
+      Get.offAll(() => StudentLoginPage());
     } catch (e) {
       Get.snackbar(
         'Error',

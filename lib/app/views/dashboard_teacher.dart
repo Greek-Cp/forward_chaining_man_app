@@ -316,7 +316,8 @@ class TeacherDashboardPage extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue.shade700,
                         ),
-                        child: const Text('Keluar'),
+                        child: const Text('Keluar',
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
