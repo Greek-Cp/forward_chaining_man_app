@@ -130,7 +130,7 @@ class TeacherRegisterPage extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.deepPurple.shade800,
+              Colors.blue.shade800,
               Colors.indigo.shade900,
             ],
           ),
@@ -143,6 +143,36 @@ class TeacherRegisterPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // Back button at the top
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8, bottom: 20),
+                        child: TextButton(
+                          onPressed: () {
+                            Get.back();
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
+                            backgroundColor: Colors.white.withOpacity(0.2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Icon(Icons.arrow_back, size: 18),
+                              SizedBox(width: 8),
+                              Text('Kembali ke Halaman Login'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
                     // App Logo with Hero animation
                     Hero(
                       tag: 'app_logo',
@@ -160,11 +190,11 @@ class TeacherRegisterPage extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons.psychology,
                             size: 60,
-                            color: Colors.indigo,
+                            color: Colors.blue.shade700,
                           ),
                         ),
                       ),
@@ -190,7 +220,7 @@ class TeacherRegisterPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.2),
+                        color: Colors.blue.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Text(
@@ -229,12 +259,12 @@ class TeacherRegisterPage extends StatelessWidget {
                                     Container(
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color: Colors.deepPurple.shade50,
+                                        color: Colors.blue.shade50,
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Icon(
                                         Icons.app_registration_rounded,
-                                        color: Colors.deepPurple.shade400,
+                                        color: Colors.blue.shade600,
                                         size: 24,
                                       ),
                                     ),
@@ -249,7 +279,7 @@ class TeacherRegisterPage extends StatelessWidget {
                                             style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.deepPurple.shade800,
+                                              color: Colors.blue.shade800,
                                             ),
                                           ),
                                           const SizedBox(height: 4),
@@ -373,30 +403,6 @@ class TeacherRegisterPage extends StatelessWidget {
                         )),
 
                     const SizedBox(height: 24),
-
-                    // Back to login button
-                    TextButton(
-                      onPressed: () {
-                        Get.back();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 24),
-                        backgroundColor: Colors.white.withOpacity(0.2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(Icons.arrow_back, size: 18),
-                          SizedBox(width: 8),
-                          Text('Kembali ke Halaman Login'),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -423,7 +429,7 @@ class TeacherRegisterPage extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: Colors.grey.shade600),
-        prefixIcon: Icon(prefixIcon, color: Colors.deepPurple.shade300),
+        prefixIcon: Icon(prefixIcon, color: Colors.blue.shade400),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -433,7 +439,7 @@ class TeacherRegisterPage extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Colors.deepPurple.shade500, width: 1.5),
+          borderSide: BorderSide(color: Colors.blue.shade500, width: 1.5),
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
@@ -452,7 +458,7 @@ class TeacherRegisterPage extends StatelessWidget {
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.deepPurple.shade700,
+        backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 16),
         minimumSize: const Size(double.infinity, 56),
@@ -460,7 +466,7 @@ class TeacherRegisterPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
         ),
         elevation: 0,
-        disabledBackgroundColor: Colors.deepPurple.shade300,
+        disabledBackgroundColor: Colors.blue.shade300,
       ),
       child: isLoading
           ? const SizedBox(

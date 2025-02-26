@@ -4092,8 +4092,8 @@ class RecommendationDetailPage extends StatelessWidget {
                   end: Alignment.bottomCenter,
                   colors: [
                     questionMode.contains('Karir')
-                        ? Colors.orange.shade700
-                        : Colors.green.shade700,
+                        ? Colors.blue.shade800
+                        : Colors.blue.shade800,
                     Colors.indigo.shade900,
                   ],
                 ),

@@ -374,120 +374,192 @@ class TeacherDashboardPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(Icons.analytics, size: 20, color: Colors.blue.shade800),
-            const SizedBox(width: 8),
-            Text(
-              'Statistik Hasil Kuisioner',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue.shade800,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: Container(
-                height: 180,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
+        // Header dengan padding yang konsisten
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: Row(
+            children: [
+              Icon(Icons.analytics, size: 18, color: Colors.blue.shade800),
+              const SizedBox(width: 8),
+              Text(
+                'Statistik Hasil Kuisioner',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade800,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Row untuk Chart dan Stat Cards
+        LayoutBuilder(
+          builder: (context, constraints) {
+            // Tentukan ukuran chart optimal berdasarkan lebar yang tersedia
+            final isWideScreen = constraints.maxWidth > 600;
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Chart Container - flex yang lebih besar pada layar lebar
+                Expanded(
+                  flex: isWideScreen ? 3 : 2,
+                  child: Container(
+                    height: 210, // Sedikit ditambah untuk menampung legend
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.pie_chart,
-                            size: 16, color: Colors.blue.shade800),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Distribusi Jenis Rekomendasi',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                        // Chart title
+                        Row(
+                          children: [
+                            Icon(Icons.pie_chart,
+                                size: 14, color: Colors.blue.shade800),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                'Distribusi Jenis Rekomendasi',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue.shade800,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Chart area
+                        Expanded(
+                          child: Obx(() {
+                            final hasData =
+                                controller.stats['totalStudents']! > 0;
+
+                            return hasData
+                                ? PieChartWidget(controller: controller)
+                                : const EmptyChartMessage();
+                          }),
+                        ),
+
+                        // Legend - hanya ditampilkan jika ada data
+                        Obx(() {
+                          final hasData =
+                              controller.stats['totalStudents']! > 0;
+
+                          return hasData
+                              ? Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 8, bottom: 4),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      _buildLegendItem(
+                                          'Karir', Colors.blue.shade700),
+                                      const SizedBox(width: 16),
+                                      _buildLegendItem(
+                                          'Kuliah', Colors.indigo.shade800),
+                                    ],
+                                  ),
+                                )
+                              : const SizedBox.shrink();
+                        }),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 12),
+
+                // Stat Cards Container
+                Expanded(
+                  flex:
+                      isWideScreen ? 2 : 3, // Sesuaikan flex berdasarkan layar
+                  child: Container(
+                    height:
+                        210, // Tinggi yang sama dengan chart untuk konsistensi
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Stat card untuk Total Siswa
+                        Expanded(
+                          child: _buildStatCard(
+                            title: 'Total Siswa',
+                            value: controller.stats['totalStudents'].toString(),
+                            icon: Icons.people,
                             color: Colors.blue.shade800,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Stat card untuk Rekomendasi Karir
+                        Expanded(
+                          child: _buildStatCard(
+                            title: 'Rekomendasi Karir',
+                            value: controller.stats['careerRecommendations']
+                                .toString(),
+                            icon: Icons.work,
+                            color: Colors.blue.shade700,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Stat card untuk Rekomendasi Kuliah
+                        Expanded(
+                          child: _buildStatCard(
+                            title: 'Rekomendasi Kuliah',
+                            value: controller.stats['studyRecommendations']
+                                .toString(),
+                            icon: Icons.school,
+                            color: Colors.indigo.shade800,
                           ),
                         ),
                       ],
                     ),
-                    Expanded(
-                      child: Obx(() => controller.stats['totalStudents'] == 0
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.bar_chart_outlined,
-                                    size: 48,
-                                    color: Colors.grey.shade300,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Belum ada data',
-                                    style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : PieChart(
-                              PieChartData(
-                                sections: controller.getPieChartData(),
-                                centerSpaceRadius: 40,
-                                sectionsSpace: 2,
-                              ),
-                            )),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              flex: 2,
-              child: Column(
-                children: [
-                  _buildStatCard(
-                    title: 'Total Siswa',
-                    value: controller.stats['totalStudents'].toString(),
-                    icon: Icons.people,
-                    color: Colors.blue.shade800,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildStatCard(
-                    title: 'Rekomendasi Karir',
-                    value: controller.stats['careerRecommendations'].toString(),
-                    icon: Icons.work,
-                    color: Colors.blue.shade700,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildStatCard(
-                    title: 'Rekomendasi Kuliah',
-                    value: controller.stats['studyRecommendations'].toString(),
-                    icon: Icons.school,
-                    color: Colors.indigo.shade800,
-                  ),
-                ],
-              ),
-            ),
-          ],
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey.shade700,
+          ),
         ),
       ],
     );
@@ -500,50 +572,59 @@ class TeacherDashboardPage extends StatelessWidget {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
               color: color,
-              size: 20,
+              size: 16,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(height: 2),
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
+                    color: color,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -826,7 +907,106 @@ class TeacherDashboardPage extends StatelessWidget {
   }
 }
 
-class StudentResultDetailPage extends StatelessWidget {
+class PieChartWidget extends StatelessWidget {
+  final TeacherDashboardController controller;
+
+  const PieChartWidget({
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Hitung ukuran chart berdasarkan constraints
+        final size = constraints.maxWidth < constraints.maxHeight
+            ? constraints.maxWidth
+            : constraints.maxHeight;
+
+        return Center(
+          child: SizedBox(
+            width: size * 0.9, // Sedikit lebih kecil dari ruang yang tersedia
+            height: size * 0.9,
+            child: PieChart(
+              PieChartData(
+                centerSpaceRadius: size * 0.15,
+                sectionsSpace: 1,
+                borderData: FlBorderData(show: false),
+                centerSpaceColor: Colors.transparent,
+                sections: controller.getPieChartData().map((section) {
+                  return section.copyWith(
+                    radius: size * 0.35,
+                    showTitle: false,
+                    titlePositionPercentageOffset: 0,
+                  );
+                }).toList(),
+              ),
+              swapAnimationDuration: const Duration(milliseconds: 800),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// Widget untuk menampilkan pesan saat tidak ada data
+class EmptyChartMessage extends StatelessWidget {
+  const EmptyChartMessage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.bar_chart_outlined,
+            size: 36,
+            color: Colors.grey.shade300,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Belum ada data',
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Widget untuk item legenda yang disederhanakan dan konsisten
+Widget _buildLegendItem(String label, Color color) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Container(
+        width: 8,
+        height: 8,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+      ),
+      const SizedBox(width: 4),
+      Text(
+        label,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+          color: Colors.grey.shade700,
+        ),
+      ),
+    ],
+  );
+}
+
+class StudentResultDetailPage extends StatefulWidget {
   final DocumentSnapshot document;
 
   const StudentResultDetailPage({
@@ -835,8 +1015,39 @@ class StudentResultDetailPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<StudentResultDetailPage> createState() =>
+      _StudentResultDetailPageState();
+}
+
+class _StudentResultDetailPageState extends State<StudentResultDetailPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final GlobalKey _headerKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+
+    // Delay to allow build to complete before animations start
+    Future.delayed(Duration.zero, () {
+      _startInitialAnimations();
+    });
+  }
+
+  void _startInitialAnimations() {
+    // Animation logic for initial page load
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final data = document.data() as Map<String, dynamic>;
+    final data = widget.document.data() as Map<String, dynamic>;
     final isKerja = data['isKerja'] ?? false;
     final userName = data['userName'] ?? data['userEmail'] ?? 'Siswa';
     final recommendations =
@@ -857,419 +1068,470 @@ class StudentResultDetailPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Detail Hasil $userName'),
-        flexibleSpace: Container(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              pinned: true,
+              expandedHeight: 180.0,
+              backgroundColor: Colors.blue.shade800,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Get.back(),
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.share, color: Colors.white),
+                  onPressed: () {
+                    Get.snackbar(
+                      'Info',
+                      'Fitur berbagi hasil sedang dalam pengembangan',
+                      backgroundColor: Colors.blue.shade50,
+                      colorText: Colors.blue.shade700,
+                      snackPosition: SnackPosition.BOTTOM,
+                      animationDuration: const Duration(milliseconds: 800),
+                      duration: const Duration(seconds: 3),
+                    );
+                  },
+                ),
+              ],
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  'Detail Hasil $userName',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.white),
+                ),
+                background: Hero(
+                  tag: 'student_header_${widget.document.id}',
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.blue.shade800,
+                          Colors.indigo.shade900,
+                        ],
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          right: -50,
+                          bottom: -50,
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 0.0, end: 1.0),
+                            duration: const Duration(milliseconds: 1500),
+                            curve: Curves.elasticOut,
+                            builder: (context, value, child) {
+                              return Opacity(
+                                opacity: 0.2 * value,
+                                child: Transform.scale(
+                                  scale: value,
+                                  child: Icon(
+                                    isKerja ? Icons.work : Icons.school,
+                                    size: 200,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          top: 70,
+                          left: 20,
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 0.0, end: 1.0),
+                            duration: const Duration(milliseconds: 800),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, value, child) {
+                              return Opacity(
+                                opacity: value,
+                                child: Transform.translate(
+                                  offset: Offset(-20 * (1 - value), 0),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor:
+                                            Colors.white.withOpacity(0.9),
+                                        radius: 30,
+                                        child: Icon(
+                                          Icons.person,
+                                          color: Colors.blue.shade700,
+                                          size: 30,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 15),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            data['userName'] ?? 'Siswa',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                          Text(
+                                            data['userEmail'] ?? '',
+                                            style: TextStyle(
+                                              color:
+                                                  Colors.white.withOpacity(0.8),
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SliverPersistentHeader(
+              delegate: _SliverAppBarDelegate(
+                TabBar(
+                  controller: _tabController,
+                  tabs: [
+                    Tab(icon: Icon(Icons.person), text: 'Profil'),
+                    Tab(icon: Icon(Icons.recommend), text: 'Rekomendasi'),
+                    Tab(icon: Icon(Icons.question_answer), text: 'Jawaban'),
+                    Tab(icon: Icon(Icons.memory), text: 'Working Memory'),
+                  ],
+                  labelColor: Colors.blue.shade700,
+                  unselectedLabelColor: Colors.grey.shade600,
+                  indicatorColor: Colors.blue.shade700,
+                  indicatorWeight: 3,
+                ),
+              ),
+              pinned: true,
+            ),
+          ];
+        },
+        body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
               colors: [
-                Colors.deepPurple.shade800,
-                Colors.indigo.shade900,
+                Colors.grey.shade50,
+                Colors.blue.shade50,
               ],
+              stops: const [0.7, 1.0],
             ),
           ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Get.back(),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share, color: Colors.white),
-            onPressed: () {
-              // Implementation for sharing functionality
-              Get.snackbar(
-                'Info',
-                'Fitur berbagi hasil sedang dalam pengembangan',
-                backgroundColor: Colors.deepPurple.shade50,
-                colorText: Colors.deepPurple.shade700,
-                snackPosition: SnackPosition.BOTTOM,
-              );
-            },
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildProfileTab(data),
+              _buildRecommendationsTab(recommendations, isKerja),
+              _buildAnswersTab(userAnswers),
+              _buildWorkingMemoryTab(workingMemory),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileTab(Map<String, dynamic> data) {
+    final timestamp = data['timestamp'] is Timestamp
+        ? (data['timestamp'] as Timestamp).toDate()
+        : DateTime.now();
+    final formattedDate = DateFormat('dd MMMM yyyy, HH:mm').format(timestamp);
+    final isKerja = data['isKerja'] ?? false;
+    final answeredQuestions = data['answeredQuestions'] ?? 0;
+    final totalQuestions = data['totalQuestions'] ?? 0;
+    final completionPercentage = totalQuestions > 0
+        ? (answeredQuestions / totalQuestions * 100).round()
+        : 0;
+
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionHeader('Informasi Siswa', Icons.info),
+          const SizedBox(height: 12),
+          _buildStudentInfoCard(data),
+          const SizedBox(height: 24),
+          _buildSectionHeader('Progres Pengerjaan', Icons.insights),
+          const SizedBox(height: 12),
+          _buildProgressCard(
+              completionPercentage, answeredQuestions, totalQuestions),
+          const SizedBox(height: 24),
+          _buildSectionHeader('Statistik', Icons.bar_chart),
+          const SizedBox(height: 12),
+          _buildStatisticsCard(data),
         ],
       ),
-      body: Container(
-        color: Colors.grey.shade50,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
+    );
+  }
+
+  Widget _buildProgressCard(int percentage, int answered, int total) {
+    return Card(
+      elevation: 4,
+      shadowColor: Colors.blue.shade100,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
           children: [
-            _buildStudentInfoCard(data),
-            const SizedBox(height: 24),
-            _buildRecommendationsSection(recommendations, isKerja),
-            const SizedBox(height: 24),
-            _buildUserAnswersSection(userAnswers),
-            const SizedBox(height: 24),
-            _buildWorkingMemorySection(workingMemory),
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 0.0, end: percentage / 100),
+              duration: const Duration(milliseconds: 1500),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, child) {
+                return Column(
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          height: 120,
+                          width: 120,
+                          child: CircularProgressIndicator(
+                            value: value,
+                            strokeWidth: 12,
+                            backgroundColor: Colors.grey.shade200,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.blue.shade500,
+                            ),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              '${(value * 100).toInt()}%',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue.shade700,
+                              ),
+                            ),
+                            Text(
+                              'Selesai',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildProgressStat(
+                          'Terjawab',
+                          answered.toString(),
+                          Icons.check_circle,
+                          Colors.green,
+                        ),
+                        _buildProgressStat(
+                          'Total',
+                          total.toString(),
+                          Icons.assignment,
+                          Colors.blue,
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildWorkingMemorySection(Map<String, dynamic> workingMemory) {
+  Widget _buildProgressStat(
+      String label, String value, IconData icon, MaterialColor color) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(
-              Icons.memory,
-              color: Colors.deepPurple.shade700,
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Working Memory',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Tooltip(
-              message: 'Data memori kerja yang digunakan saat proses inferensi',
-              child: Icon(
-                Icons.info_outline,
-                size: 16,
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ],
+        Icon(
+          icon,
+          color: color.shade400,
+          size: 28,
         ),
-        const SizedBox(height: 16),
-        workingMemory.isEmpty
-            ? _buildEmptyWorkingMemory()
-            : Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Text(
-                              'Variabel',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple.shade700,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              'Nilai',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple.shade700,
-                              ),
-                            ),
-                          ),
-                        ],
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: color.shade700,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey.shade600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatisticsCard(Map<String, dynamic> data) {
+    // Sample data for demonstration
+    final recommendations =
+        List<Map<String, dynamic>>.from(data['recommendations'] ?? []);
+    final scores =
+        recommendations.map((r) => (r['score'] ?? 0) as num).toList();
+
+    return Card(
+      elevation: 4,
+      shadowColor: Colors.blue.shade100,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Distribusi Skor Rekomendasi',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue.shade800,
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 200,
+              child: scores.isEmpty
+                  ? Center(
+                      child: Text(
+                        'Tidak ada data rekomendasi',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      const Divider(),
-                      ...workingMemory.entries.map((entry) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: Text(
-                                  entry.key,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: entry.value is bool &&
-                                            entry.value == true
-                                        ? Colors.green.shade50
-                                        : entry.value is bool &&
-                                                entry.value == false
-                                            ? Colors.red.shade50
-                                            : Colors.deepPurple.shade50,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    entry.value.toString(),
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: entry.value is bool &&
-                                              entry.value == true
-                                          ? Colors.green.shade700
-                                          : entry.value is bool &&
-                                                  entry.value == false
-                                              ? Colors.red.shade700
-                                              : Colors.deepPurple.shade700,
+                    )
+                  : BarChart(
+                      BarChartData(
+                        alignment: BarChartAlignment.spaceAround,
+                        maxY: 100,
+                        barTouchData: BarTouchData(
+                          enabled: true,
+                          touchTooltipData: BarTouchTooltipData(),
+                        ),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (double value, TitleMeta meta) {
+                                final index = value.toInt();
+                                if (index >= 0 &&
+                                    index < recommendations.length) {
+                                  return Text(
+                                    'R${index + 1}',
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
                                     ),
-                                  ),
+                                  );
+                                }
+                                return const SizedBox();
+                              },
+                              reservedSize: 22,
+                            ),
+                          ),
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (double value, TitleMeta meta) {
+                                if (value == 0 || value == 50 || value == 100) {
+                                  return Text(
+                                    '${value.toInt()}%',
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 10,
+                                    ),
+                                  );
+                                }
+                                return const SizedBox();
+                              },
+                              interval: 25,
+                              reservedSize: 30,
+                            ),
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                        ),
+                        borderData: FlBorderData(
+                          show: false,
+                        ),
+                        barGroups: scores.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final value = entry.value;
+                          return BarChartGroupData(
+                            x: index,
+                            barRods: [
+                              BarChartRodData(
+                                toY: value.toDouble(),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.blue.shade300,
+                                    Colors.blue.shade700
+                                  ],
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                ),
+                                width: 20,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(6),
+                                  topRight: Radius.circular(6),
                                 ),
                               ),
                             ],
-                          ),
-                        );
-                      }).toList(),
-                    ],
-                  ),
-                ),
-              ),
-      ],
-    );
-  }
-
-  Widget _buildEmptyWorkingMemory() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.memory_outlined,
-            size: 48,
-            color: Colors.grey.shade400,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Working memory tidak tersedia',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey.shade600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserAnswersSection(List<Map<String, dynamic>> userAnswers) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(
-              Icons.question_answer,
-              color: Colors.deepPurple.shade700,
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Jawaban Siswa',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple.shade800,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        userAnswers.isEmpty
-            ? _buildEmptyAnswers()
-            : Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      for (int i = 0; i < userAnswers.length; i++)
-                        _buildAnswerItem(userAnswers[i], i),
-                    ],
-                  ),
-                ),
-              ),
-      ],
-    );
-  }
-
-  Widget _buildEmptyAnswers() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.question_mark,
-            size: 48,
-            color: Colors.grey.shade400,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Tidak ada jawaban yang tersedia',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey.shade600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAnswerItem(Map<String, dynamic> answer, int index) {
-    final questionText = answer['question'] ?? 'Pertanyaan tidak tersedia';
-    final userAnswer = answer['answer'] ?? 'Tidak dijawab';
-    final programName = answer['programName'] ?? '';
-    final bobot = answer['bobot']?.toString() ?? '0';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (index > 0) const Divider(height: 32),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 28,
-              height: 28,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.deepPurple.shade50,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Text(
-                '${index + 1}',
-                style: TextStyle(
-                  color: Colors.deepPurple.shade700,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    questionText,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: userAnswer == 'Ya'
-                                ? Colors.green.shade50
-                                : userAnswer == 'Tidak'
-                                    ? Colors.red.shade50
-                                    : Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: userAnswer == 'Ya'
-                                  ? Colors.green.shade200
-                                  : userAnswer == 'Tidak'
-                                      ? Colors.red.shade200
-                                      : Colors.grey.shade300,
-                            ),
-                          ),
-                          child: Text(
-                            'Jawaban: $userAnswer',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: userAnswer == 'Ya'
-                                  ? Colors.green.shade700
-                                  : userAnswer == 'Tidak'
-                                      ? Colors.red.shade700
-                                      : Colors.grey.shade700,
-                            ),
-                          ),
+                          );
+                        }).toList(),
+                        gridData: FlGridData(
+                          show: true,
+                          horizontalInterval: 25,
+                          getDrawingHorizontalLine: (value) {
+                            return FlLine(
+                              color: Colors.grey.shade200,
+                              strokeWidth: 1,
+                            );
+                          },
                         ),
                       ),
-                      if (programName.isNotEmpty) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.deepPurple.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            programName,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.deepPurple.shade700,
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (bobot != '0') ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.amber.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'Bobot: $bobot',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.amber.shade800,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
+                      swapAnimationDuration: const Duration(milliseconds: 800),
+                    ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
@@ -1281,7 +1543,8 @@ class StudentResultDetailPage extends StatelessWidget {
     final isKerja = data['isKerja'] ?? false;
 
     return Card(
-      elevation: 3,
+      elevation: 4,
+      shadowColor: Colors.blue.shade100,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -1293,11 +1556,11 @@ class StudentResultDetailPage extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: Colors.deepPurple.shade50,
+                  backgroundColor: Colors.blue.shade50,
                   radius: 24,
                   child: Icon(
                     Icons.person,
-                    color: Colors.deepPurple.shade700,
+                    color: Colors.blue.shade700,
                     size: 24,
                   ),
                 ),
@@ -1363,6 +1626,575 @@ class StudentResultDetailPage extends StatelessWidget {
     );
   }
 
+  Widget _buildRecommendationsTab(
+      List<Map<String, dynamic>> recommendations, bool isKerja) {
+    return recommendations.isEmpty
+        ? _buildEmptyCenteredMessage(
+            'Tidak ada rekomendasi yang tersedia',
+            Icons.search_off,
+          )
+        : ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            itemCount: recommendations.length + 1, // +1 for header
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionHeader(
+                      'Hasil Rekomendasi',
+                      isKerja ? Icons.work : Icons.school,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }
+
+              final recommendationIndex = index - 1;
+              final recommendation = recommendations[recommendationIndex];
+              return _buildRecommendationCard(
+                  recommendation, recommendationIndex, isKerja);
+            },
+          );
+  }
+
+  Widget _buildRecommendationCard(
+      Map<String, dynamic> recommendation, int index, bool isKerja) {
+    final score = recommendation['score']?.toString() ?? '0';
+    final careers = List<String>.from(recommendation['careers'] ?? []);
+    final majors = List<String>.from(recommendation['majors'] ?? []);
+    final rules = List<String>.from(recommendation['rules'] ?? []);
+    final title = recommendation['title'] ?? 'Rekomendasi ${index + 1}';
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 300 + (index * 150)),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, 20 * (1 - value)),
+            child: Card(
+              margin: const EdgeInsets.only(bottom: 16),
+              elevation: 4,
+              shadowColor: Colors.blue.shade100,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: ExpansionTile(
+                initiallyExpanded: index == 0, // First one expanded by default
+                tilePadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                leading: Hero(
+                  tag: 'recommendation_$index',
+                  child: CircleAvatar(
+                    backgroundColor: Colors.blue.shade50,
+                    radius: 20,
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        color: Colors.blue.shade700,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                title: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 4),
+                    TweenAnimationBuilder<double>(
+                      tween: Tween<double>(
+                          begin: 0.0, end: double.parse(score) / 100),
+                      duration: const Duration(milliseconds: 1000),
+                      builder: (context, value, child) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Skor: ${(value * 100).toInt()}%',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            LinearProgressIndicator(
+                              value: value,
+                              backgroundColor: Colors.grey.shade200,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                value < 0.3
+                                    ? Colors.red.shade400
+                                    : value < 0.7
+                                        ? Colors.orange.shade400
+                                        : Colors.green.shade400,
+                              ),
+                              minHeight: 5,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                children: [
+                  const Divider(),
+                  const SizedBox(height: 16),
+                  if (isKerja && careers.isNotEmpty) ...[
+                    _buildSectionTitle('Karir yang Direkomendasikan'),
+                    const SizedBox(height: 8),
+                    _buildChipList(careers),
+                    const SizedBox(height: 16),
+                  ],
+                  if (!isKerja && majors.isNotEmpty) ...[
+                    _buildSectionTitle('Jurusan yang Direkomendasikan'),
+                    const SizedBox(height: 8),
+                    _buildChipList(majors),
+                    const SizedBox(height: 16),
+                  ],
+                  if (rules.isNotEmpty) ...[
+                    _buildSectionTitle('Aturan yang Terpenuhi'),
+                    const SizedBox(height: 8),
+                    _buildRulesList(rules),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAnswersTab(List<Map<String, dynamic>> userAnswers) {
+    return userAnswers.isEmpty
+        ? _buildEmptyCenteredMessage(
+            'Tidak ada jawaban yang tersedia',
+            Icons.question_mark,
+          )
+        : ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            itemCount: userAnswers.length + 1, // +1 for header
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionHeader('Jawaban Siswa', Icons.question_answer),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }
+
+              final answerIndex = index - 1;
+              return _buildAnswerCard(userAnswers[answerIndex], answerIndex);
+            },
+          );
+  }
+
+  Widget _buildAnswerCard(Map<String, dynamic> answer, int index) {
+    final questionText = answer['question'] ?? 'Pertanyaan tidak tersedia';
+    final userAnswer = answer['answer'] ?? 'Tidak dijawab';
+    final programName = answer['programName'] ?? '';
+    final bobot = answer['bobot']?.toString() ?? '0';
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 300 + (index * 100)),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(30 * (1 - value), 0),
+            child: Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              elevation: 3,
+              shadowColor: Colors.blue.shade100,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blue.shade100.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            questionText,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: userAnswer == 'Ya'
+                                        ? Colors.green.shade50
+                                        : userAnswer == 'Tidak'
+                                            ? Colors.red.shade50
+                                            : Colors.grey.shade50,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: userAnswer == 'Ya'
+                                          ? Colors.green.shade200
+                                          : userAnswer == 'Tidak'
+                                              ? Colors.red.shade200
+                                              : Colors.grey.shade300,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.1),
+                                        spreadRadius: 1,
+                                        blurRadius: 3,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    'Jawaban: $userAnswer',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: userAnswer == 'Ya'
+                                          ? Colors.green.shade700
+                                          : userAnswer == 'Tidak'
+                                              ? Colors.red.shade700
+                                              : Colors.grey.shade700,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (programName.isNotEmpty || bobot != '0') ...[
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              children: [
+                                if (programName.isNotEmpty)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          spreadRadius: 1,
+                                          blurRadius: 2,
+                                          offset: const Offset(0, 1),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      programName,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.blue.shade700,
+                                      ),
+                                    ),
+                                  ),
+                                if (bobot != '0')
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.amber.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          spreadRadius: 1,
+                                          blurRadius: 2,
+                                          offset: const Offset(0, 1),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      'Bobot: $bobot',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.amber.shade800,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildWorkingMemoryTab(Map<String, dynamic> workingMemory) {
+    return workingMemory.isEmpty
+        ? _buildEmptyCenteredMessage(
+            'Working memory tidak tersedia',
+            Icons.memory_outlined,
+          )
+        : ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            itemCount: workingMemory.length + 1, // +1 for header
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionHeader(
+                      'Working Memory',
+                      Icons.memory,
+                      tooltip:
+                          'Data memori kerja yang digunakan saat proses inferensi',
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                'Variabel',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue.shade700,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                'Nilai',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue.shade700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                );
+              }
+
+              final memoryIndex = index - 1;
+              final entry = workingMemory.entries.elementAt(memoryIndex);
+              return _buildWorkingMemoryItem(
+                  entry.key, entry.value, memoryIndex);
+            },
+          );
+  }
+
+  Widget _buildWorkingMemoryItem(String key, dynamic value, int index) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 300 + (index * 50)),
+      curve: Curves.easeOutCubic,
+      builder: (context, animValue, child) {
+        return Opacity(
+          opacity: animValue,
+          child: Transform.translate(
+            offset: Offset(0, 20 * (1 - animValue)),
+            child: Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              elevation: 2,
+              shadowColor: Colors.blue.shade100,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                        key,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: value is bool && value == true
+                              ? Colors.green.shade50
+                              : value is bool && value == false
+                                  ? Colors.red.shade50
+                                  : Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.1),
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          value.toString(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: value is bool && value == true
+                                ? Colors.green.shade700
+                                : value is bool && value == false
+                                    ? Colors.red.shade700
+                                    : Colors.blue.shade700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyCenteredMessage(String message, IconData icon) {
+    return Center(
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 0.0, end: 1.0),
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.elasticOut,
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value,
+            child: Transform.scale(
+              scale: 0.8 + (0.2 * value),
+              child: Container(
+                width: 250,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.shade100.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 60,
+                      color: Colors.grey.shade400,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildInfoItem({
     required IconData icon,
     required String label,
@@ -1375,7 +2207,7 @@ class StudentResultDetailPage extends StatelessWidget {
           Icon(
             icon,
             size: 16,
-            color: Colors.deepPurple.shade400,
+            color: Colors.blue.shade400,
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -1404,154 +2236,35 @@ class StudentResultDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendationsSection(
-    List<Map<String, dynamic>> recommendations,
-    bool isKerja,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildSectionHeader(String title, IconData icon, {String? tooltip}) {
+    return Row(
       children: [
-        Row(
-          children: [
-            Icon(
-              isKerja ? Icons.work : Icons.school,
-              color: Colors.deepPurple.shade700,
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Hasil Rekomendasi',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple.shade800,
-              ),
-            ),
-          ],
+        Icon(
+          icon,
+          color: Colors.blue.shade700,
+          size: 20,
         ),
-        const SizedBox(height: 16),
-        recommendations.isEmpty
-            ? _buildEmptyRecommendations()
-            : ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: recommendations.length,
-                itemBuilder: (context, index) {
-                  final recommendation = recommendations[index];
-                  final score = recommendation['score']?.toString() ?? '0';
-                  final careers =
-                      List<String>.from(recommendation['careers'] ?? []);
-                  final majors =
-                      List<String>.from(recommendation['majors'] ?? []);
-                  final rules =
-                      List<String>.from(recommendation['rules'] ?? []);
-
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: Colors.deepPurple.shade50,
-                                radius: 20,
-                                child: Text(
-                                  '${index + 1}',
-                                  style: TextStyle(
-                                    color: Colors.deepPurple.shade700,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      recommendation['title'] ?? 'Tanpa judul',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Skor: $score%',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey.shade600,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          const Divider(),
-                          const SizedBox(height: 16),
-                          if (isKerja && careers.isNotEmpty) ...[
-                            _buildSectionTitle('Karir yang Direkomendasikan'),
-                            const SizedBox(height: 8),
-                            _buildChipList(careers),
-                            const SizedBox(height: 16),
-                          ],
-                          if (!isKerja && majors.isNotEmpty) ...[
-                            _buildSectionTitle('Jurusan yang Direkomendasikan'),
-                            const SizedBox(height: 8),
-                            _buildChipList(majors),
-                            const SizedBox(height: 16),
-                          ],
-                          if (rules.isNotEmpty) ...[
-                            _buildSectionTitle('Aturan yang Terpenuhi'),
-                            const SizedBox(height: 8),
-                            _buildRulesList(rules),
-                          ],
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-      ],
-    );
-  }
-
-  Widget _buildEmptyRecommendations() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.search_off,
-            size: 48,
-            color: Colors.grey.shade400,
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.blue.shade800,
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Tidak ada rekomendasi yang tersedia',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+        ),
+        if (tooltip != null) ...[
+          const SizedBox(width: 8),
+          Tooltip(
+            message: tooltip,
+            child: Icon(
+              Icons.info_outline,
+              size: 16,
               color: Colors.grey.shade600,
             ),
           ),
         ],
-      ),
+      ],
     );
   }
 
@@ -1561,7 +2274,7 @@ class StudentResultDetailPage extends StatelessWidget {
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.bold,
-        color: Colors.deepPurple.shade700,
+        color: Colors.blue.shade700,
       ),
     );
   }
@@ -1570,20 +2283,39 @@ class StudentResultDetailPage extends StatelessWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: items.map((item) {
-        return Chip(
-          label: Text(
-            item,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          backgroundColor: Colors.deepPurple.shade50,
-          labelStyle: TextStyle(color: Colors.deepPurple.shade700),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          visualDensity: VisualDensity.compact,
+      children: items.asMap().entries.map((entry) {
+        final index = entry.key;
+        final item = entry.value;
+
+        return TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0.0, end: 1.0),
+          duration: Duration(milliseconds: 600 + (index * 50)),
+          curve: Curves.easeOutCubic,
+          builder: (context, value, child) {
+            return Opacity(
+              opacity: value,
+              child: Transform.scale(
+                scale: 0.8 + (0.2 * value),
+                child: Chip(
+                  label: Text(
+                    item,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  backgroundColor: Colors.blue.shade50,
+                  labelStyle: TextStyle(color: Colors.blue.shade700),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  elevation: 1,
+                  shadowColor: Colors.blue.shade100,
+                ),
+              ),
+            );
+          },
         );
       }).toList(),
     );
@@ -1592,28 +2324,86 @@ class StudentResultDetailPage extends StatelessWidget {
   Widget _buildRulesList(List<String> rules) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: rules.map((rule) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.check_circle,
-                size: 16,
-                color: Colors.green.shade600,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  rule,
-                  style: const TextStyle(fontSize: 14),
+      children: rules.asMap().entries.map((entry) {
+        final index = entry.key;
+        final rule = entry.value;
+
+        return TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0.0, end: 1.0),
+          duration: Duration(milliseconds: 300 + (index * 100)),
+          curve: Curves.easeOutCubic,
+          builder: (context, value, child) {
+            return Opacity(
+              opacity: value,
+              child: Transform.translate(
+                offset: Offset(20 * (1 - value), 0),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        size: 16,
+                        color: Colors.green.shade600,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          rule,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
+            );
+          },
         );
       }).toList(),
     );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
+
+  _SliverAppBarDelegate(this.tabBar);
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey.shade200,
+            width: 1,
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.05),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: tabBar,
+    );
+  }
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
   }
 }
