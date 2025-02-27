@@ -173,20 +173,14 @@ class RecommendationResultsScreen extends StatelessWidget {
                                   final item = result.recommendations[index];
                                   // Update the index for the item
                                   final updatedItem = RecommendationItem(
-                                      title: item.title,
-                                      score: item.score,
-                                      index: index,
-                                      rules: item.rules,
-                                      careers: item.careers,
-                                      majors: item.majors,
-                                      recommendedCourses:
-                                          item.recommendedCourses,
-                                      recommendedUniversities:
-                                          item.recommendedUniversities);
-
-                                  // Tampilan card yang dapat diklik untuk melihat detail
-                                  return _buildCompactRecommendationCard(
-                                      context, updatedItem);
+                                    title: item.title,
+                                    score: item.score,
+                                    index: index,
+                                    rules: item.rules,
+                                    careers: item.careers,
+                                    majors: item.majors,
+                                  );
+                                  return RecommendationCard(item: updatedItem);
                                 },
                               ),
                       ),
@@ -225,12 +219,12 @@ class RecommendationResultsScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(16),
                               ),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.auto_awesome, size: 20),
-                                SizedBox(width: 8),
-                                Text(
+                                const Icon(Icons.auto_awesome, size: 20),
+                                const SizedBox(width: 8),
+                                const Text(
                                   'Lihat Detail Forward Chaining',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
