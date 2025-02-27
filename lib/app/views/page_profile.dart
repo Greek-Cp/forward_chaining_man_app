@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forward_chaining_man_app/app/views/page_intro.dart';
 import 'package:forward_chaining_man_app/app/views/page_login.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -164,7 +165,7 @@ class ProfileController extends GetxController {
       await _auth.signOut();
 
       // Navigate to login page
-      Get.offAll(() => StudentLoginPage());
+      Get.offAll(() => IntroPage());
     } catch (e) {
       Get.snackbar(
         'Error',

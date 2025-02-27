@@ -325,7 +325,7 @@ class _SplashScreenState extends State<SplashScreen>
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: Text(
-                      'Expert System Application',
+                      'Rekomendasi Minat Bakat Anda',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w300,
