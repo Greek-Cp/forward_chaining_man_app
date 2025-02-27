@@ -260,6 +260,11 @@ class HomePage extends StatelessWidget {
                                             majorType: controller.selectedMajor,
                                           ));
 
+                                          questionController.clearQuestion();
+                                          questionController.loadProgramData(
+                                              controller.pilihan.value!,
+                                              controller.selectedMajor);
+
                                           // Navigasi ke halaman pertanyaan
                                           Get.to(() => QuestionPage(
                                                 isKerja:

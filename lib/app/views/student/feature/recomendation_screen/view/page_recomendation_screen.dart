@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' as rootBundle;
 import 'package:flutter/services.dart';
@@ -16,9 +17,9 @@ import 'package:intl/intl.dart' as intl;
 
 import 'package:url_launcher/url_launcher.dart';
 
-class RecommendationResultsScreen extends StatelessWidget {
+class RecommendationResultsScreen extends StatefulWidget {
   final RecommendationResult result;
-  final String rawMessage; // Optional: for backward compatibility
+  final String rawMessage;
 
   const RecommendationResultsScreen({
     required this.result,
@@ -27,7 +28,65 @@ class RecommendationResultsScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<RecommendationResultsScreen> createState() =>
+      _RecommendationResultsScreenState();
+}
+
+class _RecommendationResultsScreenState
+    extends State<RecommendationResultsScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeInAnimation;
+  late Animation<Offset> _slideAnimation;
+  int _currentIndex = 0;
+  final PageController _pageController = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _fadeInAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+      ),
+    );
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  String _formatProgramName(String name) {
+    return name
+        .split('_')
+        .map((word) => word.isNotEmpty
+            ? word[0].toUpperCase() + word.substring(1).toLowerCase()
+            : '')
+        .join(' ');
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final recommendations = widget.result.recommendations;
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -43,200 +102,15 @@ class RecommendationResultsScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
-              // Custom App Bar
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    const Text(
-                      'Hasil Rekomendasi',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const Spacer(),
-                    const SizedBox(width: 40), // Balance the layout
-                  ],
-                ),
-              ),
-
-              // Header Content with Animation
-              Container(
-                padding: const EdgeInsets.fromLTRB(24, 30, 24, 30),
-                child: Column(
-                  children: [
-                    // Animated Success Icon
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.check_circle_outline,
-                        size: 50,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Congratulations Text
-                    Text(
-                      'Rekomendasi Untuk Kamu!',
-                      style: TextStyle(
-                        color: Colors.amber.shade300,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Description
-                    Text(
-                      'Berdasarkan jawaban Anda, berikut adalah rekomendasi minat dan karir yang paling sesuai:',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 16,
-                        height: 1.4,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-
-              // Recommendation Cards in Material Container
+              _buildAppBar(context),
               Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      // Top Handle for Visual Cue
-                      Container(
-                        width: 50,
-                        height: 5,
-                        margin: const EdgeInsets.only(top: 16, bottom: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-
-                      // Results Count
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          '${result.recommendations.length} Rekomendasi Terbaik',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
-                      ),
-
-                      // List of Recommendations
-                      Expanded(
-                        child: result.recommendations.isEmpty
-                            ? _buildEmptyState(context)
-                            : ListView.builder(
-                                itemCount: result.recommendations.length,
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                                physics: const BouncingScrollPhysics(),
-                                itemBuilder: (context, index) {
-                                  final item = result.recommendations[index];
-                                  // Update the index for the item
-                                  final updatedItem = RecommendationItem(
-                                    title: item.title,
-                                    score: item.score,
-                                    index: index,
-                                    rules: item.rules,
-                                    careers: item.careers,
-                                    majors: item.majors,
-                                  );
-                                  return RecommendationCard(item: updatedItem);
-                                },
-                              ),
-                      ),
-
-                      // Action Button
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: Container(
-                          width: double.infinity,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.blue.shade700,
-                                Colors.indigo.shade700,
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.blue.shade700.withOpacity(0.3),
-                                blurRadius: 12,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _showRawResults(context);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.white,
-                              shadowColor: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.auto_awesome, size: 20),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'Lihat Detail Forward Chaining',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                child: FadeTransition(
+                  opacity: _fadeInAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: recommendations.isEmpty
+                        ? _buildEmptyState()
+                        : _buildResultContent(recommendations),
                   ),
                 ),
               ),
@@ -247,347 +121,56 @@ class RecommendationResultsScreen extends StatelessWidget {
     );
   }
 
-  // Widget untuk tampilan card kompak yang dapat diklik
-  Widget _buildCompactRecommendationCard(
-      BuildContext context, RecommendationItem item) {
-    // Parsing title
-    final parts = item.title.split('-');
-    String program = parts[0].trim();
-    String concentration = parts.length > 1 ? parts[1].trim() : '';
-
-    // Further clean up if needed
-    if (program.contains('|')) {
-      final subParts = program.split('|');
-      program = subParts[0].trim();
-      if (concentration.isEmpty && subParts.length > 1) {
-        concentration = subParts[1].trim();
-      }
-    }
-
-    // Warna berdasarkan peringkat
-    final medalColors = [
-      const Color(0xFFFFD700), // Gold
-      const Color(0xFFC0C0C0), // Silver
-      const Color(0xFFCD7F32), // Bronze
-    ];
-
-    final medalColor = item.index < medalColors.length
-        ? medalColors[item.index]
-        : Colors.blue.shade300;
-
-    final isTopRecommendation = item.index == 0;
-
-    return GestureDetector(
-      onTap: () {
-        _showDetailRecommendation(context, item);
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: isTopRecommendation
-                  ? Colors.amber.shade200.withOpacity(0.5)
-                  : Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          child: Column(
-            children: [
-              // Card header with medal
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: isTopRecommendation
-                        ? [Colors.amber.shade300, Colors.amber.shade600]
-                        : [Colors.blue.shade100, Colors.blue.shade200],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    // Medal/Ranking indicator
-                    Container(
-                      width: 45,
-                      height: 45,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: medalColor,
-                          width: 3,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: medalColor.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${item.index + 1}',
-                          style: TextStyle(
-                            color: medalColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-
-                    // Title and program
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            concentration,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            program,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white.withOpacity(0.9),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Score indicator
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isTopRecommendation
-                            ? Colors.amber.shade600
-                            : Colors.blue.shade600,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${item.score}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Preview content
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                  color: Colors.white,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Preview karir
-                    if (item.careers.isNotEmpty) ...[
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.work_outline,
-                            size: 18,
-                            color: Colors.blue.shade700,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Karir: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              color: Colors.blue.shade700,
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              item.careers.take(2).join(', ') +
-                                  (item.careers.length > 2 ? ', ...' : ''),
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade700,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-
-                    // Preview jurusan
-                    if (item.majors.isNotEmpty) ...[
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.school_outlined,
-                            size: 18,
-                            color: Colors.purple.shade700,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Jurusan: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              color: Colors.purple.shade700,
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              item.majors.take(2).join(', ') +
-                                  (item.majors.length > 2 ? ', ...' : ''),
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade700,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-
-                    // Tampilkan tombol lihat detail
-                    Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 8),
-                        height: 36,
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            _showDetailRecommendation(context, item);
-                          },
-                          icon: const Icon(Icons.visibility, size: 16),
-                          label: const Text('Lihat Detail Lengkap'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isTopRecommendation
-                                ? Colors.amber.shade500
-                                : Colors.blue.shade500,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Fungsi untuk menampilkan detail rekomendasi dalam fullscreen scrollable view
-  void _showDetailRecommendation(
-      BuildContext context, RecommendationItem item) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => DetailRecommendationScreen(item: item),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildAppBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.search_off,
-              size: 70,
-              color: Colors.grey.shade400,
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Tidak ada rekomendasi yang cocok',
-            style: TextStyle(
-              color: Colors.grey.shade800,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-              'Coba jawab pertanyaan dengan pola yang berbeda untuk menemukan rekomendasi yang sesuai',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 15,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Coba Lagi'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue.shade700,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
+          InkWell(
+            onTap: () => Navigator.of(context).pop(),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            'Hasil Rekomendasi',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const Spacer(),
+          InkWell(
+            onTap: () {
+              // TODO: Implement share functionality
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Berbagi hasil akan segera tersedia')),
+              );
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.share_rounded,
+                color: Colors.white,
+                size: 20,
               ),
             ),
           ),
@@ -596,206 +179,789 @@ class RecommendationResultsScreen extends StatelessWidget {
     );
   }
 
-  void _showRawResults(BuildContext context) {
-    // Use raw message if available, otherwise generate it
-    final detailedText =
-        rawMessage.isNotEmpty ? rawMessage : _generateDetailedText();
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_off_rounded,
+            size: 80,
+            color: Colors.white.withOpacity(0.7),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Belum Ada Rekomendasi',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              'Silakan lengkapi kuisioner minat dan bakat untuk mendapatkan rekomendasi',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white.withOpacity(0.7),
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.blue.shade900,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Mulai Kuisioner',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+  Widget _buildResultContent(List<RecommendationItem> recommendations) {
+    return Column(
+      children: [
+        _buildScoreIndicator(recommendations),
+        const SizedBox(height: 16),
+        _buildPageIndicator(recommendations.length),
+        const SizedBox(height: 8),
+        Expanded(
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() => _currentIndex = index);
+            },
+            itemCount: recommendations.length,
+            itemBuilder: (context, index) {
+              return _buildRecommendationCard(recommendations[index]);
+            },
+          ),
         ),
-        child: DraggableScrollableSheet(
-          initialChildSize: 0.85,
-          maxChildSize: 0.9,
-          minChildSize: 0.5,
-          expand: false,
-          builder: (context, scrollController) => Column(
-            children: [
-              // Handle Bar
-              Container(
-                width: 50,
-                height: 5,
-                margin: const EdgeInsets.only(top: 16, bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(10),
-                ),
+      ],
+    );
+  }
+
+  Widget _buildScoreIndicator(List<RecommendationItem> recommendations) {
+    // Create a list of score items for the bar chart
+    final items = recommendations.take(5).toList();
+    final maxScore = items.map((e) => e.score).reduce(math.max);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: SizedBox(
+        height: 180,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Kesesuaian Dengan Minat & Bakat Kamu',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
-
-              // Title
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.auto_awesome,
-                        color: Colors.blue.shade700,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    const Text(
-                      'Detail Forward Chaining',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Geser kartu untuk melihat detail rekomendasi',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: Colors.white.withOpacity(0.7),
               ),
-
-              // Content
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    physics: const BouncingScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.grey.shade200,
-                              width: 1,
-                            ),
-                          ),
-                          child: SelectableText(
-                            detailedText,
-                            style: TextStyle(
-                              fontSize: 14,
-                              height: 1.5,
-                              color: Colors.grey.shade800,
-                              fontFamily: 'monospace',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-
-                        // Copy and Share buttons
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  Clipboard.setData(
-                                      ClipboardData(text: detailedText));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Teks berhasil disalin!'),
-                                      duration: Duration(seconds: 2),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.copy),
-                                label: const Text('Salin Teks'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.grey.shade200,
-                                  foregroundColor: Colors.grey.shade800,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: maxScore.toDouble(),
+                  barTouchData: BarTouchData(enabled: false),
+                  titlesData: FlTitlesData(
+                    show: true,
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (double value, TitleMeta meta) {
+                          final index = value.toInt();
+                          if (index >= 0 && index < items.length) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                _formatProgramName(items[index].title)
+                                    .split(' ')
+                                    .first,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  // Share functionality would go here
-                                  // Using a placeholder for now
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Bagikan hasil'),
-                                      duration: Duration(seconds: 2),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.share),
-                                label: const Text('Bagikan'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue.shade700,
-                                  foregroundColor: Colors.white,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            );
+                          }
+                          return const Text('');
+                        },
+                        reservedSize: 30,
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                   ),
+                  gridData: FlGridData(show: false),
+                  borderData: FlBorderData(show: false),
+                  barGroups: items.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    final color = index == _currentIndex
+                        ? Colors.amber.shade300
+                        : Colors.white.withOpacity(0.7);
+
+                    return BarChartGroupData(
+                      x: index,
+                      barRods: [
+                        BarChartRodData(
+                          toY: item.score.toDouble(),
+                          color: color,
+                          width: 18,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6),
+                          ),
+                          backDrawRodData: BackgroundBarChartRodData(
+                            show: true,
+                            toY: maxScore.toDouble(),
+                            color: Colors.white.withOpacity(0.1),
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
                 ),
+                swapAnimationDuration: const Duration(milliseconds: 300),
               ),
-            ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPageIndicator(int length) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(
+        length,
+        (index) => AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          height: 8,
+          width: _currentIndex == index ? 24 : 8,
+          decoration: BoxDecoration(
+            color: _currentIndex == index
+                ? Colors.white
+                : Colors.white.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
       ),
     );
   }
 
-  // Helper to generate detailed text from the result object if needed
-  String _generateDetailedText() {
-    String text = 'HASIL FORWARD CHAINING:\n\n';
-    text += 'Working Memory (fakta): ${result.workingMemory.join(', ')}\n\n';
+  Widget _buildRecommendationCard(RecommendationItem item) {
+    final friendlyExplanations = item.rules.map((rule) {
+      // Clean up the rule text first
+      String cleanedRule = rule.trim();
 
-    text += 'Top ${result.recommendations.length} Rekomendasi:\n';
-    for (int i = 0; i < result.recommendations.length; i++) {
-      final rec = result.recommendations[i];
-      text += '${i + 1}. ${rec.title} (Skor: ${rec.score})\n';
+      // Try different patterns to extract questions
+      String question = "";
 
-      // Rules
-      if (rec.rules.isNotEmpty) {
-        text += '  RULES YANG:\n';
-        for (var rule in rec.rules) {
-          text += '   - $rule\n';
-        }
-      }
+      // Pattern for finding quoted text that looks like a question
+      final pattern = RegExp(r'["""]([^"""]+)["""]');
+      final match = pattern.firstMatch(cleanedRule);
 
-      // Careers
-      if (rec.careers.isNotEmpty) {
-        text += '  Karir:\n';
-        for (var career in rec.careers) {
-          text += '   - $career\n';
-        }
+      if (match != null && match.group(1) != null) {
+        question = match.group(1)!.trim();
       } else {
-        text += '  Karir: (Tidak ada data)\n';
+        // If no match found, use a generic placeholder
+        question = "terkait minat ini";
       }
 
-      // Majors
-      if (rec.majors.isNotEmpty) {
-        text += '  Jurusan Terkait:\n';
-        for (var major in rec.majors) {
-          text += '   - $major\n';
-        }
-      }
+      // Create a friendly explanation
+      return "Kamu menjawab \"Ya\" untuk pertanyaan \"$question\" yang menunjukkan ketertarikan pada bidang ${_formatProgramName(item.title)}";
+    }).toList();
 
-      text += '\n';
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          _buildScoreCard(item),
+          const SizedBox(height: 16),
+          _buildDetailCard(item, friendlyExplanations),
+          const SizedBox(height: 16),
+          if (item.careers.isNotEmpty) _buildCareersCard(item),
+          if (item.careers.isNotEmpty) const SizedBox(height: 16),
+          if (item.majors.isNotEmpty) _buildMajorsCard(item),
+          if (item.majors.isNotEmpty) const SizedBox(height: 16),
+          if (item.recommendedCourses != null &&
+              item.recommendedCourses!.isNotEmpty)
+            _buildCoursesCard(item),
+          if (item.recommendedCourses != null &&
+              item.recommendedCourses!.isNotEmpty)
+            const SizedBox(height: 16),
+          if (item.recommendedUniversities != null &&
+              item.recommendedUniversities!.isNotEmpty)
+            _buildUniversitiesCard(item),
+          if (item.recommendedUniversities != null &&
+              item.recommendedUniversities!.isNotEmpty)
+            const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScoreCard(RecommendationItem item) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.white,
+              Colors.blue.shade50,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            Text(
+              _formatProgramName(item.title),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue.shade900,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildCircularScoreIndicator(item.score),
+                const SizedBox(width: 24),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _getScoreText(item.score),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: _getScoreColor(item.score),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _getScoreDescription(item.score),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCircularScoreIndicator(int score) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: score / 100),
+      duration: const Duration(milliseconds: 1500),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            SizedBox(
+              height: 80,
+              width: 80,
+              child: CircularProgressIndicator(
+                value: value,
+                strokeWidth: 10,
+                backgroundColor: Colors.grey.shade200,
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(_getScoreColor(score)),
+              ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${(value * 100).toInt()}',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue.shade900,
+                  ),
+                ),
+                Text(
+                  'skor',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _getScoreText(int score) {
+    if (score >= 90) return 'Sangat Cocok';
+    if (score >= 75) return 'Cocok';
+    if (score >= 60) return 'Cukup Cocok';
+    if (score >= 45) return 'Kurang Cocok';
+    return 'Tidak Cocok';
+  }
+
+  String _getScoreDescription(int score) {
+    if (score >= 90) {
+      return 'Rekomendasi terbaik berdasarkan minat dan bakatmu';
     }
+    if (score >= 75) {
+      return 'Potensi keberhasilan tinggi di bidang ini';
+    }
+    if (score >= 60) {
+      return 'Ada beberapa kecocokan dengan minatmu';
+    }
+    if (score >= 45) {
+      return 'Mungkin bukan pilihan utama untukmu';
+    }
+    return 'Pertimbangkan opsi lain yang lebih sesuai';
+  }
 
-    return text;
+  Color _getScoreColor(int score) {
+    if (score >= 90) return Colors.green.shade600;
+    if (score >= 75) return Colors.teal.shade600;
+    if (score >= 60) return Colors.blue.shade600;
+    if (score >= 45) return Colors.orange.shade600;
+    return Colors.red.shade600;
+  }
+
+  Widget _buildDetailCard(RecommendationItem item, List<String> explanations) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.lightbulb_outline,
+                    color: Colors.blue.shade700,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Mengapa Ini Direkomendasikan',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.blue.shade900,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Berdasarkan jawaban-jawabanmu di kuisioner, kami menemukan bahwa "${_formatProgramName(item.title)}" sangat sesuai dengan minat dan bakatmu.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade800,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Alasan utama (${explanations.length} faktor):',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...explanations.asMap().entries.map((entry) {
+              final index = entry.key;
+              final explanation = entry.value;
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 3),
+                      height: 18,
+                      width: 18,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade100,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        explanation,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade700,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCareersCard(RecommendationItem item) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.indigo.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.work_outline_rounded,
+                    color: Colors.indigo.shade700,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Prospek Karir',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.indigo.shade900,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: item.careers.map((career) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.indigo.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.indigo.shade100),
+                  ),
+                  child: Text(
+                    career,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.indigo.shade700,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMajorsCard(RecommendationItem item) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.school_outlined,
+                    color: Colors.purple.shade700,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Jurusan yang Disarankan',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.purple.shade900,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: item.majors.map((major) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.purple.shade100),
+                  ),
+                  child: Text(
+                    major,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.purple.shade700,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCoursesCard(RecommendationItem item) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.teal.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.menu_book_rounded,
+                    color: Colors.teal.shade700,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Mata Pelajaran Penunjang',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.teal.shade900,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ...item.recommendedCourses!.map((course) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle_rounded,
+                      size: 16,
+                      color: Colors.teal.shade600,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      course,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUniversitiesCard(RecommendationItem item) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.account_balance_rounded,
+                    color: Colors.amber.shade700,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Universitas Terkait',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.amber.shade900,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: item.recommendedUniversities!.map((university) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.amber.shade100),
+                  ),
+                  child: Text(
+                    university,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.amber.shade700,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
