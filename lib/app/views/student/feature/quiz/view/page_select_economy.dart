@@ -9,7 +9,9 @@ import 'package:forward_chaining_man_app/app/views/about/page_about.dart';
 import 'package:forward_chaining_man_app/app/views/page_intro.dart';
 import 'package:forward_chaining_man_app/app/views/page_login.dart';
 import 'package:forward_chaining_man_app/app/views/page_profile.dart';
+import 'package:forward_chaining_man_app/app/views/student/feature/quiz/controller/question_controller.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/quiz/view/page_question.dart';
+import 'package:forward_chaining_man_app/app/views/student/feature/quiz/view/page_select_major.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/recomendation_screen/view/page_recomendation_screen.dart';
 import 'package:forward_chaining_man_app/app/views/student/model/data_student.dart';
 import 'package:get/get.dart';
@@ -34,6 +36,9 @@ class HomeController extends GetxController {
   final RxString selectedKode =
       "".obs; // Menyimpan kode pilihan yang dipilih user
 
+  // Dapatkan preferensi minat dari controller sebelumnya
+  final majorPrefController = Get.find<MajorPreferenceController>();
+
   void setPilihan(String kode) {
     if (selectedKode.value == kode)
       return; // Jika memilih yang sama, tidak berubah
@@ -46,6 +51,10 @@ class HomeController extends GetxController {
       pilihan.value = true; // Kerja
     }
   }
+
+  // Tambahkan getter untuk memudahkan akses preferensi minat
+  String get selectedMajor => majorPrefController.selectedMajor.value;
+  bool get isSainsMajor => selectedMajor == "SAINS";
 }
 
 class HomePage extends StatelessWidget {
@@ -244,6 +253,14 @@ class HomePage extends StatelessWidget {
                                           .selectedKode.value.isEmpty
                                       ? null
                                       : () {
+                                          // Buat instance QuestionController dengan preferensi yang sesuai
+                                          final questionController =
+                                              Get.put(QuestionController(
+                                            isKerja: controller.pilihan.value!,
+                                            majorType: controller.selectedMajor,
+                                          ));
+
+                                          // Navigasi ke halaman pertanyaan
                                           Get.to(() => QuestionPage(
                                                 isKerja:
                                                     controller.pilihan.value!,

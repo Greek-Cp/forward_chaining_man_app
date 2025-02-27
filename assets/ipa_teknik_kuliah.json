@@ -1,124 +1,345 @@
 {
-    
-        "J01B": {
-          "name": "IPA (Teknik)",
-          "description": "Fokus: Matematika, Fisika, IT (arah teknik/teknologi)",
-          "categories": [
-            "Teknologi & IT"
-          ],
-          "minat": {
-            "Elektronika": {
-              "pertanyaan": [
-                "Apakah Anda tertarik dengan dunia elektronik dan rangkaian listrik? [5]",
-                "Apakah Anda ingin belajar cara membuat perangkat elektronik sederhana? [6]",
-                "Apakah Anda suka memecahkan masalah teknis dengan alat-alat elektronik? [6]",
-                "Apakah Anda tertarik untuk mengembangkan teknologi elektronik untuk kehidupan sehari-hari? [5]"
-              ],
-              "karir": [
-                "Insinyur Elektro[20]",
-                "Teknisi Elektronika[19]",
-                "R&D Specialist[18]"
-              ],
-              "jurusan_terkait": [
-                "Teknik Elektro",
-                "Teknik Mekatronika",
-                "Elektronika Industri"
-              ]
-            },
-            "Robotika": {
-              "pertanyaan": [
-                "Apakah Anda tertarik untuk mengembangkan robot atau mesin otomatis? [6]",
-                "Apakah Anda suka bekerja dengan teknologi yang menggabungkan perangkat keras dan perangkat lunak? [7]",
-                "Apakah Anda tertarik dengan dunia sensor dan bagaimana mereka bekerja dalam robot? [6]",
-                "Apakah Anda menikmati belajar cara membuat robot bergerak atau berinteraksi dengan lingkungannya? [6]"
-              ],
-              "karir": [
-                "Robotic Engineer[20]",
-                "Automation Engineer[19]",
-                "Teknisi Robotik[18]"
-              ],
-              "jurusan_terkait": [
-                "Teknik Mekatronika",
-                "Teknik Elektro",
-                "Teknik Informatika (Konsentrasi Robotika)"
-              ]
-            },
-            "Teknologi": {
-              "pertanyaan": [
-                "Apakah Anda tertarik untuk membuat perangkat lunak atau aplikasi untuk komputer atau ponsel? [7]",
-                "Apakah Anda suka bekerja dengan kode dan pengembangan teknologi? [7]",
-                "Apakah Anda ingin memahami cara kerja jaringan komputer dan internet? [6]",
-                "Apakah Anda menikmati tantangan dalam menciptakan solusi teknologi untuk masalah sehari-hari? [6]"
-              ],
-              "karir": [
-                "Software Engineer[20]",
-                "Network Engineer[19]",
-                "IT Consultant[18]"
-              ],
-              "jurusan_terkait": [
-                "Teknik Informatika",
-                "Sistem Informasi",
-                "Teknologi Informasi"
-              ]
-            },
-            "Teknik Mesin": {
-              "pertanyaan": [
-                "Apakah Anda tertarik dengan cara kerja mesin dan perangkat mekanis? [6]",
-                "Apakah Anda ingin belajar tentang proses manufaktur dan pembuatan mesin? [6]",
-                "Apakah Anda suka mempelajari cara benda-benda bergerak atau bekerja dalam kehidupan sehari-hari? [5]",
-                "Apakah Anda tertarik untuk merancang alat atau mesin yang bisa membantu memecahkan masalah? [6]"
-              ],
-              "karir": [
-                "Insinyur Mesin[20]",
-                "Teknisi Mesin[19]",
-                "R&D Mechanical Engineer[18]"
-              ],
-              "jurusan_terkait": [
-                "Teknik Mesin",
-                "Teknik Industri",
-                "Teknik Otomotif",
-                "Teknik Aeronautika"
-              ]
-            },
-            "Teknik Sipil": {
-              "pertanyaan": [
-                "Apakah Anda tertarik dengan pembangunan dan perancangan bangunan? [6]",
-                "Apakah Anda suka belajar tentang bagaimana gedung atau jembatan dibangun? [6]",
-                "Apakah Anda tertarik untuk mempelajari cara bangunan menahan beban? [5]",
-                "Apakah Anda menikmati mempelajari teknik dan cara-cara konstruksi dalam kehidupan sehari-hari? [5]"
-              ],
-              "karir": [
-                "Insinyur Sipil[20]",
-                "Pengawas Konstruksi[19]",
-                "Perencana Infrastruktur[18]"
-              ],
-              "jurusan_terkait": [
-                "Teknik Sipil",
-                "Teknik Konstruksi",
-                "Teknik Transportasi"
-              ]
-            },
-            "Teknik Kimia": {
-              "pertanyaan": [
-                "Apakah Anda tertarik dengan reaksi kimia yang terjadi di sekitar kita? [6]",
-                "Apakah Anda ingin memahami bagaimana bahan kimia digunakan dalam kehidupan sehari-hari? [5]",
-                "Apakah Anda tertarik untuk mempelajari cara proses kimia bekerja, seperti pembuatan sabun atau pembersih? [5]",
-                "Apakah Anda ingin tahu lebih banyak tentang pengolahan limbah atau kualitas air? [5]"
-              ],
-              "karir": [
-                "Insinyur Kimia[20]",
-                "Proses Engineer[19]",
-                "Ahli Lingkungan[18]"
-              ],
-              "jurusan_terkait": [
-                "Teknik Kimia",
-                "Teknik Lingkungan",
-                "Teknik Biokimia"
-              ]
-            }
-          }
-        }
-
-
+  "J01B": {
+    "name": "IPA (Teknik)",
+    "description": "Fokus: Matematika, Fisika, IT (arah teknik/teknologi) untuk persiapan kuliah di bidang teknik dan terapannya.",
+    "categories": [
+      "Teknologi & IT",
+      "Rekayasa",
+      "Konstruksi",
+      "Manufaktur"
+    ],
+    "minat": {
+      "Elektronika": {
+        "pertanyaan": [
+          "Apakah Anda tertarik dengan dunia elektronik dan rangkaian listrik? [5]",
+          "Apakah Anda ingin belajar cara membuat perangkat elektronik sederhana? [6]",
+          "Apakah Anda suka memecahkan masalah teknis dengan alat-alat elektronik? [6]",
+          "Apakah Anda tertarik untuk mengembangkan teknologi elektronik untuk kehidupan sehari-hari? [5]",
+          "Apakah Anda tertarik mempelajari sistem kendali dan otomasi berbasis elektronika? [6]",
+          "Apakah Anda ingin tahu lebih dalam tentang sistem komputer dan mikroprosesor? [5]"
+        ],
+        "karir": [
+          "Insinyur Elektro [20]",
+          "Teknisi Elektronika [19]",
+          "R&D Specialist [18]",
+          "Insinyur Telekomunikasi [19]",
+          "Perancang Sistem Elektronik [20]",
+          "Insinyur Kontrol [18]",
+          "Konsultan Elektronika [17]"
+        ],
+        "jurusan_terkait": [
+          "Teknik Elektro",
+          "Teknik Elektronika",
+          "Teknik Mekatronika",
+          "Teknik Telekomunikasi",
+          "Teknik Komputer",
+          "Elektronika Industri",
+          "Teknik Instrumentasi"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Diponegoro (UNDIP)",
+          "Politeknik Elektronika Negeri Surabaya (PENS)"
+        ]
+      },
+      "Robotika": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk mengembangkan robot atau mesin otomatis? [6]",
+          "Apakah Anda suka bekerja dengan teknologi yang menggabungkan perangkat keras dan perangkat lunak? [7]",
+          "Apakah Anda tertarik dengan dunia sensor dan bagaimana mereka bekerja dalam robot? [6]",
+          "Apakah Anda menikmati belajar cara membuat robot bergerak atau berinteraksi dengan lingkungannya? [6]",
+          "Apakah Anda tertarik dengan perkembangan kecerdasan buatan dan implementasinya pada robot? [6]",
+          "Apakah Anda ingin belajar tentang pengembangan sistem otomasi industri? [5]"
+        ],
+        "karir": [
+          "Robotic Engineer [20]",
+          "Automation Engineer [19]",
+          "Teknisi Robotik [18]",
+          "AI & Robotics Researcher [20]",
+          "Insinyur Mekatronika [19]",
+          "Pengembang Sistem Otomasi Industri [18]",
+          "Konsultan Robotika [17]"
+        ],
+        "jurusan_terkait": [
+          "Teknik Mekatronika",
+          "Teknik Elektro",
+          "Teknik Informatika (Konsentrasi Robotika)",
+          "Teknik Komputer",
+          "Teknik Otomasi",
+          "Teknik Sistem Kendali",
+          "Teknik Mesin"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Indonesia (UI)",
+          "Universitas Gadjah Mada (UGM)",
+          "Politeknik Elektronika Negeri Surabaya (PENS)",
+          "Universitas Telkom"
+        ]
+      },
+      "Ilmu Komputer": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk membuat perangkat lunak atau aplikasi untuk komputer atau ponsel? [7]",
+          "Apakah Anda suka bekerja dengan kode dan pengembangan teknologi? [7]",
+          "Apakah Anda ingin memahami cara kerja jaringan komputer dan internet? [6]",
+          "Apakah Anda menikmati tantangan dalam menciptakan solusi teknologi untuk masalah sehari-hari? [6]",
+          "Apakah Anda tertarik mempelajari algoritma dan struktur data? [6]",
+          "Apakah Anda ingin mengembangkan keterampilan dalam kecerdasan buatan dan pembelajaran mesin? [6]"
+        ],
+        "karir": [
+          "Software Engineer [20]",
+          "Data Scientist [19]",
+          "Machine Learning Engineer [20]",
+          "Web Developer [18]",
+          "Mobile App Developer [18]",
+          "Security Engineer [19]",
+          "DevOps Engineer [19]"
+        ],
+        "jurusan_terkait": [
+          "Teknik Informatika",
+          "Ilmu Komputer",
+          "Sistem Informasi",
+          "Sains Data",
+          "Kecerdasan Buatan",
+          "Rekayasa Perangkat Lunak",
+          "Teknologi Informasi"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Gadjah Mada (UGM)",
+          "BINUS University",
+          "Universitas Brawijaya",
+          "Telkom University"
+        ]
+      },
+      "Sistem & Infrastruktur IT": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk mengelola sistem komputer dan jaringan? [6]",
+          "Apakah Anda ingin belajar tentang keamanan sistem dan jaringan? [6]",
+          "Apakah Anda suka mengatur dan mengoptimalkan infrastruktur IT? [5]",
+          "Apakah Anda tertarik dengan cloud computing dan virtualisasi? [6]",
+          "Apakah Anda ingin mempelajari cara membangun dan mengatur server? [5]",
+          "Apakah Anda tertarik dengan pengelolaan big data dan infrastrukturnya? [5]"
+        ],
+        "karir": [
+          "Network Engineer [19]",
+          "System Administrator [18]",
+          "IT Infrastructure Manager [19]",
+          "Cloud Architect [20]",
+          "Security Specialist [18]",
+          "Database Administrator [17]",
+          "IT Consultant [18]"
+        ],
+        "jurusan_terkait": [
+          "Teknik Informatika",
+          "Sistem Informasi",
+          "Teknologi Informasi",
+          "Teknik Komputer",
+          "Teknik Telekomunikasi",
+          "Keamanan Siber",
+          "Teknik Jaringan"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "BINUS University",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Brawijaya",
+          "Telkom University"
+        ]
+      },
+      "Teknik Mesin": {
+        "pertanyaan": [
+          "Apakah Anda tertarik dengan cara kerja mesin dan perangkat mekanis? [6]",
+          "Apakah Anda ingin belajar tentang proses manufaktur dan pembuatan mesin? [6]",
+          "Apakah Anda suka mempelajari cara benda-benda bergerak atau bekerja dalam kehidupan sehari-hari? [5]",
+          "Apakah Anda tertarik untuk merancang alat atau mesin yang bisa membantu memecahkan masalah? [6]",
+          "Apakah Anda tertarik dengan pengembangan sistem termal dan fluida? [5]",
+          "Apakah Anda ingin mempelajari tentang desain dan analisis struktural mekanik? [5]"
+        ],
+        "karir": [
+          "Insinyur Mesin [20]",
+          "Teknisi Mesin [19]",
+          "R&D Mechanical Engineer [18]",
+          "Insinyur Perancangan [19]",
+          "Insinyur Manufaktur [18]",
+          "Insinyur Otomotif [19]",
+          "Konsultan Teknik Mesin [17]"
+        ],
+        "jurusan_terkait": [
+          "Teknik Mesin",
+          "Teknik Industri",
+          "Teknik Otomotif",
+          "Teknik Aeronautika",
+          "Teknik Material",
+          "Teknik Manufaktur",
+          "Teknik Perkapalan"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Diponegoro (UNDIP)",
+          "Universitas Brawijaya",
+          "Politeknik Manufaktur Bandung"
+        ]
+      },
+      "Teknik Sipil": {
+        "pertanyaan": [
+          "Apakah Anda tertarik dengan pembangunan dan perancangan bangunan? [6]",
+          "Apakah Anda suka belajar tentang bagaimana gedung atau jembatan dibangun? [6]",
+          "Apakah Anda tertarik untuk mempelajari cara bangunan menahan beban? [5]",
+          "Apakah Anda menikmati mempelajari teknik dan cara-cara konstruksi dalam kehidupan sehari-hari? [5]",
+          "Apakah Anda tertarik dengan perencanaan infrastruktur seperti jalan dan sistem transportasi? [6]",
+          "Apakah Anda ingin belajar tentang manajemen sumber daya air dan penanganan bencana? [5]"
+        ],
+        "karir": [
+          "Insinyur Sipil [20]",
+          "Pengawas Konstruksi [19]",
+          "Perencana Infrastruktur [18]",
+          "Konsultan Struktur [19]",
+          "Project Manager Konstruksi [18]",
+          "Insinyur Geoteknik [18]",
+          "Urban Planner [17]"
+        ],
+        "jurusan_terkait": [
+          "Teknik Sipil",
+          "Teknik Konstruksi",
+          "Teknik Transportasi",
+          "Teknik Pengairan",
+          "Teknik Lingkungan",
+          "Arsitektur",
+          "Perencanaan Wilayah dan Kota"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Universitas Gadjah Mada (UGM)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Diponegoro (UNDIP)",
+          "Universitas Brawijaya",
+          "Politeknik Negeri Jakarta"
+        ]
+      },
+      "Teknik Kimia": {
+        "pertanyaan": [
+          "Apakah Anda tertarik dengan reaksi kimia yang terjadi di sekitar kita? [6]",
+          "Apakah Anda ingin memahami bagaimana bahan kimia digunakan dalam industri? [5]",
+          "Apakah Anda tertarik untuk mempelajari cara proses kimia bekerja dalam skala industri? [5]",
+          "Apakah Anda ingin tahu lebih banyak tentang pengolahan limbah atau kualitas air? [5]",
+          "Apakah Anda tertarik mengembangkan produk berbasis kimia yang ramah lingkungan? [6]",
+          "Apakah Anda ingin mempelajari teknologi pemrosesan minyak bumi dan gas alam? [5]"
+        ],
+        "karir": [
+          "Insinyur Kimia [20]",
+          "Proses Engineer [19]",
+          "Ahli Lingkungan [18]",
+          "R&D Kimia [19]",
+          "Quality Control Specialist [17]",
+          "Insinyur Bioproses [18]",
+          "Konsultan Teknik Kimia [17]"
+        ],
+        "jurusan_terkait": [
+          "Teknik Kimia",
+          "Teknik Lingkungan",
+          "Teknik Bioproses",
+          "Biokimia Terapan",
+          "Teknik Perminyakan",
+          "Teknik Material",
+          "Teknologi Pangan"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Diponegoro (UNDIP)",
+          "Universitas Brawijaya",
+          "Politeknik Negeri Malang"
+        ]
+      },
+      "Teknik Industri": {
+        "pertanyaan": [
+          "Apakah Anda tertarik pada optimasi sistem dan proses? [6]",
+          "Apakah Anda suka menyelesaikan masalah yang melibatkan efisiensi dan produktivitas? [6]",
+          "Apakah Anda tertarik dengan manajemen operasi dan rantai pasok? [5]",
+          "Apakah Anda ingin mempelajari cara meningkatkan kualitas produk dan layanan? [5]",
+          "Apakah Anda menyukai kombinasi antara teknik, bisnis, dan manajemen? [6]",
+          "Apakah Anda ingin mempelajari cara mendesain sistem kerja yang ergonomis? [5]"
+        ],
+        "karir": [
+          "Insinyur Industri [20]",
+          "Supply Chain Manager [19]",
+          "Quality Assurance Manager [18]",
+          "Konsultan Produktivitas [18]",
+          "Operation Manager [19]",
+          "Business Process Analyst [17]",
+          "Project Manager [18]"
+        ],
+        "jurusan_terkait": [
+          "Teknik Industri",
+          "Manajemen Rekayasa",
+          "Teknik Logistik",
+          "Manajemen Operasi",
+          "Teknik Sistem",
+          "Teknik Manufaktur",
+          "Manajemen Kualitas"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Diponegoro (UNDIP)",
+          "BINUS University",
+          "Universitas Telkom"
+        ]
+      },
+      "Teknik Energi": {
+        "pertanyaan": [
+          "Apakah Anda tertarik dengan sumber energi terbarukan dan konservasi energi? [6]",
+          "Apakah Anda ingin mempelajari sistem pembangkit listrik dan distribusi energi? [6]",
+          "Apakah Anda peduli tentang efisiensi energi dan dampak lingkungan? [5]",
+          "Apakah Anda tertarik dengan teknologi panel surya, turbin angin, atau bioenergi? [6]",
+          "Apakah Anda ingin berkontribusi pada solusi energi masa depan? [5]",
+          "Apakah Anda tertarik dengan manajemen energi di industri dan bangunan? [5]"
+        ],
+        "karir": [
+          "Insinyur Energi [20]",
+          "Renewable Energy Specialist [19]",
+          "Power System Engineer [18]",
+          "Energy Efficiency Consultant [18]",
+          "Insinyur Pembangkit Listrik [19]",
+          "Environmental Engineer [17]",
+          "Peneliti Energi Terbarukan [19]"
+        ],
+        "jurusan_terkait": [
+          "Teknik Energi",
+          "Teknik Elektro (Konsentrasi Energi)",
+          "Energi Terbarukan",
+          "Teknik Fisika",
+          "Teknik Lingkungan",
+          "Teknik Perminyakan",
+          "Teknologi Energi"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Indonesia (UI)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Diponegoro (UNDIP)",
+          "Politeknik Negeri Bandung",
+          "Universitas Pertamina"
+        ]
+      }
+    }
   }
-  
+}

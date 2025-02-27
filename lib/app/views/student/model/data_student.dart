@@ -17,6 +17,8 @@ class RecommendationItem {
   final List<String> majors;
   final List<String> rules;
   final int index;
+  final List<String>? recommendedCourses; // Baru
+  final List<String>? recommendedUniversities; // Baru
 
   RecommendationItem({
     required this.title,
@@ -25,9 +27,10 @@ class RecommendationItem {
     required this.majors,
     required this.rules,
     required this.index,
+    this.recommendedCourses,
+    this.recommendedUniversities,
   });
 }
-
 //////////////////////////////////////////////
 // Bagian Model, Fungsi Pendukung, & Rule
 //////////////////////////////////////////////
@@ -47,19 +50,18 @@ class ProgramStudi {
   });
 
   factory ProgramStudi.fromJson(Map<String, dynamic> json) {
-    final minatMap = <String, Minat>{};
-    if (json['minat'] != null) {
-      (json['minat'] as Map<String, dynamic>).forEach((key, value) {
-        minatMap[key] = Minat.fromJson(value);
-      });
-    }
+    final Map<String, dynamic> rawMinat = json['minat'] ?? {};
+    final Map<String, Minat> minat = {};
+
+    rawMinat.forEach((key, value) {
+      minat[key] = Minat.fromJson(value);
+    });
+
     return ProgramStudi(
       name: json['name'] ?? '',
       description: json['description'] ?? '',
-      categories: (json['categories'] == null)
-          ? []
-          : List<String>.from(json['categories']),
-      minat: minatMap,
+      categories: List<String>.from(json['categories'] ?? []),
+      minat: minat,
     );
   }
 
@@ -79,22 +81,26 @@ class Minat {
   final List<String> pertanyaan;
   final List<String> karir;
   final List<String> jurusanTerkait;
+  final List<String>? rekomendasi_kursus; // Baru
+  final List<String>? universitas_rekomendasi; // Baru
 
   Minat({
     required this.pertanyaan,
     required this.karir,
     required this.jurusanTerkait,
+    this.rekomendasi_kursus,
+    this.universitas_rekomendasi,
   });
 
   factory Minat.fromJson(Map<String, dynamic> json) {
     return Minat(
-      pertanyaan: (json['pertanyaan'] == null)
-          ? []
-          : List<String>.from(json['pertanyaan']),
-      karir: (json['karir'] == null) ? [] : List<String>.from(json['karir']),
-      jurusanTerkait: (json['jurusan_terkait'] == null)
-          ? []
-          : List<String>.from(json['jurusan_terkait']),
+      pertanyaan: List<String>.from(json['pertanyaan'] ?? []),
+      karir: List<String>.from(json['karir'] ?? []),
+      jurusanTerkait: List<String>.from(json['jurusan_terkait'] ?? []),
+      // Tambahkan parsing untuk field baru
+      rekomendasi_kursus: List<String>.from(json['rekomendasi_kursus'] ?? []),
+      universitas_rekomendasi:
+          List<String>.from(json['universitas_rekomendasi'] ?? []),
     );
   }
 }

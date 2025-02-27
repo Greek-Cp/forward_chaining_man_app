@@ -20,10 +20,158 @@ import 'package:url_launcher/url_launcher.dart';
 class QuestionPage extends StatelessWidget {
   final bool isKerja; // true=Kerja, false=Kuliah
   const QuestionPage({Key? key, required this.isKerja}) : super(key: key);
+// Modifikasi metode _showAutoFillOptions
+  void _showAutoFillOptions(
+      BuildContext context, QuestionController controller) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                'Auto Fill Options (Testing)',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade800,
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Opsi untuk mengisi & lanjut ke halaman berikutnya
+              _buildAutoFillOption(
+                context,
+                icon: Icons.fast_forward,
+                label: 'Lanjut ke Halaman Berikutnya',
+                color: Colors.blue.shade600,
+                onTap: () {
+                  controller.autoFillAnswers(true);
+                  Navigator.pop(context);
+                  // Langsung lanjut ke halaman berikutnya
+                  if (controller.currentPage.value <
+                      controller.totalPages - 1) {
+                    controller.nextPage();
+                  } else {
+                    // Jika halaman terakhir, tampilkan hasil
+                    final results = controller.runForwardChaining();
+                    controller.saveResultsToFirestore(results).then((_) {
+                      showRecommendationResultsGetx(results);
+                    });
+                  }
+                },
+              ),
+              const Divider(height: 1),
+              // Opsi untuk mengisi & menyelesaikan semua halaman
+              _buildAutoFillOption(
+                context,
+                icon: Icons.done_all,
+                label: 'Selesaikan Semua & Lihat Hasil',
+                color: Colors.green.shade600,
+                onTap: () {
+                  Navigator.pop(context);
+                  // Isi semua pertanyaan di semua halaman
+                  controller.autoFillAllPages(true).then((_) {
+                    // Kemudian jalankan forward chaining
+                    final results = controller.runForwardChaining();
+                    controller.saveResultsToFirestore(results).then((_) {
+                      showRecommendationResultsGetx(results);
+                    });
+                  });
+                },
+              ),
+              const Divider(height: 1),
+              // Opsi mengisi secara acak & menyelesaikan semua
+              _buildAutoFillOption(
+                context,
+                icon: Icons.shuffle,
+                label: 'Isi Acak & Lihat Hasil',
+                color: Colors.purple.shade600,
+                onTap: () {
+                  Navigator.pop(context);
+                  // Isi semua pertanyaan secara acak
+                  controller.autoFillAllPages(null).then((_) {
+                    // Kemudian jalankan forward chaining
+                    final results = controller.runForwardChaining();
+                    controller.saveResultsToFirestore(results).then((_) {
+                      showRecommendationResultsGetx(results);
+                    });
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    foregroundColor: Colors.grey.shade700,
+                  ),
+                  child: const Text('Batal'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Helper untuk item menu auto fill
+  Widget _buildAutoFillOption(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: color,
+              size: 24,
+            ),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade800,
+              ),
+            ),
+            const Spacer(),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey.shade400,
+              size: 16,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(QuestionController(isKerja: isKerja));
+    final controller = Get.find<QuestionController>();
+    // Tambahkan ScrollController untuk mengontrol scrolling
+    final scrollController = ScrollController();
 
     return Scaffold(
       appBar: AppBar(
@@ -38,6 +186,14 @@ class QuestionPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Get.back(),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.amber.shade600,
+        onPressed: () {
+          _showAutoFillOptions(context, controller);
+        },
+        child: const Icon(Icons.bolt, size: 28),
+        tooltip: 'Auto Fill (Testing)',
       ),
       body: Container(
         color: Colors.blue.shade700,
@@ -85,6 +241,19 @@ class QuestionPage extends StatelessWidget {
           final questionsThisPage = controller.questionsThisPage;
           final startIndex =
               controller.currentPage.value * QuestionController.pageSize;
+
+          // Jika flag scroll ke atas aktif, lakukan scrolling
+          if (controller.shouldScrollToTop) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (scrollController.hasClients) {
+                scrollController.animateTo(0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut);
+                // Reset flag
+                controller.shouldScrollToTop = false;
+              }
+            });
+          }
 
           return Column(
             children: [
@@ -187,99 +356,185 @@ class QuestionPage extends StatelessWidget {
                       // List of Questions
                       Expanded(
                         child: ListView.builder(
+                          controller: scrollController, // Tambahkan controller
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                           itemCount: questionsThisPage.length,
                           itemBuilder: (context, index) {
                             final qItem = questionsThisPage[index];
                             final globalIndex = startIndex + index;
 
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 16),
-                              elevation: 2,
-                              shadowColor: Colors.black.withOpacity(0.1),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Question header
-                                  Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue.shade50,
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(16),
-                                        topRight: Radius.circular(16),
-                                      ),
+                            return Obx(() {
+                              // Cek apakah pertanyaan ini perlu di-highlight
+                              final isHighlighted = controller
+                                  .highlightedQuestionIds
+                                  .contains(qItem.id);
+
+                              // Cek status jawaban dari pertanyaan ini
+                              final isAnswered = controller.allQuestions
+                                      .firstWhere((q) => q.id == qItem.id)
+                                      .userAnswer !=
+                                  null;
+
+                              return Card(
+                                key: ValueKey(
+                                    'question_${qItem.id}'), // Key untuk identifikasi
+                                margin: const EdgeInsets.only(bottom: 16),
+                                elevation: 2,
+                                shadowColor: Colors.black.withOpacity(0.1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                // Wrap dengan Container biasa agar tidak memicu animasi saat jawaban dipilih
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: isHighlighted
+                                          ? Colors.amber.shade500
+                                          : Colors.transparent,
+                                      width: 2,
                                     ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue.shade600,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Text(
-                                            '${globalIndex + 1}',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Text(
-                                            qItem.questionText,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 15,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    boxShadow: isHighlighted
+                                        ? [
+                                            BoxShadow(
+                                              color: Colors.amber.shade200
+                                                  .withOpacity(0.5),
+                                              blurRadius: 8,
+                                              spreadRadius: 2,
+                                            )
+                                          ]
+                                        : null,
                                   ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Question header
+                                      Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: isHighlighted
+                                              ? Colors.amber.shade50
+                                              : Colors.blue.shade50,
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(16),
+                                            topRight: Radius.circular(16),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                color: isHighlighted
+                                                    ? Colors.amber.shade600
+                                                    : Colors.blue.shade600,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Text(
+                                                '${globalIndex + 1}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Text(
+                                                qItem.questionText,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                            ),
+                                            // Badge untuk pertanyaan yang di-highlight
+                                            if (isHighlighted && !isAnswered)
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.amber.shade100,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                      color: Colors
+                                                          .amber.shade600),
+                                                ),
+                                                child: Text(
+                                                  'Belum Diisi',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color:
+                                                        Colors.amber.shade900,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
 
-                                  // Answer options
-                                  Obx(() {
-                                    final selectedAnswer = controller
-                                        .allQuestions
-                                        .firstWhere((q) => q.id == qItem.id)
-                                        .userAnswer;
-
-                                    return Column(
-                                      children: [
-                                        _buildAnswerOption(
-                                          icon: Icons.check_circle_outline,
-                                          label: 'Ya',
-                                          isSelected: selectedAnswer == true,
-                                          onTap: () {
-                                            controller.setAnswer(qItem, true);
-                                          },
-                                          activeColor: Colors.green.shade600,
-                                        ),
-                                        Divider(
-                                          height: 1,
-                                          color: Colors.grey.shade200,
-                                        ),
-                                        _buildAnswerOption(
-                                          icon: Icons.cancel_outlined,
-                                          label: 'Tidak',
-                                          isSelected: selectedAnswer == false,
-                                          onTap: () {
-                                            controller.setAnswer(qItem, false);
-                                          },
-                                          activeColor: Colors.red.shade600,
-                                        ),
-                                      ],
-                                    );
-                                  }),
-                                ],
-                              ),
-                            );
+                                      // Answer options
+                                      Column(
+                                        children: [
+                                          _buildAnswerOption(
+                                            icon: Icons.check_circle_outline,
+                                            label: 'Ya',
+                                            isSelected: controller.allQuestions
+                                                    .firstWhere(
+                                                        (q) => q.id == qItem.id)
+                                                    .userAnswer ==
+                                                true,
+                                            onTap: () {
+                                              controller.setAnswer(qItem, true);
+                                              // Hapus highlight saat jawaban dipilih
+                                              if (controller
+                                                  .highlightedQuestionIds
+                                                  .contains(qItem.id)) {
+                                                controller
+                                                    .highlightedQuestionIds
+                                                    .remove(qItem.id);
+                                              }
+                                            },
+                                            activeColor: Colors.green.shade600,
+                                          ),
+                                          Divider(
+                                            height: 1,
+                                            color: Colors.grey.shade200,
+                                          ),
+                                          _buildAnswerOption(
+                                            icon: Icons.cancel_outlined,
+                                            label: 'Tidak',
+                                            isSelected: controller.allQuestions
+                                                    .firstWhere(
+                                                        (q) => q.id == qItem.id)
+                                                    .userAnswer ==
+                                                false,
+                                            onTap: () {
+                                              controller.setAnswer(
+                                                  qItem, false);
+                                              // Hapus highlight saat jawaban dipilih
+                                              if (controller
+                                                  .highlightedQuestionIds
+                                                  .contains(qItem.id)) {
+                                                controller
+                                                    .highlightedQuestionIds
+                                                    .remove(qItem.id);
+                                              }
+                                            },
+                                            activeColor: Colors.red.shade600,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            });
                           },
                         ),
                       ),
@@ -305,7 +560,14 @@ class QuestionPage extends StatelessWidget {
                               flex: 1,
                               child: ElevatedButton.icon(
                                 onPressed: controller.currentPage.value > 0
-                                    ? () => controller.prevPage()
+                                    ? () {
+                                        // Hapus semua highlight sebelum pindah halaman
+                                        controller.highlightedQuestionIds
+                                            .clear();
+                                        controller.prevPage();
+                                        // Set flag untuk scroll ke atas
+                                        controller.shouldScrollToTop = true;
+                                      }
                                     : null,
                                 icon: const Icon(Icons.arrow_back, size: 18),
                                 label: const Text('Kembali'),
@@ -327,30 +589,39 @@ class QuestionPage extends StatelessWidget {
                             Expanded(
                               flex: 2,
                               child: Obx(() {
-                                bool canProceed =
+                                bool allAnswered =
                                     controller.allAnsweredThisPage;
                                 final isLastPage =
                                     controller.currentPage.value ==
                                         controller.totalPages - 1;
 
                                 return ElevatedButton.icon(
-                                  onPressed: canProceed
-                                      ? () {
-                                          if (!isLastPage) {
-                                            controller.nextPage();
-                                          } else {
-                                            final results =
-                                                controller.runForwardChaining();
-                                            controller
-                                                .saveResultsToFirestore(results)
-                                                .then((_) {
-                                              // Then show results to user
-                                              showRecommendationResultsGetx(
-                                                  results);
-                                            });
-                                          }
-                                        }
-                                      : null,
+                                  onPressed: () {
+                                    if (allAnswered) {
+                                      // Hapus semua highlight sebelum pindah halaman
+                                      controller.highlightedQuestionIds.clear();
+
+                                      if (!isLastPage) {
+                                        controller.nextPage();
+                                        // Set flag untuk scroll ke atas
+                                        controller.shouldScrollToTop = true;
+                                      } else {
+                                        final results =
+                                            controller.runForwardChaining();
+                                        controller
+                                            .saveResultsToFirestore(results)
+                                            .then((_) {
+                                          // Then show results to user
+                                          showRecommendationResultsGetx(
+                                              results);
+                                        });
+                                      }
+                                    } else {
+                                      // Highlight pertanyaan yang belum dijawab
+                                      controller.highlightUnansweredQuestions(
+                                          scrollController);
+                                    }
+                                  },
                                   icon: Icon(
                                       isLastPage
                                           ? Icons.check_circle
@@ -369,7 +640,7 @@ class QuestionPage extends StatelessWidget {
                                     ),
                                     elevation: 0,
                                     disabledBackgroundColor:
-                                        Colors.blue.shade200,
+                                        null, // Hapus ini agar tombol selalu aktif
                                   ),
                                 );
                               }),
@@ -388,7 +659,7 @@ class QuestionPage extends StatelessWidget {
     );
   }
 
-  // Helper method for building answer options
+  // Fungsi helper yang sama seperti sebelumnya
   Widget _buildAnswerOption({
     required IconData icon,
     required String label,
@@ -441,22 +712,4 @@ class QuestionPage extends StatelessWidget {
       ),
     );
   }
-
-  void _showResultDialog(BuildContext context, String msg) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Rekomendasi'),
-        content: SingleChildScrollView(child: Text(msg)),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('OK'),
-          )
-        ],
-      ),
-    );
-  }
 }
-
-/// Halaman untuk memilih/toggle Developer Mode dengan desain yang lebih modern dan menarik
-/// Fixed version to prevent overflow

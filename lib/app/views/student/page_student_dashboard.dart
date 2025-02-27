@@ -10,6 +10,7 @@ import 'package:forward_chaining_man_app/app/views/developer/page/page_developer
 import 'package:forward_chaining_man_app/app/views/page_intro.dart';
 import 'package:forward_chaining_man_app/app/views/page_login.dart';
 import 'package:forward_chaining_man_app/app/views/page_profile.dart';
+import 'package:forward_chaining_man_app/app/views/student/feature/quiz/view/page_select_major.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/recomendation_screen/view/page_recmendation_detail_screen.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/recomendation_screen/view/page_recomendation_screen_history.dart';
 import 'package:forward_chaining_man_app/app/views/student/model/data_student.dart';
@@ -981,7 +982,8 @@ class PageStudentDashboard extends StatelessWidget {
                         ],
                       ),
                       child: ElevatedButton(
-                        onPressed: () => Get.to(() => const HomePage()),
+                        onPressed: () =>
+                            Get.to(() => const MajorPreferencePage()),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.indigo.shade800,
                           foregroundColor: Colors.white,

@@ -1,11 +1,12 @@
 {
   "J01B-Kerja": {
     "name": "IPA (Teknik) - Kerja",
-    "description": "Fokus: Matematika, Fisika, IT (arah teknik/teknologi) untuk pekerjaan langsung, bisa belajar mandiri melalui kursus atau pelatihan.",
+    "description": "Fokus: Matematika, Fisika, IT (arah teknik/teknologi) untuk pekerjaan langsung, bisa belajar mandiri melalui kursus, pelatihan, atau sertifikasi industri tanpa kuliah formal.",
     "categories": [
       "Teknologi & IT",
       "Manufaktur",
-      "Pekerjaan Teknik"
+      "Pekerjaan Teknik",
+      "Instalasi & Pemeliharaan"
     ],
     "minat": {
       "Elektronika": {
@@ -13,90 +14,250 @@
           "Apakah Anda tertarik untuk memperbaiki dan merakit perangkat elektronik tanpa kuliah formal? [7]",
           "Apakah Anda ingin belajar tentang instalasi perangkat elektronik melalui kursus atau tutorial online? [6]",
           "Apakah Anda tertarik untuk bekerja di industri yang mengembangkan teknologi elektronik? [6]",
-          "Apakah Anda ingin memecahkan masalah teknis dengan alat-alat elektronik? [6]"
+          "Apakah Anda ingin memecahkan masalah teknis dengan alat-alat elektronik? [6]",
+          "Apakah Anda suka membongkar dan mempelajari cara kerja perangkat elektronik? [5]",
+          "Apakah Anda tertarik untuk memodifikasi perangkat elektronik agar memiliki fungsi yang lebih baik? [5]"
         ],
         "karir": [
-          "Teknisi Elektronika[20]",
-          "Teknisi Perangkat Elektronik[19]",
-          "Teknisi Service HP[18]",
-          "Pengembang Perangkat Elektronik[18]"
+          "Teknisi Elektronika [20]",
+          "Teknisi Perangkat Elektronik [19]",
+          "Teknisi Service HP/Laptop [18]",
+          "Teknisi Instalasi CCTV [17]",
+          "Assembler Perangkat Elektronik [16]",
+          "Teknisi Peralatan Audio-Visual [17]",
+          "Teknisi Telekomunikasi [18]"
         ],
-        "jurusan_terkait": []
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Sertifikasi Teknisi Elektronika Dasar",
+          "Kursus Perbaikan Smartphone dan Komputer",
+          "Pelatihan Instalasi Sistem Keamanan",
+          "Kursus Dasar-Dasar Elektronika Digital",
+          "Pelatihan Perakitan PCB"
+        ]
       },
       "Robotika": {
         "pertanyaan": [
           "Apakah Anda tertarik untuk mengembangkan robot atau mesin otomatis dengan belajar mandiri? [7]",
           "Apakah Anda ingin bekerja dengan sistem robot dan otomatisasi tanpa kuliah formal? [7]",
           "Apakah Anda ingin mempelajari lebih lanjut tentang teknologi robotika melalui kursus online? [6]",
-          "Apakah Anda tertarik untuk memprogram robot dan membuatnya berfungsi sesuai keinginan? [6]"
+          "Apakah Anda tertarik untuk memprogram robot dan membuatnya berfungsi sesuai keinginan? [6]",
+          "Apakah Anda tertarik pada integrasi sensor dan aktuator untuk sistem otomatis? [5]",
+          "Apakah Anda ingin bekerja di industri yang menggunakan robot dan sistem otomatisasi? [6]"
         ],
         "karir": [
-          "Teknisi Robotika[20]",
-          "Pengembang Robot[19]",
-          "Operator Robot Industri[18]",
-          "Automation Engineer[18]"
+          "Teknisi Robotika [20]",
+          "Operator Robot Industri [18]",
+          "Teknisi Pemeliharaan Sistem Otomasi [19]",
+          "Asisten Pengembang Robot [17]",
+          "Teknisi IoT dan Smart Systems [18]",
+          "Teknisi Mekatronika [19]",
+          "Assembly Line Automation Technician [17]"
         ],
-        "jurusan_terkait": []
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Pelatihan Arduino dan Mikrokontroler",
+          "Sertifikasi Teknisi Otomasi Industri",
+          "Kursus Dasar Pemrograman Robot",
+          "Pelatihan IoT (Internet of Things)",
+          "Kursus Mekatronika Dasar"
+        ]
       },
-      "Teknologi": {
+      "Programmer": {
         "pertanyaan": [
           "Apakah Anda tertarik untuk belajar pemrograman komputer dan membuat aplikasi secara mandiri? [7]",
           "Apakah Anda ingin bekerja di bidang teknologi informasi tanpa kuliah? [6]",
-          "Apakah Anda ingin memahami cara kerja jaringan komputer dan server melalui kursus? [6]",
-          "Apakah Anda tertarik untuk mengembangkan solusi teknologi untuk masalah sehari-hari? [6]"
+          "Apakah Anda suka memecahkan masalah logika dan mengembangkan algoritma? [6]",
+          "Apakah Anda tertarik untuk mengembangkan website atau aplikasi mobile? [6]",
+          "Apakah Anda tekun dan mau terus belajar teknologi baru secara mandiri? [6]",
+          "Apakah Anda tertarik dengan analisis data dan membuat visualisasi data? [5]"
         ],
         "karir": [
-          "Software Developer[20]",
-          "Network Engineer[19]",
-          "IT Support[18]",
-          "Freelance Web Developer[18]"
+          "Junior Web Developer [20]",
+          "Junior Mobile App Developer [19]",
+          "Front-End Developer [18]",
+          "Technical Support [17]",
+          "Junior Software Tester [17]",
+          "Junior UI/UX Designer [18]",
+          "Freelance Programmer [19]"
         ],
-        "jurusan_terkait": []
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Bootcamp Pemrograman Web/Mobile",
+          "Sertifikasi HTML, CSS, JavaScript",
+          "Pelatihan Framework Front-End (React, Vue)",
+          "Kursus Pemrograman Python/Java",
+          "Sertifikasi UI/UX Design",
+          "Kursus Database SQL"
+        ]
+      },
+      "Jaringan & Infrastruktur IT": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk mempelajari jaringan komputer dan infrastruktur IT? [7]",
+          "Apakah Anda ingin bekerja dengan server, router, dan perangkat jaringan lainnya? [6]",
+          "Apakah Anda suka mengonfigurasi dan memecahkan masalah koneksi jaringan? [6]",
+          "Apakah Anda tertarik untuk mempelajari keamanan jaringan dan sistem komputer? [6]",
+          "Apakah Anda ingin bekerja sebagai teknisi IT di perusahaan atau institusi? [5]",
+          "Apakah Anda tertarik untuk belajar cloud computing dan virtualisasi? [5]"
+        ],
+        "karir": [
+          "Teknisi Jaringan [20]",
+          "IT Support Specialist [19]",
+          "Network Technician [19]",
+          "Helpdesk Support [17]",
+          "Junior System Administrator [18]",
+          "Teknisi Instalasi Internet [18]",
+          "Teknisi Keamanan IT [19]"
+        ],
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Sertifikasi CompTIA A+",
+          "Sertifikasi CompTIA Network+",
+          "Kursus Cisco CCNA",
+          "Pelatihan Dasar Keamanan Siber",
+          "Kursus Windows Server Administration",
+          "Pelatihan Linux Fundamentals"
+        ]
       },
       "Teknik Mesin": {
         "pertanyaan": [
           "Apakah Anda tertarik untuk bekerja dengan mesin dan perangkat mekanis tanpa gelar kuliah? [7]",
           "Apakah Anda ingin mempelajari proses pembuatan dan perbaikan mesin melalui pelatihan atau kursus? [6]",
           "Apakah Anda ingin bekerja di industri manufaktur dan perakitan mesin? [6]",
-          "Apakah Anda tertarik untuk memperbaiki mesin dan alat industri? [6]"
+          "Apakah Anda tertarik untuk memperbaiki mesin dan alat industri? [6]",
+          "Apakah Anda menyukai pekerjaan yang melibatkan alat-alat berat dan mesin industri? [5]",
+          "Apakah Anda tertarik untuk mempelajari desain dan pembacaan gambar teknik? [5]"
         ],
         "karir": [
-          "Teknisi Mesin[20]",
-          "Operator Mesin[19]",
-          "Perancang Mesin[18]",
-          "Engineer Maintenance Mesin[18]"
+          "Teknisi Mesin [20]",
+          "Operator Mesin CNC [19]",
+          "Teknisi Pemeliharaan Industri [19]",
+          "Teknisi Otomotif [18]",
+          "Drafter CAD [17]",
+          "Operator Alat Berat [18]",
+          "Welder/Tukang Las [17]"
         ],
-        "jurusan_terkait": []
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Pelatihan Operator Mesin CNC",
+          "Sertifikasi Teknisi Mesin Industri",
+          "Kursus AutoCAD/SolidWorks",
+          "Pelatihan Pemeliharaan Mesin Industri",
+          "Sertifikasi Pengelasan (Welding)",
+          "Kursus Dasar Pneumatik dan Hidrolik"
+        ]
       },
       "Teknik Sipil": {
         "pertanyaan": [
           "Apakah Anda tertarik untuk bekerja dalam perencanaan dan pengawasan proyek konstruksi tanpa kuliah? [7]",
           "Apakah Anda ingin mempelajari dasar-dasar desain bangunan dan jalan melalui pelatihan? [6]",
           "Apakah Anda ingin bekerja di lapangan untuk proyek konstruksi dan infrastruktur? [6]",
-          "Apakah Anda tertarik dengan analisis material dan struktur bangunan? [5]"
+          "Apakah Anda tertarik dengan analisis material dan struktur bangunan? [5]",
+          "Apakah Anda memiliki ketelitian dan kemampuan membaca gambar teknik? [5]",
+          "Apakah Anda tertarik dengan pekerjaan yang melibatkan pengukuran dan pemetaan lahan? [6]"
         ],
         "karir": [
-          "Teknisi Sipil[20]",
-          "Pengawas Konstruksi[19]",
-          "Surveyor Lapangan[18]",
-          "Staf Pengelola Proyek Konstruksi[18]"
+          "Teknisi Sipil [20]",
+          "Pengawas Konstruksi [19]",
+          "Surveyor Lapangan [18]",
+          "Drafter CAD Konstruksi [17]",
+          "Estimator Biaya Proyek [18]",
+          "Teknisi Pengujian Material [17]",
+          "Asisten Kontraktor [16]"
         ],
-        "jurusan_terkait": []
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Pelatihan AutoCAD untuk Konstruksi",
+          "Kursus Quantity Surveying",
+          "Pelatihan Pengawas Konstruksi",
+          "Sertifikasi Survey dan Pemetaan",
+          "Kursus Estimasi Biaya Konstruksi",
+          "Pelatihan Pengujian Bahan Konstruksi"
+        ]
       },
       "Teknik Kimia": {
         "pertanyaan": [
           "Apakah Anda tertarik untuk bekerja di industri kimia tanpa gelar kuliah? [7]",
           "Apakah Anda ingin memahami proses kimia industri melalui kursus atau pelatihan? [6]",
           "Apakah Anda tertarik untuk bekerja dengan bahan kimia dan proses pembuatan produk kimia? [6]",
-          "Apakah Anda ingin berkarir di pengolahan limbah dan pemurnian air? [5]"
+          "Apakah Anda ingin berkarir di pengolahan limbah dan pemurnian air? [5]",
+          "Apakah Anda memiliki ketelitian dan disiplin dalam mengikuti prosedur operasi standar? [5]",
+          "Apakah Anda tertarik untuk mempelajari kontrol kualitas produk kimia? [5]"
         ],
         "karir": [
-          "Teknisi Kimia[20]",
-          "Operator Proses Kimia[19]",
-          "Staf Produksi Kimia[18]",
-          "Ahli Laboratorium Kimia[18]"
+          "Teknisi Kimia [20]",
+          "Operator Proses Kimia [19]",
+          "Quality Control Produk Kimia [18]",
+          "Teknisi Laboratorium Kimia [19]",
+          "Teknisi Pengolahan Limbah [18]",
+          "Operator Instalasi Pengolahan Air [17]",
+          "Teknisi Health & Safety [16]"
         ],
-        "jurusan_terkait": []
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Sertifikasi K3 Kimia",
+          "Pelatihan Operator Proses Kimia Industri",
+          "Kursus Teknik Laboratorium Kimia",
+          "Pelatihan Pengelolaan Limbah B3",
+          "Sertifikasi Good Manufacturing Practice (GMP)",
+          "Kursus Kontrol Kualitas Produk Kimia"
+        ]
+      },
+      "Teknisi Energi": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk bekerja di bidang pembangkit listrik dan distribusi energi? [6]",
+          "Apakah Anda ingin mempelajari instalasi dan pemeliharaan sistem energi terbarukan? [6]",
+          "Apakah Anda tertarik dengan sistem listrik dan elektronika daya? [6]",
+          "Apakah Anda ingin bekerja di lapangan untuk instalasi atau perbaikan sistem energi? [5]",
+          "Apakah Anda tertarik untuk mempelajari efisiensi energi dan konservasi? [5]",
+          "Apakah Anda memiliki ketelitian dan kesadaran keselamatan yang tinggi? [5]"
+        ],
+        "karir": [
+          "Teknisi Listrik [20]",
+          "Teknisi Panel Surya [19]",
+          "Operator Pembangkit Listrik [18]",
+          "Teknisi Instalasi Listrik [18]",
+          "Teknisi Turbin Angin [17]",
+          "Teknisi Pemeliharaan Sistem Energi [19]",
+          "Teknisi Smart Grid [18]"
+        ],
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Sertifikasi Teknisi Listrik",
+          "Pelatihan Instalasi Panel Surya",
+          "Kursus Sistem Pembangkit Listrik",
+          "Pelatihan K3 Listrik",
+          "Kursus Instalasi Kabel Industri",
+          "Pelatihan Teknisi Energi Terbarukan"
+        ]
+      },
+      "Teknik Otomotif": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk memperbaiki dan merawat kendaraan bermotor? [7]",
+          "Apakah Anda ingin mempelajari sistem mekanik dan elektronik pada kendaraan modern? [6]",
+          "Apakah Anda tertarik dengan diagnosis dan troubleshooting kerusakan kendaraan? [6]",
+          "Apakah Anda suka bekerja dengan tangan dan alat-alat mekanik? [5]",
+          "Apakah Anda tertarik untuk mempelajari sistem kendaraan listrik dan hybrid? [5]",
+          "Apakah Anda ingin bekerja di bengkel atau industri otomotif? [6]"
+        ],
+        "karir": [
+          "Mekanik Otomotif [20]",
+          "Teknisi Mobil Listrik/Hybrid [19]",
+          "Teknisi Diagnostik Kendaraan [18]",
+          "Teknisi Kelistrikan Otomotif [18]",
+          "Teknisi AC Mobil [17]",
+          "Service Advisor [16]",
+          "Teknisi Mesin Industri [17]"
+        ],
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Sertifikasi Mekanik Otomotif",
+          "Pelatihan Teknisi Mobil Listrik",
+          "Kursus Sistem Manajemen Mesin",
+          "Pelatihan Kelistrikan Otomotif",
+          "Kursus Diagnosis Komputer Kendaraan",
+          "Pelatihan Sistem Pengereman ABS"
+        ]
       }
     }
   }

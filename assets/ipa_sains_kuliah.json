@@ -1,7 +1,7 @@
 {
   "J01A": {
     "name": "IPA (Sains Murni)",
-    "description": "Fokus: Biologi, Kimia, dsb. (kedokteran, farmasi, sains)",
+    "description": "Fokus: Biologi, Kimia, Fisika (kedokteran, farmasi, sains, teknik biomedis, lingkungan)",
     "categories": [
       "Kesehatan & Sains"
     ],
@@ -11,20 +11,26 @@
           "Apakah Anda tertarik untuk mempelajari bagaimana tubuh manusia bekerja? [5]",
           "Apakah Anda ingin membantu orang lain untuk sembuh dari penyakit? [6]",
           "Apakah Anda tertarik mempelajari cara-cara medis untuk mendiagnosis dan mengobati penyakit? [6]",
-          "Apakah Anda suka belajar tentang sistem organ tubuh dan bagaimana mereka berfungsi? [5]"
+          "Apakah Anda suka belajar tentang sistem organ tubuh dan bagaimana mereka berfungsi? [5]",
+          "Apakah Anda tertarik untuk mengikuti perkembangan teknologi dalam dunia kedokteran? [4]",
+          "Apakah Anda memiliki ketelitian tinggi dan mampu bekerja di bawah tekanan? [5]"
         ],
         "karir": [
-          "Dokter Umum[20]",
-          "Dokter Spesialis[18]",
-          "Tenaga Medis[16]",
-          "Dokter Gigi[18]",
-          "Ahli Bedah[20]"
+          "Dokter Umum [22]",
+          "Dokter Spesialis [21]",
+          "Tenaga Medis [18]",
+          "Dokter Gigi [20]",
+          "Ahli Bedah [23]",
+          "Dokter Forensik [19]",
+          "Peneliti Kedokteran [20]"
         ],
         "jurusan_terkait": [
           "Kedokteran Umum",
           "Kedokteran Gigi",
           "Kedokteran Hewan",
-          "Kesehatan Masyarakat"
+          "Kesehatan Masyarakat",
+          "Keperawatan",
+          "Kebidanan"
         ]
       },
       "Sains": {
@@ -32,21 +38,28 @@
           "Apakah Anda tertarik untuk melakukan eksperimen ilmiah dan menemukan sesuatu yang baru? [6]",
           "Apakah Anda senang menganalisis data dan hasil percobaan? [5]",
           "Apakah Anda suka belajar tentang alam dan bagaimana semua itu bekerja? [6]",
-          "Apakah Anda ingin memahami lebih dalam tentang dunia di sekitar Anda, seperti hewan, tumbuhan, atau planet? [6]"
+          "Apakah Anda ingin memahami lebih dalam tentang dunia di sekitar Anda, seperti hewan, tumbuhan, atau planet? [6]",
+          "Apakah Anda menikmati kegiatan praktikum di laboratorium? [5]",
+          "Apakah Anda tertarik untuk memecahkan masalah lingkungan menggunakan pendekatan ilmiah? [5]"
         ],
         "karir": [
-          "Peneliti Biologi[21]",
-          "Peneliti Kimia[21]",
-          "Asisten Dosen[20]",
-          "Scientist R&D[20]",
-          "Ahli Ekologi[19]",
-          "Ahli Fisika[19]"
+          "Peneliti Biologi [22]",
+          "Peneliti Kimia [22]",
+          "Asisten Dosen [19]",
+          "Scientist R&D [21]",
+          "Ahli Ekologi [20]",
+          "Ahli Fisika [21]",
+          "Klimatolog [19]",
+          "Ahli Geologi [20]"
         ],
         "jurusan_terkait": [
           "Biologi",
           "Kimia",
           "Fisika",
-          "Matematika"
+          "Matematika",
+          "Astronomi",
+          "Geofisika",
+          "Meteorologi"
         ]
       },
       "Farmasi": {
@@ -54,19 +67,157 @@
           "Apakah Anda tertarik untuk mempelajari bagaimana obat bekerja dalam tubuh manusia? [6]",
           "Apakah Anda ingin membantu menciptakan obat-obatan yang dapat menyembuhkan penyakit? [6]",
           "Apakah Anda suka belajar tentang bahan kimia dan bagaimana mereka digunakan untuk tujuan medis? [5]",
-          "Apakah Anda ingin tahu lebih banyak tentang bagaimana obat dikembangkan dan diuji? [5]"
+          "Apakah Anda ingin tahu lebih banyak tentang bagaimana obat dikembangkan dan diuji? [5]",
+          "Apakah Anda tertarik pada pembuatan dan pengembangan kosmetik dan produk perawatan tubuh? [4]",
+          "Apakah Anda memiliki ketelitian tinggi dalam mengukur dan mencampur bahan-bahan kimia? [5]"
         ],
         "karir": [
-          "Apoteker[20]",
-          "Peneliti Obat[21]",
-          "Quality Control Farmasi[18]",
-          "Asisten Farmasi[17]"
+          "Apoteker [21]",
+          "Peneliti Obat [22]",
+          "Quality Control Farmasi [19]",
+          "Asisten Farmasi [18]",
+          "Ahli Formulasi [20]",
+          "Konsultan Obat [19]"
         ],
         "jurusan_terkait": [
           "Farmasi",
           "Kimia",
           "Teknologi Pangan",
-          "Bioteknologi"
+          "Bioteknologi",
+          "Teknik Kimia",
+          "Biokimia"
+        ]
+      },
+      "Bioteknologi": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk menggabungkan teknologi dengan ilmu biologi? [6]",
+          "Apakah Anda ingin mengembangkan produk atau teknologi baru berdasarkan proses biologis? [5]",
+          "Apakah Anda tertarik pada rekayasa genetika dan aplikasinya? [6]",
+          "Apakah Anda ingin bekerja di laboratorium dengan peralatan canggih? [5]",
+          "Apakah Anda tertarik untuk meneliti cara meningkatkan kualitas pangan melalui bioteknologi? [5]",
+          "Apakah Anda ingin berkontribusi dalam pengembangan terapi gen atau obat-obatan baru? [6]"
+        ],
+        "karir": [
+          "Peneliti Bioteknologi [22]",
+          "Ahli Mikrobiologi [20]",
+          "Teknisi Laboratorium [18]",
+          "Ahli Genetika [21]",
+          "Peneliti Industri Pangan [19]",
+          "Ilmuwan Riset dan Pengembangan [21]"
+        ],
+        "jurusan_terkait": [
+          "Bioteknologi",
+          "Teknologi Pangan",
+          "Mikrobiologi",
+          "Teknik Biomedis",
+          "Biologi Molekuler",
+          "Rekayasa Genetika"
+        ]
+      },
+      "Lingkungan dan Konservasi": {
+        "pertanyaan": [
+          "Apakah Anda peduli terhadap masalah lingkungan dan pelestarian alam? [6]",
+          "Apakah Anda tertarik untuk mempelajari ekosistem dan keanekaragaman hayati Indonesia? [5]",
+          "Apakah Anda ingin mengembangkan solusi untuk mengatasi polusi dan perubahan iklim? [6]",
+          "Apakah Anda senang melakukan penelitian di lapangan/alam terbuka? [5]",
+          "Apakah Anda tertarik untuk melindungi spesies terancam punah dan habitat alaminya? [5]",
+          "Apakah Anda ingin mengedukasi masyarakat tentang pentingnya pelestarian lingkungan? [4]"
+        ],
+        "karir": [
+          "Ahli Konservasi [21]",
+          "Peneliti Lingkungan [20]",
+          "Konsultan AMDAL [19]",
+          "Spesialis Pengelolaan Limbah [18]",
+          "Peneliti Ekosistem [20]",
+          "Edukator Lingkungan [17]",
+          "Ahli Kehutanan [19]"
+        ],
+        "jurusan_terkait": [
+          "Ilmu Lingkungan",
+          "Biologi Konservasi",
+          "Kehutanan",
+          "Teknik Lingkungan",
+          "Oseanografi",
+          "Meteorologi dan Geofisika"
+        ]
+      },
+      "Geosains": {
+        "pertanyaan": [
+          "Apakah Anda tertarik mempelajari struktur dan proses yang terjadi di bumi? [5]",
+          "Apakah Anda ingin memahami tentang gempa bumi, gunung berapi, dan bencana alam lainnya? [6]",
+          "Apakah Anda suka mempelajari tentang batuan, mineral, dan sumber daya alam? [5]",
+          "Apakah Anda tertarik pada eksplorasi sumber daya tambang dan energi? [5]",
+          "Apakah Anda ingin bekerja di lapangan untuk menganalisis formasi geologis? [5]",
+          "Apakah Anda tertarik pada pemetaan dan pemodelan fenomena geologi? [5]"
+        ],
+        "karir": [
+          "Ahli Geologi [21]",
+          "Ahli Vulkanologi [20]",
+          "Ahli Seismologi [20]",
+          "Ahli Hidrologi [19]",
+          "Geofisikawan [21]",
+          "Ahli Geoteknik [19]",
+          "Ahli Pertambangan [20]"
+        ],
+        "jurusan_terkait": [
+          "Geologi",
+          "Geofisika",
+          "Teknik Perminyakan",
+          "Teknik Pertambangan",
+          "Oseanografi",
+          "Geodesi"
+        ]
+      },
+      "Neurosains": {
+        "pertanyaan": [
+          "Apakah Anda tertarik mempelajari bagaimana otak manusia bekerja? [6]",
+          "Apakah Anda ingin memahami hubungan antara otak dan perilaku manusia? [6]",
+          "Apakah Anda tertarik pada penelitian penyakit neurologis dan cara mengobatinya? [5]",
+          "Apakah Anda suka mempelajari sistem saraf dan transmisi sinyal di otak? [5]",
+          "Apakah Anda tertarik pada kecerdasan buatan dan bagaimana meniru fungsi otak? [4]",
+          "Apakah Anda ingin membantu orang dengan gangguan neurologis atau psikiatri? [5]"
+        ],
+        "karir": [
+          "Peneliti Neurosains [22]",
+          "Ahli Saraf (Neurolog) [21]",
+          "Teknisi Pemindaian Otak [18]",
+          "Neurofarmakolog [20]",
+          "Psikiater [20]",
+          "Ahli Rehabilitasi Neurologis [19]"
+        ],
+        "jurusan_terkait": [
+          "Neurosains",
+          "Psikologi",
+          "Kedokteran",
+          "Biologi",
+          "Teknologi Medis",
+          "Ilmu Biomedis"
+        ]
+      },
+      "Teknik Biomedis": {
+        "pertanyaan": [
+          "Apakah Anda tertarik menggabungkan ilmu teknik dengan medis? [6]",
+          "Apakah Anda ingin merancang alat dan teknologi untuk diagnosis dan pengobatan? [5]",
+          "Apakah Anda tertarik pada pengembangan organ buatan dan implan? [5]",
+          "Apakah Anda suka mempelajari cara kerja peralatan medis canggih? [5]",
+          "Apakah Anda tertarik pada pengolahan citra medis dan analisis data kesehatan? [5]",
+          "Apakah Anda ingin berkontribusi dalam inovasi teknologi kesehatan? [6]"
+        ],
+        "karir": [
+          "Insinyur Biomedis [21]",
+          "Pengembang Alat Medis [20]",
+          "Spesialis Pencitraan Medis [19]",
+          "Konsultan Teknologi Kesehatan [18]",
+          "Peneliti Biomaterial [20]",
+          "Teknisi Peralatan Medis [17]"
+        ],
+        "jurusan_terkait": [
+          "Teknik Biomedis",
+          "Teknologi Medis",
+          "Fisika Medis",
+          "Teknik Elektro",
+          "Ilmu Komputer",
+          "Teknik Mesin"
         ]
       }
     }

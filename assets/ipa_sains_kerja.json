@@ -1,59 +1,202 @@
 {
-    "J01A-Kerja": {
-      "name": "IPA (Sains Murni) - Kerja",
-      "description": "Fokus: Biologi, Kimia, dsb. (pekerjaan di bidang kesehatan, sains, farmasi) tanpa kuliah formal, bisa belajar mandiri melalui kursus.",
-      "categories": [
-        "Kesehatan & Sains",
-        "Penelitian",
-        "Pekerjaan Sains"
-      ],
-      "minat": {
-        "Kedokteran": {
-          "pertanyaan": [
-            "Apakah Anda tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal? [6]",
-            "Apakah Anda ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh? [6]",
-            "Apakah Anda tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan? [6]",
-            "Apakah Anda ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter? [5]"
-          ],
-          "karir": [
-            "Asisten Medis[20]",
-            "Tenaga Kesehatan[19]",
-            "Staf Klinik[18]",
-            "Perawat[18]"
-          ],
-          "jurusan_terkait": []
-        },
-        "Sains": {
-          "pertanyaan": [
-            "Apakah Anda ingin menjadi peneliti atau bekerja di laboratorium? [7]",
-            "Apakah Anda senang melakukan eksperimen ilmiah dan mempelajari data percobaan? [6]",
-            "Apakah Anda tertarik untuk bekerja di bidang riset atau pengembangan produk tanpa kuliah formal? [6]",
-            "Apakah Anda ingin bekerja dengan tim sains di industri atau lembaga penelitian? [6]"
-          ],
-          "karir": [
-            "Peneliti Laboratorium[20]",
-            "Asisten Peneliti[19]",
-            "Teknisi Laboratorium[18]",
-            "Staf R&D[18]"
-          ],
-          "jurusan_terkait": []
-        },
-        "Farmasi": {
-          "pertanyaan": [
-            "Apakah Anda tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal? [6]",
-            "Apakah Anda ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat? [6]",
-            "Apakah Anda tertarik dengan pengujian obat dan kualitas farmasi di industri? [5]",
-            "Apakah Anda ingin menjadi bagian dari tim yang mengembangkan produk obat? [6]"
-          ],
-          "karir": [
-            "Asisten Apoteker[20]",
-            "Teknisi Farmasi[19]",
-            "Staf Produksi Obat[18]",
-            "Pengujian Obat[17]"
-          ],
-          "jurusan_terkait": []
-        }
+  "J01A-Kerja": {
+    "name": "IPA (Sains Murni) - Kerja",
+    "description": "Fokus: Biologi, Kimia, Fisika (pekerjaan di bidang kesehatan, sains, farmasi, laboratorium, lingkungan) tanpa kuliah formal, bisa belajar mandiri melalui kursus, sertifikasi, dan pelatihan.",
+    "categories": [
+      "Kesehatan & Sains",
+      "Penelitian",
+      "Pekerjaan Sains",
+      "Teknis Laboratorium"
+    ],
+    "minat": {
+      "Kedokteran": {
+        "pertanyaan": [
+          "Apakah Anda tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal? [6]",
+          "Apakah Anda ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh? [6]",
+          "Apakah Anda tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan? [6]",
+          "Apakah Anda ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter? [5]",
+          "Apakah Anda tertarik dengan pekerjaan administrasi di lingkungan rumah sakit atau klinik? [4]",
+          "Apakah Anda memiliki empati tinggi dan ingin membantu pasien secara langsung? [6]"
+        ],
+        "karir": [
+          "Asisten Medis [21]",
+          "Tenaga Kesehatan [19]",
+          "Staf Klinik [18]",
+          "Perawat (dengan sertifikasi) [20]",
+          "Administrasi Rumah Sakit [17]",
+          "Teknisi Alat Kesehatan [18]",
+          "Customer Service Asuransi Kesehatan [16]"
+        ],
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Pelatihan Bantuan Hidup Dasar (BHD)",
+          "Kursus Asisten Perawat Tersertifikasi",
+          "Pelatihan Administrasi Rumah Sakit",
+          "Sertifikasi Teknisi Alat Kesehatan"
+        ]
+      },
+      "Sains": {
+        "pertanyaan": [
+          "Apakah Anda ingin menjadi peneliti atau bekerja di laboratorium? [7]",
+          "Apakah Anda senang melakukan eksperimen ilmiah dan mempelajari data percobaan? [6]",
+          "Apakah Anda tertarik untuk bekerja di bidang riset atau pengembangan produk tanpa kuliah formal? [6]",
+          "Apakah Anda ingin bekerja dengan tim sains di industri atau lembaga penelitian? [6]",
+          "Apakah Anda teliti dan mampu mengikuti protokol dengan tepat? [5]",
+          "Apakah Anda tertarik dalam pengolahan dan analisis data penelitian? [5]"
+        ],
+        "karir": [
+          "Teknisi Laboratorium [20]",
+          "Asisten Peneliti [19]",
+          "Teknisi Peralatan Sains [18]",
+          "Staf R&D [18]",
+          "Pengumpul Data Lapangan [17]",
+          "Operator Peralatan Penelitian [18]",
+          "Staf Pengujian Kualitas [19]"
+        ],
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Sertifikasi Teknisi Laboratorium",
+          "Pelatihan Good Laboratory Practice (GLP)",
+          "Kursus Pengoperasian Alat Laboratorium",
+          "Pelatihan Analisis Data Dasar",
+          "Sertifikasi K3 Laboratorium"
+        ]
+      },
+      "Farmasi": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal? [6]",
+          "Apakah Anda ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat? [6]",
+          "Apakah Anda tertarik dengan pengujian obat dan kualitas farmasi di industri? [5]",
+          "Apakah Anda ingin menjadi bagian dari tim yang mengembangkan produk obat? [6]",
+          "Apakah Anda teliti dalam mengukur dan mencatat informasi penting? [5]",
+          "Apakah Anda tertarik dalam penyimpanan dan pendistribusian obat-obatan? [5]"
+        ],
+        "karir": [
+          "Asisten Apoteker [20]",
+          "Teknisi Farmasi [19]",
+          "Staf Produksi Obat [18]",
+          "Pengujian Kualitas Obat [17]",
+          "Staf Logistik Farmasi [16]",
+          "Sales Representative Produk Farmasi [17]",
+          "Staf Administrasi Apotek [16]"
+        ],
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Pelatihan Asisten Apoteker",
+          "Sertifikasi Good Manufacturing Practice (GMP)",
+          "Kursus Pengelolaan Obat",
+          "Pelatihan Teknik Penjualan Produk Farmasi",
+          "Kursus Komputer untuk Administrasi Apotek"
+        ]
+      },
+      "Laboratorium": {
+        "pertanyaan": [
+          "Apakah Anda tertarik bekerja dengan peralatan dan instrumen laboratorium? [6]",
+          "Apakah Anda menyukai pekerjaan yang membutuhkan ketelitian dan konsistensi tinggi? [6]",
+          "Apakah Anda ingin bekerja di laboratorium klinik, industri, atau penelitian? [5]",
+          "Apakah Anda tertarik untuk mempelajari teknik-teknik analisis laboratorium? [6]",
+          "Apakah Anda mampu mengikuti protokol dan prosedur standar dengan tepat? [5]",
+          "Apakah Anda tertarik dalam persiapan sampel dan pengujian bahan? [5]"
+        ],
+        "karir": [
+          "Teknisi Laboratorium Klinik [20]",
+          "Teknisi Laboratorium Industri [19]",
+          "Asisten Analis Laboratorium [18]",
+          "Staf Pengujian Kualitas [19]",
+          "Teknisi Mikrobiologi [18]",
+          "Teknisi Instrumentasi [17]",
+          "Staf Pengambilan Sampel [16]"
+        ],
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Sertifikasi Teknisi Laboratorium",
+          "Pelatihan Teknik Dasar Mikrobiologi",
+          "Kursus Instrumentasi Laboratorium",
+          "Pelatihan Sistem Manajemen Mutu Laboratorium",
+          "Kursus Pengambilan dan Penanganan Sampel"
+        ]
+      },
+      "Lingkungan": {
+        "pertanyaan": [
+          "Apakah Anda tertarik untuk bekerja dalam pemantauan dan pengelolaan lingkungan? [6]",
+          "Apakah Anda peduli terhadap isu-isu lingkungan dan pelestarian alam? [5]",
+          "Apakah Anda suka bekerja di lapangan dan mengumpulkan data lingkungan? [6]",
+          "Apakah Anda tertarik untuk mempelajari cara mengukur polusi dan kualitas lingkungan? [5]",
+          "Apakah Anda ingin bekerja dalam proyek konservasi atau pengelolaan limbah? [5]",
+          "Apakah Anda tertarik dalam pendidikan lingkungan dan kampanye kesadaran? [4]"
+        ],
+        "karir": [
+          "Teknisi Pemantauan Lingkungan [19]",
+          "Staf Pengelolaan Limbah [18]",
+          "Asisten Pengambil Sampel Lingkungan [17]",
+          "Operator Pengolahan Air [18]",
+          "Staf Lapangan Konservasi [17]",
+          "Teknisi Pengendalian Polusi [18]",
+          "Edukator Lingkungan [16]"
+        ],
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Sertifikasi Teknisi Lingkungan",
+          "Pelatihan Pengelolaan Limbah",
+          "Kursus Pengambilan Sampel Lingkungan",
+          "Pelatihan Operator Instalasi Pengolahan Air",
+          "Kursus K3 Lingkungan"
+        ]
+      },
+      "Pangan dan Nutrisi": {
+        "pertanyaan": [
+          "Apakah Anda tertarik bekerja dalam pengujian dan pengembangan produk pangan? [6]",
+          "Apakah Anda ingin mempelajari cara menganalisis kualitas dan keamanan makanan? [5]",
+          "Apakah Anda tertarik untuk bekerja di industri pengolahan pangan? [5]",
+          "Apakah Anda peduli tentang nutrisi dan dampaknya terhadap kesehatan? [5]",
+          "Apakah Anda tertarik dalam produksi dan pengawasan makanan? [5]",
+          "Apakah Anda ingin membantu orang dengan masalah nutrisi dan diet? [4]"
+        ],
+        "karir": [
+          "Teknisi Pengujian Pangan [19]",
+          "Asisten Quality Control Makanan [18]",
+          "Staf Produksi Industri Pangan [17]",
+          "Teknisi Pengolahan Makanan [18]",
+          "Asisten Konsultan Nutrisi [16]",
+          "Staf Pengembangan Produk Pangan [18]",
+          "Asisten Food Safety [17]"
+        ],
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Sertifikasi Keamanan Pangan (HACCP)",
+          "Pelatihan Quality Control Makanan",
+          "Kursus Pengujian Nutrisi Pangan",
+          "Pelatihan Good Manufacturing Practice (GMP) untuk Pangan",
+          "Kursus Dasar Nutrisi dan Diet"
+        ]
+      },
+      "Peralatan Medis": {
+        "pertanyaan": [
+          "Apakah Anda tertarik bekerja dengan peralatan dan teknologi medis? [6]",
+          "Apakah Anda ingin mempelajari cara mengoperasikan dan memelihara alat medis? [5]",
+          "Apakah Anda tertarik untuk bekerja di rumah sakit atau perusahaan peralatan medis? [5]",
+          "Apakah Anda memiliki keterampilan teknis dan ingin menerapkannya di bidang kesehatan? [6]",
+          "Apakah Anda tertarik dalam pengenalan dan pelatihan penggunaan peralatan medis? [5]",
+          "Apakah Anda suka memperbaiki dan memecahkan masalah pada perangkat elektronik? [5]"
+        ],
+        "karir": [
+          "Teknisi Peralatan Medis [20]",
+          "Asisten Teknologi Radiologi [19]",
+          "Teknisi Laboratorium Medis [18]",
+          "Staf Penjualan Alat Kesehatan [17]",
+          "Teknisi Pemeliharaan Alat Medis [19]",
+          "Asisten Teknologi Elektrokardiogram [18]",
+          "Staf Logistik Peralatan Medis [16]"
+        ],
+        "jurusan_terkait": [],
+        "rekomendasi_kursus": [
+          "Sertifikasi Teknisi Peralatan Medis",
+          "Pelatihan Dasar Radiologi",
+          "Kursus Elektrokardiografi",
+          "Pelatihan Pemeliharaan Peralatan Laboratorium",
+          "Kursus Penjualan Alat Kesehatan"
+        ]
       }
     }
   }
-  
+}
