@@ -110,6 +110,26 @@ class QuestionPage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 16),
+              const Divider(height: 1),
+              // Opsi mengisi secara acak & menyelesaikan semua
+              _buildAutoFillOption(
+                context,
+                icon: Icons.shuffle,
+                label: 'Isi Salah',
+                color: Colors.purple.shade600,
+                onTap: () {
+                  Navigator.pop(context);
+                  // Isi semua pertanyaan secara acak
+                  controller.autoFillAllPages(false).then((_) {
+                    // Kemudian jalankan forward chaining
+                    final results = controller.runForwardChaining();
+                    controller.saveResultsToFirestore(results).then((_) {
+                      showRecommendationResultsGetx(results);
+                    });
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 child: TextButton(

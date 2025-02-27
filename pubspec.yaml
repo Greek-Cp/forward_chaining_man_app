@@ -13,6 +13,7 @@ dependencies:
   fl_chart: ^0.69.0
   flutter:
     sdk: flutter
+  flutter_animate: ^4.5.2
   flutter_svg: ^2.0.17
   get: ^4.6.6
   google_sign_in: ^6.2.2

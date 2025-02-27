@@ -35,7 +35,38 @@ class QuestionController extends GetxController {
       setAnswer(q, answer);
     }
   }
+
 // Tambahkan metode berikut ke dalam QuestionController
+  Future<void> autoFillAllPagesNotCorrect(bool? answer) async {
+    // Simpan halaman saat ini
+    final currentPageValue = currentPage.value;
+
+    // Iterasi melalui semua halaman
+    for (var page = 0; page < totalPages; page++) {
+      // Pindah ke halaman tersebut
+      currentPage.value = page;
+
+      // Tunggu rendering selesai
+      await Future.delayed(const Duration(milliseconds: 10));
+
+      // Isi jawaban pada halaman ini
+      if (answer != null) {
+        // Isi semua jawaban dengan nilai yang sama
+        for (var q in questionsThisPage) {
+          setAnswer(q, answer);
+        }
+      } else {
+        // Isi jawaban secara acak
+        final random = Random();
+        for (var q in questionsThisPage) {
+          setAnswer(q, random.nextBool());
+        }
+      }
+    }
+
+    // Pindah ke halaman terakhir
+    currentPage.value = totalPages - 1;
+  }
 
 // Metode untuk mengisi jawaban di semua halaman
   Future<void> autoFillAllPages(bool? answer) async {
@@ -437,287 +468,139 @@ class QuestionController extends GetxController {
   /// Modified: Return RecommendationResult object instead of a string
   /// Modified: Return RecommendationResult object with balanced scoring
   RecommendationResult runForwardChaining() {
-    // 1. Working Memory: Inisialisasi untuk menyimpan fakta yang diketahui
+    // 1. Working Memory: "Q1=Yes" atau "Q1=No"
     final workingMemoryList = <String>[];
     final workingMemory = <String>{};
 
-    // Populate working memory dari jawaban user
     for (var q in allQuestions) {
       if (q.userAnswer == true) {
-        final fact = '${q.id}=Yes';
-        workingMemory.add(fact);
-        workingMemoryList.add(fact);
+        workingMemory.add('${q.id}=Yes'); // misal "Q1=Yes"
+        workingMemoryList.add('${q.id}=Yes');
       } else if (q.userAnswer == false) {
-        final fact = '${q.id}=No';
-        workingMemory.add(fact);
-        workingMemoryList.add(fact);
+        workingMemory.add('${q.id}=No'); // "Q1=No" (opsional)
+        workingMemoryList.add('${q.id}=No');
       }
     }
 
-    // 2. Skor per-minat: menyimpan total skor untuk setiap bidang minat
+    // 2. Skor per-minat
     final minatScores = <String, int>{};
 
-    // 3. Menyimpan kontribusi rule untuk penjelasan hasil
+    // 3. Untuk menampilkan rule, kita simpan "kontribusi" rule di map ini:
+    //    Key: nama minat (ex: "IPA (Sains Murni) - Kerja|Kedokteran")
+    //    Value: daftar string penjelasan rule
     final minatContrib = <String, List<String>>{};
 
-    // 4. Menyimpan data tambahan per minat
-    final minatAdditionalData = <String, Map<String, dynamic>>{};
-
-    // 5. Menyimpan total pertanyaan per minat untuk perhitungan rasio
-    final minatQuestionCount = <String, int>{};
-
-    // 6. Membuat rule berdasarkan pertanyaan
+    // 4. Generate rule: "IF Qx=Yes THEN skor[(prog|minat)] += bobot"
+    //    + simpan catatan rule di minatContrib agar kita tahu pertanyaan apa.
     final rules = <Rule>[];
     for (var q in allQuestions) {
-      // Ekstrak bobot dari teks pertanyaan
-      int bobot = q.bobot;
-      if (bobot == 0) {
-        final regex = RegExp(r'\[(\d+)\]');
-        final match = regex.firstMatch(q.questionText);
-        if (match != null && match.groupCount >= 1) {
-          bobot = int.parse(match.group(1)!);
-        } else {
-          bobot = 5; // Default weight
-        }
-      }
-
-      // Hitung total pertanyaan per minat
-      final keyMinat = '${q.programName}|${q.minatKey}';
-      minatQuestionCount[keyMinat] = (minatQuestionCount[keyMinat] ?? 0) + 1;
-
-      // Buat rule untuk jawaban Yes
-      final ruleYes = Rule(
-        ifFacts: ['${q.id}=Yes'],
+      final rule = Rule(
+        ifFacts: ['${q.id}=Yes'], // kondisi: Qx=Yes
         thenAction: (wm) {
-          // Tambah skor sesuai bobot (tanpa multiplier)
-          minatScores[keyMinat] = (minatScores[keyMinat] ?? 0) + bobot;
+          final keyMinat = '${q.programName}|${q.minatKey}';
+          // Tambah skor
+          minatScores[keyMinat] = (minatScores[keyMinat] ?? 0) + q.bobot;
 
-          // Catat rule yang dijalankan untuk penjelasan
+          // Catat rule fired:
+          // Kita sertakan penjelasan pertanyaan agar lebih jelas.
           minatContrib[keyMinat] ??= [];
-          minatContrib[keyMinat]!.add(
-              'IF (${q.id}=Yes) THEN +$bobot skor → $keyMinat\n'
-              '   [Pertanyaan: "${q.questionText.replaceAll(RegExp(r'\s*\[\d+\]'), '')}"]');
+          minatContrib[keyMinat]!
+              .add('IF (${q.id}=Yes) THEN +${q.bobot} skor → $keyMinat\n'
+                  '   [Pertanyaan: "${q.questionText}"]');
         },
       );
-      rules.add(ruleYes);
-
-      // Aktifkan rule untuk jawaban No
-      final ruleNo = Rule(
-        ifFacts: ['${q.id}=No'],
-        thenAction: (wm) {
-          // Kurangi skor dengan penalti kecil
-          final penalty = bobot ~/ 3; // Penalti lebih kecil (1/3 dari bobot)
-          minatScores[keyMinat] = (minatScores[keyMinat] ?? 0) - penalty;
-
-          // Catat rule yang dijalankan
-          minatContrib[keyMinat] ??= [];
-          minatContrib[keyMinat]!.add(
-              'IF (${q.id}=No) THEN -$penalty skor → $keyMinat\n'
-              '   [Pertanyaan: "${q.questionText.replaceAll(RegExp(r'\s*\[\d+\]'), '')}"]');
-        },
-      );
-      rules.add(ruleNo);
+      rules.add(rule);
     }
 
-    // 7. Tambahkan rule untuk memproses karir dengan bobot
-    for (var program in programList.value) {
-      program.minat.forEach((minatKey, minat) {
-        // Simpan data tambahan
-        final additionalDataKey = '${program.name}|$minatKey';
-        minatAdditionalData[additionalDataKey] = {
-          'rekomendasi_kursus': minat.rekomendasi_kursus ?? [],
-          'universitas_rekomendasi': minat.universitas_rekomendasi ?? [],
-        };
-
-        // Proses bobot karir
-        for (var career in minat.karir) {
-          final regex = RegExp(r'\[(\d+)\]');
-          final match = regex.firstMatch(career);
-          if (match != null && match.groupCount >= 1) {
-            final careerBobot = int.parse(match.group(1)!);
-
-            // Buat rule khusus untuk karir dengan bobot tinggi
-            if (careerBobot > 15) {
-              // Turunkan threshold
-              final rule = Rule(
-                ifFacts: [],
-                thenAction: (wm) {
-                  // Tambahkan bonus untuk karir berbobot tinggi
-                  final keyMinat = '${program.name}|$minatKey';
-                  final bonusScore = (careerBobot - 15); // Bonus moderat
-                  minatScores[keyMinat] =
-                      (minatScores[keyMinat] ?? 0) + bonusScore;
-
-                  // Catat rule ini
-                  minatContrib[keyMinat] ??= [];
-                  minatContrib[keyMinat]!.add(
-                      'Bonus untuk karir prospektif: "${career.replaceAll(RegExp(r'\s*\[\d+\]'), '')}" +$bonusScore skor');
-                },
-              );
-              rules.add(rule);
-            }
-          }
-        }
-      });
-    }
-
-    // 8. Jalankan Forward Chaining dengan agenda dan conflict resolution
-    final agenda = <Rule>[...rules];
+    // 5. Jalankan Forward Chaining (sederhana: 1 kali loop iteratif)
+    bool firedSomething = true;
     final firedRules = <Rule>{};
 
-    while (agenda.isNotEmpty) {
-      final rule = agenda.removeAt(0);
-      if (firedRules.contains(rule)) continue;
+    while (firedSomething) {
+      firedSomething = false;
+      for (var r in rules) {
+        if (firedRules.contains(r)) continue; // sudah menembak
 
-      bool allConditionsMet = true;
-      for (final fact in rule.ifFacts) {
-        if (!workingMemory.contains(fact)) {
-          allConditionsMet = false;
-          break;
+        // Cek kondisi IF (semua ifFacts ada di workingMemory)
+        final allMatch =
+            r.ifFacts.every((fact) => workingMemory.contains(fact));
+        if (allMatch) {
+          r.thenAction(workingMemory);
+          firedRules.add(r);
+          firedSomething = true;
         }
-      }
-
-      if (allConditionsMet || rule.ifFacts.isEmpty) {
-        rule.thenAction(workingMemory);
-        firedRules.add(rule);
       }
     }
 
-    // 9. Cek hasil skor
+    // 6. Cek hasil skor
     if (minatScores.isEmpty) {
+      // Jika tidak ada hasil, kembalikan objek kosong
       return RecommendationResult(
         workingMemory: workingMemoryList,
         recommendations: [],
       );
     }
 
-    // 10. Hitung rasio jawaban Yes untuk tiap minat
-    final minatYesRatio = <String, double>{};
-
-    minatScores.forEach((minatKey, rawScore) {
-      // Hitung total pertanyaan untuk minat ini
-      final totalQuestions = minatQuestionCount[minatKey] ?? 1;
-
-      // Jumlah jawaban "Yes" (estimasi berdasarkan skor)
-      int estimatedYesCount = 0;
-
-      // Cari rules yang berkontribusi ke minat ini (parsing untuk menghitung jawaban Yes)
-      final contribs = minatContrib[minatKey] ?? [];
-      for (final contrib in contribs) {
-        if (contrib.contains('IF (') &&
-            contrib.contains('=Yes)') &&
-            !contrib.contains('Bonus')) {
-          estimatedYesCount++;
-        }
-      }
-
-      // Hitung rasio
-      final ratio = estimatedYesCount / totalQuestions;
-      minatYesRatio[minatKey] = ratio;
-    });
-
-    // 11. Normalisasi skor dengan pendekatan berjenjang
-    final normalizedScores = <String, int>{};
-
-    // Tentukan skor tertinggi dan terendah untuk distribusi
-    final highestRawScore = minatScores.values.reduce((a, b) => a > b ? a : b);
-
-    minatScores.forEach((minatKey, rawScore) {
-      // Base score berdasarkan perbandingan dengan skor tertinggi
-      double relativeFactor = rawScore / highestRawScore;
-
-      // Rasio Yes juga mempengaruhi skor
-      final yesRatio = minatYesRatio[minatKey] ?? 0.0;
-
-      // Formula skor:
-      // - 70% dari faktor relatif terhadap skor tertinggi
-      // - 30% dari rasio jawaban Yes
-      double scoreBase = (relativeFactor * 0.7) + (yesRatio * 0.3);
-
-      // Scale ke rentang 0-100
-      int finalScore = (scoreBase * 100).round();
-
-      // Buat distribusi yang lebih beragam dengan kurva:
-      // Skor tertinggi: 80-95
-      // Skor rata-rata: 60-75
-      // Skor rendah: 40-59
-      if (finalScore >= 75) {
-        // Top tier - max 95
-        finalScore = 80 + ((finalScore - 75) * 15 ~/ 25);
-      } else if (finalScore >= 50) {
-        // Mid tier
-        finalScore = 60 + ((finalScore - 50) * 15 ~/ 25);
-      } else {
-        // Low tier - min 40
-        finalScore = 40 + ((finalScore) * 19 ~/ 50);
-      }
-
-      // Terapkan batas akhir
-      finalScore = finalScore.clamp(40, 95);
-
-      normalizedScores[minatKey] = finalScore;
-    });
-
-    // 12. Urutkan hasil berdasarkan skor normalisasi (descending)
-    final sorted = normalizedScores.entries.toList()
+    // Urutkan descending
+    final sorted = minatScores.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
+    // Ambil top 3
+    final top3 = sorted.take(3).toList();
 
-    // 13. Ambil top 3 rekomendasi
-    final topResults = sorted.take(3).toList();
-
-    // 14. Pastikan ada perbedaan yang cukup antar rekomendasi
-    if (topResults.length > 1) {
-      // Pastikan ada gap minimal 5 point antara #1 dan #2
-      if (topResults[0].value - topResults[1].value < 5) {
-        topResults[1] = MapEntry(topResults[1].key, topResults[0].value - 5);
-      }
-
-      // Jika ada #3, pastikan ada gap minimal 3 point antara #2 dan #3
-      if (topResults.length > 2 &&
-          topResults[1].value - topResults[2].value < 3) {
-        topResults[2] = MapEntry(topResults[2].key, topResults[1].value - 3);
-      }
-    }
-
-    // 15. Buat list rekomendasi
+    // 7. Buat list rekomendasi
     final recommendations = <RecommendationItem>[];
 
-    for (int i = 0; i < topResults.length; i++) {
-      final minatKey = topResults[i].key;
-      final score = topResults[i].value;
+    for (int i = 0; i < top3.length; i++) {
+      final minatKey =
+          top3[i].key; // ex: "IPA (Sains Murni) - Kerja|Kedokteran"
+      final score = top3[i].value;
 
+      // Split "IPA (Sains Murni) - Kerja" | "Kedokteran"
       final parts = minatKey.split('|');
       if (parts.length == 2) {
         final progName = parts[0];
         final mKey = parts[1];
 
+        // Cari programStudi & minat
         final programStudi = programList.value.firstWhere(
           (p) => p.name == progName,
           orElse: () => ProgramStudi.empty(),
         );
-
         final minatObj = programStudi.minat[mKey];
 
         if (minatObj != null) {
-          final careers = minatObj.karir.map((career) {
-            return career.replaceAll(RegExp(r'\s*\[\d+\]'), '').trim();
-          }).toList();
-
+          // Dapatkan careers dan majors dari minatObj
+          final careers = minatObj.karir;
           final majors = minatObj.jurusanTerkait;
-          final rules = minatContrib[minatKey] ?? [];
-          final additionalData = minatAdditionalData[minatKey] ?? {};
 
+          // Dapatkan recommended courses dari rekomendasi_kursus (jika ada)
+          List<String>? recommendedCourses;
+          if (minatObj.rekomendasi_kursus != null &&
+              minatObj.rekomendasi_kursus!.isNotEmpty) {
+            recommendedCourses = minatObj.rekomendasi_kursus;
+          }
+
+          // Dapatkan recommended universities dari rekomendasi_universitas (jika ada)
+          List<String>? recommendedUniversities;
+          if (minatObj.universitas_rekomendasi != null &&
+              minatObj.universitas_rekomendasi!.isNotEmpty) {
+            recommendedUniversities = minatObj.universitas_rekomendasi;
+          }
+
+          // Dapatkan rules dari minatContrib
+          final rules = minatContrib[minatKey] ?? [];
+
+          // Add to recommendations with the additional data
           recommendations.add(
             RecommendationItem(
-              title: '$progName - $mKey',
+              title: minatKey,
               score: score,
               careers: careers,
               majors: majors,
               rules: rules,
               index: i,
-              recommendedCourses: additionalData['rekomendasi_kursus'],
-              recommendedUniversities:
-                  additionalData['universitas_rekomendasi'],
+              recommendedCourses: recommendedCourses,
+              recommendedUniversities: recommendedUniversities,
             ),
           );
         }
