@@ -473,8 +473,9 @@ class RecommendationResultsScreen extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Recommendations cards
+        // Recommendations cards
         SizedBox(
-          height: 180,
+          height: 250, // Increased height to prevent overflow
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -484,14 +485,34 @@ class RecommendationResultsScreen extends StatelessWidget {
               final rank = index + 1;
               final rankDescription = _getRankDescription(rank);
 
+              // Define custom gradient based on rank
+              final List<Color> cardGradient = rank == 1
+                  ? [
+                      Colors.amber.shade50,
+                      Colors.amber.shade100,
+                      Color(0xFFFFF8E1)
+                    ]
+                  : rank == 2
+                      ? [
+                          Colors.indigo.shade50,
+                          Colors.indigo.shade100,
+                          Color(0xFFE8EAF6)
+                        ]
+                      : rank == 3
+                          ? [
+                              Colors.blue.shade50,
+                              Colors.blue.shade100,
+                              Color(0xFFE3F2FD)
+                            ]
+                          : [
+                              Colors.grey.shade50,
+                              Colors.grey.shade100,
+                              Color(0xFFF5F5F5)
+                            ];
+
               return GestureDetector(
                 onTap: () {
-                  // Toggle detail view
-                  if (selectedRecommendationIndex.value == index) {
-                    selectedRecommendationIndex.value = -1;
-                  } else {
-                    selectedRecommendationIndex.value = index;
-                  }
+                  _showRecommendationBottomSheet(context, item, rank);
                 },
                 child: Container(
                   width: 250,
@@ -508,17 +529,8 @@ class RecommendationResultsScreen extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [
-                            Colors.white,
-                            rank == 1
-                                ? Colors.amber.shade50
-                                : rank == 2
-                                    ? Colors.indigo.shade50
-                                    : rank == 3
-                                        ? Colors.blue.shade50
-                                        : Colors.grey.shade50,
-                          ],
-                          stops: const [0.4, 1.0],
+                          colors: cardGradient,
+                          stops: const [0.0, 0.5, 1.0],
                         ),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
@@ -539,10 +551,11 @@ class RecommendationResultsScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Top row with rank badge and score indicator
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // Rank badge
+                              // Rank badge with enhanced design
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -552,22 +565,22 @@ class RecommendationResultsScreen extends StatelessWidget {
                                   gradient: LinearGradient(
                                     colors: rank == 1
                                         ? [
-                                            Colors.amber.shade100,
-                                            Colors.amber.shade200
+                                            Colors.amber.shade200,
+                                            Colors.amber.shade300,
                                           ]
                                         : rank == 2
                                             ? [
-                                                Colors.indigo.shade100,
-                                                Colors.indigo.shade200
+                                                Colors.indigo.shade200,
+                                                Colors.indigo.shade300,
                                               ]
                                             : rank == 3
                                                 ? [
-                                                    Colors.blue.shade100,
-                                                    Colors.blue.shade200
+                                                    Colors.blue.shade200,
+                                                    Colors.blue.shade300,
                                                   ]
                                                 : [
-                                                    Colors.grey.shade100,
-                                                    Colors.grey.shade200
+                                                    Colors.grey.shade200,
+                                                    Colors.grey.shade300,
                                                   ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -623,28 +636,74 @@ class RecommendationResultsScreen extends StatelessWidget {
                                   ],
                                 ),
                               ),
+
+                              // Score indicator (if needed)
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 2,
+                                      offset: Offset(0, 1),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  '${item.score}%',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.indigo.shade700,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
-                          const SizedBox(height: 12),
+
+                          const SizedBox(height: 14),
+
+                          // Program title with improved styling
                           Text(
                             _formatProgramName(item.title),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                               color: Colors.indigo.shade900,
+                              height: 1.2,
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 8),
+
+                          const SizedBox(height: 10),
+
+                          // Program majors with improved styling
                           Row(
                             children: [
-                              Icon(
-                                Icons.school_outlined,
-                                size: 14,
-                                color: Colors.grey.shade600,
+                              Container(
+                                padding: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 2,
+                                      offset: Offset(0, 1),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  Icons.school_outlined,
+                                  size: 14,
+                                  color: Colors.indigo.shade600,
+                                ),
                               ),
-                              const SizedBox(width: 6),
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   item.majors.isNotEmpty
@@ -660,7 +719,19 @@ class RecommendationResultsScreen extends StatelessWidget {
                               ),
                             ],
                           ),
+
                           const Spacer(),
+
+                          // Add divider for visual separation
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 12),
+                            child: Divider(
+                              color: Colors.grey.shade200,
+                              thickness: 1,
+                            ),
+                          ),
+
+                          // Action button with improved styling
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -668,8 +739,8 @@ class RecommendationResultsScreen extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      Colors.blue.shade700,
-                                      Colors.indigo.shade800,
+                                      Colors.blue.shade600,
+                                      Colors.indigo.shade700,
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -678,9 +749,10 @@ class RecommendationResultsScreen extends StatelessWidget {
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.indigo.shade900
-                                          .withOpacity(0.3),
+                                          .withOpacity(0.2),
                                       blurRadius: 4,
                                       offset: const Offset(0, 2),
+                                      spreadRadius: -2,
                                     ),
                                   ],
                                 ),
@@ -688,19 +760,17 @@ class RecommendationResultsScreen extends StatelessWidget {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     onTap: () {
-                                      if (selectedRecommendationIndex.value ==
-                                          index) {
-                                        selectedRecommendationIndex.value = -1;
-                                      } else {
-                                        selectedRecommendationIndex.value =
-                                            index;
-                                      }
+                                      _showRecommendationBottomSheet(
+                                          context, item, rank);
                                     },
                                     borderRadius: BorderRadius.circular(12),
+                                    splashColor: Colors.white.withOpacity(0.1),
+                                    highlightColor:
+                                        Colors.white.withOpacity(0.05),
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12,
-                                        vertical: 6,
+                                        vertical: 8,
                                       ),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
@@ -731,183 +801,23 @@ class RecommendationResultsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                )
-                    .animate()
-                    .fadeIn(
-                        delay: Duration(milliseconds: (200 * index).toInt()))
-                    .slideX(begin: 0.2, end: 0),
-              );
+                ),
+              )
+                  .animate(
+                      onPlay: (controller) => controller.repeat(reverse: true))
+                  .shimmer(
+                      duration: Duration(seconds: 3),
+                      color: Colors.white.withOpacity(0.05))
+                  .animate()
+                  .fadeIn(
+                      duration: Duration(milliseconds: 500),
+                      delay: Duration(milliseconds: index * 150))
+                  .slide(
+                      begin: Offset(0.2, 0),
+                      end: Offset.zero,
+                      curve: Curves.easeOutQuart);
             },
           ),
-        ),
-
-        // Detail View (appears when a recommendation is selected)
-        ValueListenableBuilder<int?>(
-          valueListenable: selectedRecommendationIndex,
-          builder: (context, selectedIndex, child) {
-            if (selectedIndex == null ||
-                selectedIndex < 0 ||
-                selectedIndex >= result.recommendations.length) {
-              return const SizedBox.shrink();
-            }
-
-            final selectedItem = result.recommendations[selectedIndex];
-
-            return Container(
-              margin: const EdgeInsets.only(top: 20),
-              child: Card(
-                elevation: 10,
-                shadowColor: Colors.black38,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.white,
-                        Colors.blue.shade50,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header with close button
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Detail Rekomendasi',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.indigo.shade900,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              selectedRecommendationIndex.value = -1;
-                            },
-                            icon: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.close,
-                                size: 16,
-                                color: Colors.grey.shade700,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // Program name
-                      Container(
-                        margin: const EdgeInsets.only(top: 10, bottom: 20),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.blue.shade700,
-                              Colors.indigo.shade800
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.indigo.shade900.withOpacity(0.3),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          _formatProgramName(selectedItem.title),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-
-                      // Content in two columns for larger screens, single column for small screens
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          if (constraints.maxWidth > 600) {
-                            // Two column layout
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                    child:
-                                        _buildDetailLeftColumn(selectedItem)),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                    child:
-                                        _buildDetailRightColumn(selectedItem)),
-                              ],
-                            );
-                          } else {
-                            // Single column layout
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildDetailLeftColumn(selectedItem),
-                                const SizedBox(height: 20),
-                                _buildDetailRightColumn(selectedItem),
-                              ],
-                            );
-                          }
-                        },
-                      ),
-
-                      // Action buttons
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildActionButton(
-                              'Lihat Kurikulum',
-                              Icons.menu_book_rounded,
-                              Colors.green.shade600,
-                              () {},
-                            ),
-                            const SizedBox(width: 16),
-                            _buildActionButton(
-                              'Eksplorasi Karir',
-                              Icons.trending_up_rounded,
-                              Colors.amber.shade700,
-                              () {},
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            )
-                .animate()
-                .fadeIn(duration: const Duration(milliseconds: 400))
-                .slideY(begin: 0.2, end: 0);
-          },
         ),
       ],
     );
@@ -927,78 +837,249 @@ class RecommendationResultsScreen extends StatelessWidget {
     }
   }
 
-// Build left column of detail view
-  Widget _buildDetailLeftColumn(RecommendationItem item) {
+  Widget _buildDetailLeftColumn(BuildContext context, RecommendationItem item,
+      MaterialColor accentColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildDetailSection(
-          'Jurusan Terkait',
+        _buildEnhancedDetailSection(
+          context,
+          'Program Studi Terkait',
+          item.majors.isEmpty ? ['Program Studi Umum'] : item.majors,
           Icons.school_rounded,
-          Colors.indigo.shade700,
-          children: item.majors.map((major) {
-            return _buildDetailItem(major);
-          }).toList(),
+          Colors.indigo,
+          0,
         ),
-        const SizedBox(height: 20),
-        _buildDetailSection(
-          'Rekomendasi Universitas',
-          Icons.account_balance_rounded,
-          Colors.amber.shade700,
-          children: item.recommendedUniversities != null &&
-                  item.recommendedUniversities!.isNotEmpty
-              ? item.recommendedUniversities!.map((university) {
-                  return _buildDetailItem(university);
-                }).toList()
-              : [
-                  Text(
-                    'Tidak ada rekomendasi spesifik',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
+        SizedBox(height: 20),
+        _buildEnhancedDetailSection(
+          context,
+          'Prospek Karir',
+          item.careers.isEmpty ? ['Beragam Karir'] : item.careers,
+          Icons.work_rounded,
+          Colors.blue,
+          200,
         ),
       ],
     );
   }
 
-// Build right column of detail view
-  Widget _buildDetailRightColumn(RecommendationItem item) {
+  Widget _buildDetailRightColumn(BuildContext context, RecommendationItem item,
+      MaterialColor accentColor) {
+    final courses =
+        item.recommendedCourses ?? ['Matematika', 'Fisika', 'Kimia', 'Biologi'];
+    final universities = item.recommendedUniversities ??
+        [
+          'Universitas Indonesia',
+          'Institut Teknologi Bandung',
+          'Universitas Gadjah Mada'
+        ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildDetailSection(
-          'Prospek Karir',
-          Icons.business_center_rounded,
-          Colors.blue.shade700,
-          children: item.careers.map((career) {
-            return _buildDetailItem(career);
-          }).toList(),
-        ),
-        const SizedBox(height: 20),
-        _buildDetailSection(
-          'Mata Pelajaran yang Direkomendasikan',
+        _buildEnhancedDetailSection(
+          context,
+          'Mata Kuliah Unggulan',
+          courses,
           Icons.book_rounded,
-          Colors.green.shade700,
-          children: item.recommendedCourses != null &&
-                  item.recommendedCourses!.isNotEmpty
-              ? item.recommendedCourses!.map((course) {
-                  return _buildDetailItem(course);
-                }).toList()
-              : [
-                  Text(
-                    'Tidak ada rekomendasi spesifik',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
+          Colors.green,
+          0,
         ),
+        SizedBox(height: 20),
+        _buildEnhancedDetailSection(
+          context,
+          'Universitas Terkemuka',
+          universities,
+          Icons.account_balance_rounded,
+          Colors.amber,
+          200,
+        ),
+      ],
+    );
+  }
+
+// Enhanced detail section with animations using FutureBuilder for delay
+  Widget _buildEnhancedDetailSection(BuildContext context, String title,
+      List<String> items, IconData icon, MaterialColor color, int delayMs) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section header with animated icon using FutureBuilder
+        FutureBuilder(
+          future: Future.delayed(Duration(milliseconds: delayMs)),
+          builder: (context, headerSnapshot) {
+            final double headerValue =
+                headerSnapshot.connectionState == ConnectionState.done
+                    ? 1.0
+                    : 0.0;
+
+            return TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: headerValue),
+              duration: Duration(milliseconds: 700),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, _) {
+                return Opacity(
+                  opacity: value,
+                  child: Row(
+                    children: [
+                      // Icon with scale animation
+                      FutureBuilder(
+                        future: Future.delayed(
+                            Duration(milliseconds: delayMs + 200)),
+                        builder: (context, iconSnapshot) {
+                          final double iconValue =
+                              iconSnapshot.connectionState ==
+                                      ConnectionState.done
+                                  ? 1.0
+                                  : 0.0;
+
+                          return TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0.0, end: iconValue),
+                            duration: Duration(milliseconds: 800),
+                            curve: Curves.elasticOut,
+                            builder: (context, scaleValue, _) {
+                              return Transform.scale(
+                                scale: scaleValue,
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        color.shade50,
+                                        color.shade100,
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: color.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        spreadRadius: -5,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    icon,
+                                    size: 22,
+                                    color: color.shade700,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      SizedBox(width: 14),
+                      ShaderMask(
+                        shaderCallback: (bounds) {
+                          return LinearGradient(
+                            colors: [
+                              color.shade800,
+                              color.shade500,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(bounds);
+                        },
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        ),
+
+        SizedBox(height: 15),
+
+        // List items with staggered animations
+        ...items.asMap().entries.map((entry) {
+          final index = entry.key;
+          final item = entry.value;
+
+          return FutureBuilder(
+            future: Future.delayed(
+                Duration(milliseconds: delayMs + 300 + (index * 100))),
+            builder: (context, itemSnapshot) {
+              final double itemValue =
+                  itemSnapshot.connectionState == ConnectionState.done
+                      ? 1.0
+                      : 0.0;
+
+              return TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: itemValue),
+                duration: Duration(milliseconds: 600),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, _) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(20 * (1 - value), 0),
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(top: 2),
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: color.shade100,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check,
+                                size: 14,
+                                color: color.shade700,
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.04),
+                                      blurRadius: 8,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  item,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.grey.shade800,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        }).toList(),
       ],
     );
   }
@@ -1068,6 +1149,511 @@ class RecommendationResultsScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showRecommendationBottomSheet(
+      BuildContext context, RecommendationItem item, int rank) {
+    // Define theme-specific colors
+    final primaryGradient = [Colors.blue.shade700, Colors.indigo.shade800];
+    final accentColor = rank == 1
+        ? Colors.amber
+        : rank == 2
+            ? Colors.indigo
+            : rank == 3
+                ? Colors.blue
+                : Colors.grey;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      transitionAnimationController: AnimationController(
+        vsync: Navigator.of(context),
+        duration: const Duration(milliseconds: 400),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.9,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.white, Colors.grey.shade50],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                    offset: Offset(0, -3),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Drag handle
+                  Container(
+                    margin: EdgeInsets.only(top: 12),
+                    child: Center(
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        duration: Duration(milliseconds: 600),
+                        curve: Curves.elasticOut,
+                        builder: (context, value, child) {
+                          return Transform.scale(
+                            scale: value,
+                            child: Container(
+                              width: 50,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade400,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  // Content
+                  Expanded(
+                    child: CustomScrollView(
+                      physics: BouncingScrollPhysics(),
+                      controller: scrollController,
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Header with shimmering effect and close button
+                                TweenAnimationBuilder<double>(
+                                  tween: Tween(begin: 0.0, end: 1.0),
+                                  duration: Duration(milliseconds: 600),
+                                  curve: Curves.easeOutCubic,
+                                  builder: (context, value, child) {
+                                    return Transform.translate(
+                                      offset: Offset(0, 20 * (1 - value)),
+                                      child: Opacity(
+                                        opacity: value,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            ShaderMask(
+                                              shaderCallback: (bounds) {
+                                                return LinearGradient(
+                                                  colors: primaryGradient,
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                ).createShader(bounds);
+                                              },
+                                              child: Text(
+                                                'Detail Rekomendasi',
+                                                style: TextStyle(
+                                                  fontSize: 22,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                            TweenAnimationBuilder<double>(
+                                              tween:
+                                                  Tween(begin: 0.0, end: 1.0),
+                                              duration:
+                                                  Duration(milliseconds: 800),
+                                              curve: Curves.elasticOut,
+                                              builder: (context, value, child) {
+                                                return Transform.rotate(
+                                                  angle: (1 - value) * 1.5,
+                                                  child: Transform.scale(
+                                                    scale: value,
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        shape: BoxShape.circle,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black
+                                                                .withOpacity(
+                                                                    0.1),
+                                                            blurRadius: 8,
+                                                            offset:
+                                                                Offset(0, 3),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: IconButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        icon: Icon(
+                                                          Icons.close_rounded,
+                                                          color: Colors
+                                                              .grey.shade700,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+
+                                SizedBox(height: 20),
+
+                                // Program name with hover effect and shadow
+                                TweenAnimationBuilder<double>(
+                                  tween: Tween(begin: 0.0, end: 1.0),
+                                  duration: Duration(milliseconds: 700),
+                                  curve: Curves.easeOutCubic,
+                                  builder: (context, value, child) {
+                                    return Opacity(
+                                      opacity: value,
+                                      child: Transform.translate(
+                                        offset: Offset(0, 30 * (1 - value)),
+                                        child: Container(
+                                          width: double.infinity,
+                                          margin: EdgeInsets.only(bottom: 25),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 14,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: primaryGradient,
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.indigo.shade800
+                                                    .withOpacity(0.4),
+                                                blurRadius: 15,
+                                                offset: Offset(0, 8),
+                                                spreadRadius: -4,
+                                              ),
+                                            ],
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              // Decorative elements
+                                              ...List.generate(3, (index) {
+                                                return Positioned(
+                                                  right: 10 + (index * 20),
+                                                  top: index * 10,
+                                                  child: Opacity(
+                                                    opacity: 0.1,
+                                                    child: Icon(
+                                                      Icons.school_rounded,
+                                                      size: 24,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
+                                              Center(
+                                                child: Text(
+                                                  _formatProgramName(
+                                                      item.title),
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    color: Colors.white,
+                                                    letterSpacing: 0.5,
+                                                    shadows: [
+                                                      Shadow(
+                                                        color: Colors.black
+                                                            .withOpacity(0.3),
+                                                        blurRadius: 5,
+                                                        offset: Offset(0, 2),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+
+                                // Badge with particle effects
+                                TweenAnimationBuilder<double>(
+                                  tween: Tween(begin: 0.0, end: 1.0),
+                                  duration: Duration(milliseconds: 800),
+                                  curve: Curves.easeOutCubic,
+                                  builder: (context, value, child) {
+                                    return Opacity(
+                                      opacity: value,
+                                      child: Transform.translate(
+                                        offset: Offset(0, 30 * (1 - value)),
+                                        child: Center(
+                                          child: Container(
+                                            margin: EdgeInsets.only(bottom: 25),
+                                            child: Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                // Decorative shine effect - using Future.delayed approach
+                                                ...List.generate(5, (index) {
+                                                  return FutureBuilder(
+                                                    future: Future.delayed(
+                                                        Duration(
+                                                            milliseconds: 1000 +
+                                                                (index * 200))),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      final isDelayComplete =
+                                                          snapshot.connectionState ==
+                                                              ConnectionState
+                                                                  .done;
+                                                      return Positioned(
+                                                        left:
+                                                            100 + (index * 10),
+                                                        top: index * 3,
+                                                        child: AnimatedOpacity(
+                                                          duration: Duration(
+                                                              milliseconds:
+                                                                  500),
+                                                          opacity:
+                                                              isDelayComplete
+                                                                  ? 0.2
+                                                                  : 0,
+                                                          child: Container(
+                                                            width: 8,
+                                                            height: 8,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              color: accentColor
+                                                                  .shade300,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                }),
+
+                                                // Actual badge
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 10),
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      colors: [
+                                                        accentColor.shade100,
+                                                        accentColor.shade200,
+                                                      ],
+                                                      begin: Alignment.topLeft,
+                                                      end:
+                                                          Alignment.bottomRight,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            50),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: accentColor
+                                                            .withOpacity(0.3),
+                                                        blurRadius: 15,
+                                                        spreadRadius: -2,
+                                                        offset: Offset(0, 7),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      TweenAnimationBuilder<
+                                                          double>(
+                                                        tween: Tween(
+                                                            begin: 0.0,
+                                                            end: 1.0),
+                                                        duration: Duration(
+                                                            milliseconds: 1200),
+                                                        curve:
+                                                            Curves.elasticOut,
+                                                        builder: (context,
+                                                            value, child) {
+                                                          return Transform
+                                                              .scale(
+                                                            scale: value,
+                                                            child: rank <= 3
+                                                                ? Icon(
+                                                                    rank == 1
+                                                                        ? Icons
+                                                                            .emoji_events_rounded
+                                                                        : rank ==
+                                                                                2
+                                                                            ? Icons.star_rounded
+                                                                            : Icons.workspace_premium_rounded,
+                                                                    size: 24,
+                                                                    color: accentColor
+                                                                        .shade800,
+                                                                  )
+                                                                : SizedBox
+                                                                    .shrink(),
+                                                          );
+                                                        },
+                                                      ),
+                                                      rank <= 3
+                                                          ? SizedBox(width: 12)
+                                                          : SizedBox.shrink(),
+                                                      Text(
+                                                        _getRankDescription(
+                                                            rank),
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 18,
+                                                          color: accentColor
+                                                              .shade800,
+                                                          letterSpacing: 0.5,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+
+                                // Content sections with staggered animations
+                                LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    if (constraints.maxWidth > 600) {
+                                      // Two column layout for larger screens
+                                      return Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: _buildAnimatedDetailColumn(
+                                              context,
+                                              _buildDetailLeftColumn(
+                                                  context, item, accentColor),
+                                              100,
+                                            ),
+                                          ),
+                                          SizedBox(width: 20),
+                                          Expanded(
+                                            child: _buildAnimatedDetailColumn(
+                                              context,
+                                              _buildDetailRightColumn(
+                                                  context, item, accentColor),
+                                              300,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    } else {
+                                      // Single column layout for smaller screens
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          _buildAnimatedDetailColumn(
+                                            context,
+                                            _buildDetailLeftColumn(
+                                                context, item, accentColor),
+                                            100,
+                                          ),
+                                          SizedBox(height: 20),
+                                          _buildAnimatedDetailColumn(
+                                            context,
+                                            _buildDetailRightColumn(
+                                                context, item, accentColor),
+                                            300,
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                  },
+                                ),
+
+                                // Animated action buttons
+                                Padding(
+                                  padding: EdgeInsets.only(top: 30, bottom: 20),
+                                  child: Center(
+                                    child: TweenAnimationBuilder<double>(
+                                      tween: Tween(begin: 0.0, end: 1.0),
+                                      duration: Duration(milliseconds: 900),
+                                      curve: Curves.easeOutCubic,
+                                      builder: (context, value, child) {
+                                        return Opacity(
+                                          opacity: value,
+                                          child: Transform.translate(
+                                            offset: Offset(0, 40 * (1 - value)),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                _buildAnimatedActionButton(
+                                                  'Lihat Kurikulum',
+                                                  Icons.menu_book_rounded,
+                                                  Colors.green.shade600,
+                                                  () {},
+                                                  800,
+                                                ),
+                                                SizedBox(width: 16),
+                                                _buildAnimatedActionButton(
+                                                  'Eksplorasi Karir',
+                                                  Icons.trending_up_rounded,
+                                                  Colors.amber.shade700,
+                                                  () {},
+                                                  1000,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -1320,6 +1906,108 @@ class RecommendationResultsScreen extends StatelessWidget {
             .slideY(begin: 0.1, end: 0),
       ],
     );
+  }
+
+// Animated column wrapper using FutureBuilder for delay
+  Widget _buildAnimatedDetailColumn(
+      BuildContext context, Widget child, int delayMs) {
+    return FutureBuilder(
+      future: Future.delayed(Duration(milliseconds: delayMs)),
+      builder: (context, snapshot) {
+        final double animationValue =
+            snapshot.connectionState == ConnectionState.done ? 1.0 : 0.0;
+
+        return TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0.0, end: animationValue),
+          duration: Duration(milliseconds: 800),
+          curve: Curves.easeOutCubic,
+          builder: (context, value, _) {
+            return Opacity(
+              opacity: value,
+              child: Transform.translate(
+                offset: Offset(0, 40 * (1 - value)),
+                child: child,
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildAnimatedActionButton(String text, IconData icon, Color color,
+      VoidCallback onPressed, int delayMs) {
+    return FutureBuilder(
+        future: Future.delayed(Duration(milliseconds: delayMs)),
+        builder: (context, snapshot) {
+          final double animationValue =
+              snapshot.connectionState == ConnectionState.done ? 1.0 : 0.0;
+
+          return TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.0, end: animationValue),
+            duration: Duration(milliseconds: 600),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, _) {
+              return Transform.scale(
+                scale: 0.8 + (0.2 * value),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        color,
+                        Color.lerp(color, Colors.black, 0.3)!,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: Offset(0, 6),
+                        spreadRadius: -4,
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: onPressed,
+                      borderRadius: BorderRadius.circular(14),
+                      splashColor: Colors.white.withOpacity(0.2),
+                      highlightColor: Colors.white.withOpacity(0.1),
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              icon,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                            SizedBox(width: 12),
+                            Text(
+                              text,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        });
   }
 
   Widget _buildRecommendedCourses(BuildContext context) {
