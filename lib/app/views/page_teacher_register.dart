@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forward_chaining_man_app/app/views/page_login.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -204,7 +205,7 @@ class TeacherRegisterPage extends StatelessWidget {
 
                     // App Title
                     const Text(
-                      'Forward Chaining',
+                      'EduGuide',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -299,7 +300,7 @@ class TeacherRegisterPage extends StatelessWidget {
                                 const SizedBox(height: 30),
 
                                 // Name field
-                                _buildTextField(
+                                CustomTextField(
                                   controller: controller.nameController,
                                   label: 'Nama Lengkap',
                                   prefixIcon: Icons.person_outline,
@@ -308,7 +309,7 @@ class TeacherRegisterPage extends StatelessWidget {
                                 const SizedBox(height: 16),
 
                                 // Email field
-                                _buildTextField(
+                                CustomTextField(
                                   controller: controller.emailController,
                                   label: 'Email',
                                   prefixIcon: Icons.email_outlined,
@@ -318,7 +319,7 @@ class TeacherRegisterPage extends StatelessWidget {
                                 const SizedBox(height: 16),
 
                                 // School field
-                                _buildTextField(
+                                CustomTextField(
                                   controller: controller.schoolController,
                                   label: 'Sekolah',
                                   prefixIcon: Icons.school_outlined,
@@ -327,7 +328,7 @@ class TeacherRegisterPage extends StatelessWidget {
                                 const SizedBox(height: 16),
 
                                 // Subject field
-                                _buildTextField(
+                                CustomTextField(
                                   controller: controller.subjectController,
                                   label: 'Mata Pelajaran (Opsional)',
                                   prefixIcon: Icons.book_outlined,
@@ -336,7 +337,7 @@ class TeacherRegisterPage extends StatelessWidget {
                                 const SizedBox(height: 16),
 
                                 // Password field
-                                _buildTextField(
+                                CustomTextField(
                                   controller: controller.passwordController,
                                   label: 'Password',
                                   prefixIcon: Icons.lock_outline,
@@ -346,7 +347,7 @@ class TeacherRegisterPage extends StatelessWidget {
                                 const SizedBox(height: 16),
 
                                 // Confirm Password field
-                                _buildTextField(
+                                CustomTextField(
                                   controller:
                                       controller.confirmPasswordController,
                                   label: 'Konfirmasi Password',
@@ -414,39 +415,6 @@ class TeacherRegisterPage extends StatelessWidget {
   }
 
   // Helper method to build text fields
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData prefixIcon,
-    bool isPassword = false,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: isPassword,
-      keyboardType: keyboardType,
-      style: const TextStyle(fontSize: 16),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: Colors.grey.shade600),
-        prefixIcon: Icon(prefixIcon, color: Colors.blue.shade400),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Colors.blue.shade500, width: 1.5),
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
-      ),
-    );
-  }
 
   // Helper method to build primary button
   Widget _buildPrimaryButton({

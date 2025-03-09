@@ -354,7 +354,7 @@ class _IntroPageState extends State<IntroPage> with TickerProviderStateMixin {
 
           // App Title
           const Text(
-            'Forward Chaining',
+            'EduGuide',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,

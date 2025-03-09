@@ -417,7 +417,7 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                         child: Column(
                           children: [
                             const Text(
-                              'Forward Chaining',
+                              'EduGuide',
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
@@ -458,7 +458,7 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Aplikasi Forward Chaining adalah sistem pakar berbasis aturan (rule-based expert system) yang menggunakan metode inferensi forward chaining untuk memberikan rekomendasi jurusan dan karir yang sesuai dengan minat pengguna.',
+                                'Aplikasi EduGuide adalah sistem pakar berbasis aturan (rule-based expert system) yang menggunakan metode inferensi forward chaining untuk memberikan rekomendasi jurusan dan karir yang sesuai dengan minat pengguna.',
                                 style: TextStyle(fontSize: 14, height: 1.5),
                               ),
                               const SizedBox(height: 16),
@@ -687,7 +687,7 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                         child: Column(
                           children: [
                             Text(
-                              '© ${DateTime.now().year} Forward Chaining App',
+                              '© ${DateTime.now().year} EduGuide App',
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.8),
                                 fontSize: 14,

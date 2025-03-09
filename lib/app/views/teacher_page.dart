@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forward_chaining_man_app/app/views/dashboard_teacher.dart';
+import 'package:forward_chaining_man_app/app/views/page_login.dart';
 import 'package:forward_chaining_man_app/app/views/page_teacher_register.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -231,7 +232,7 @@ class TeacherLoginPage extends StatelessWidget {
 
                     // App Title
                     const Text(
-                      'Forward Chaining',
+                      'EduGuide',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -326,7 +327,7 @@ class TeacherLoginPage extends StatelessWidget {
                                 const SizedBox(height: 30),
 
                                 // Email field
-                                _buildTextField(
+                                CustomTextField(
                                   controller: controller.emailController,
                                   label: 'Email',
                                   prefixIcon: Icons.email_outlined,
@@ -336,7 +337,7 @@ class TeacherLoginPage extends StatelessWidget {
                                 const SizedBox(height: 20),
 
                                 // Password field
-                                _buildTextField(
+                                CustomTextField(
                                   controller: controller.passwordController,
                                   label: 'Password',
                                   prefixIcon: Icons.lock_outline,

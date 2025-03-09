@@ -249,10 +249,10 @@ class DevDataViewerPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Developer Data Viewer',
+        title: const Text('Statistik Data Aplikasi',
             style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Colors.black,
                 letterSpacing: 0.5)),
         backgroundColor: Colors.white,
         elevation: 0,

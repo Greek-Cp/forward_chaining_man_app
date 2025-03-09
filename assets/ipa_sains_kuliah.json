@@ -5,6 +5,12 @@
     "categories": [
       "Kesehatan & Sains"
     ],
+    "riasec": {
+      "primary": "I (Investigative)",
+      "secondary": "R (Realistic)",
+      "tertiary": "S (Social)",
+      "code": "IRS"
+    },
     "minat": {
       "Kedokteran": {
         "pertanyaan": [
@@ -15,6 +21,14 @@
           "Apakah Anda tertarik untuk mengikuti perkembangan teknologi dalam dunia kedokteran? [4]",
           "Apakah Anda memiliki ketelitian tinggi dan mampu bekerja di bawah tekanan? [5]"
         ],
+        "riasecType": [
+          {"type": ["I"], "bobot": [5]},
+          {"type": ["S", "I"], "bobot": [4, 2]},
+          {"type": ["I", "S"], "bobot": [4, 2]},
+          {"type": ["I"], "bobot": [5]},
+          {"type": ["I", "E"], "bobot": [3, 1]},
+          {"type": ["C", "R"], "bobot": [3, 2]}
+        ],
         "karir": [
           "Dokter Umum [22]",
           "Dokter Spesialis [21]",
@@ -24,6 +38,7 @@
           "Dokter Forensik [19]",
           "Peneliti Kedokteran [20]"
         ],
+        "karir_riasec": ["I/S", "I/S", "S/I", "I/S", "I/R", "I/R", "I"],
         "jurusan_terkait": [
           "Kedokteran Umum",
           "Kedokteran Gigi",
@@ -42,6 +57,14 @@
           "Apakah Anda menikmati kegiatan praktikum di laboratorium? [5]",
           "Apakah Anda tertarik untuk memecahkan masalah lingkungan menggunakan pendekatan ilmiah? [5]"
         ],
+        "riasecType": [
+          {"type": ["I", "A"], "bobot": [5, 1]},
+          {"type": ["I", "C"], "bobot": [4, 1]},
+          {"type": ["I"], "bobot": [6]},
+          {"type": ["I", "R"], "bobot": [5, 1]},
+          {"type": ["R", "I"], "bobot": [3, 2]},
+          {"type": ["I", "S"], "bobot": [4, 1]}
+        ],
         "karir": [
           "Peneliti Biologi [22]",
           "Peneliti Kimia [22]",
@@ -52,6 +75,7 @@
           "Klimatolog [19]",
           "Ahli Geologi [20]"
         ],
+        "karir_riasec": ["I", "I", "I/S", "I", "I/R", "I", "I", "I/R"],
         "jurusan_terkait": [
           "Biologi",
           "Kimia",
@@ -71,6 +95,14 @@
           "Apakah Anda tertarik pada pembuatan dan pengembangan kosmetik dan produk perawatan tubuh? [4]",
           "Apakah Anda memiliki ketelitian tinggi dalam mengukur dan mencampur bahan-bahan kimia? [5]"
         ],
+        "riasecType": [
+          {"type": ["I"], "bobot": [6]},
+          {"type": ["I", "S"], "bobot": [4, 2]},
+          {"type": ["I", "R"], "bobot": [4, 1]},
+          {"type": ["I"], "bobot": [5]},
+          {"type": ["R", "A"], "bobot": [2, 2]},
+          {"type": ["C", "R"], "bobot": [3, 2]}
+        ],
         "karir": [
           "Apoteker [21]",
           "Peneliti Obat [22]",
@@ -79,6 +111,7 @@
           "Ahli Formulasi [20]",
           "Konsultan Obat [19]"
         ],
+        "karir_riasec": ["I/C", "I", "C/I", "C/I", "I/R", "I/S"],
         "jurusan_terkait": [
           "Farmasi",
           "Kimia",
@@ -97,6 +130,14 @@
           "Apakah Anda tertarik untuk meneliti cara meningkatkan kualitas pangan melalui bioteknologi? [5]",
           "Apakah Anda ingin berkontribusi dalam pengembangan terapi gen atau obat-obatan baru? [6]"
         ],
+        "riasecType": [
+          {"type": ["I", "R"], "bobot": [4, 2]},
+          {"type": ["I", "E"], "bobot": [3, 2]},
+          {"type": ["I"], "bobot": [6]},
+          {"type": ["R", "I"], "bobot": [3, 2]},
+          {"type": ["I", "S"], "bobot": [3, 2]},
+          {"type": ["I", "S"], "bobot": [4, 2]}
+        ],
         "karir": [
           "Peneliti Bioteknologi [22]",
           "Ahli Mikrobiologi [20]",
@@ -105,6 +146,7 @@
           "Peneliti Industri Pangan [19]",
           "Ilmuwan Riset dan Pengembangan [21]"
         ],
+        "karir_riasec": ["I", "I", "R/I", "I", "I/R", "I"],
         "jurusan_terkait": [
           "Bioteknologi",
           "Teknologi Pangan",
@@ -123,6 +165,14 @@
           "Apakah Anda tertarik untuk melindungi spesies terancam punah dan habitat alaminya? [5]",
           "Apakah Anda ingin mengedukasi masyarakat tentang pentingnya pelestarian lingkungan? [4]"
         ],
+        "riasecType": [
+          {"type": ["S", "I"], "bobot": [3, 3]},
+          {"type": ["I", "R"], "bobot": [4, 1]},
+          {"type": ["I", "E"], "bobot": [4, 2]},
+          {"type": ["R", "I"], "bobot": [3, 2]},
+          {"type": ["S", "I"], "bobot": [3, 2]},
+          {"type": ["S", "E"], "bobot": [2, 2]}
+        ],
         "karir": [
           "Ahli Konservasi [21]",
           "Peneliti Lingkungan [20]",
@@ -132,6 +182,7 @@
           "Edukator Lingkungan [17]",
           "Ahli Kehutanan [19]"
         ],
+        "karir_riasec": ["I/S", "I/R", "I/E", "R/C", "I", "S/E", "I/R"],
         "jurusan_terkait": [
           "Ilmu Lingkungan",
           "Biologi Konservasi",
@@ -150,6 +201,14 @@
           "Apakah Anda ingin bekerja di lapangan untuk menganalisis formasi geologis? [5]",
           "Apakah Anda tertarik pada pemetaan dan pemodelan fenomena geologi? [5]"
         ],
+        "riasecType": [
+          {"type": ["I"], "bobot": [5]},
+          {"type": ["I", "R"], "bobot": [5, 1]},
+          {"type": ["I", "R"], "bobot": [4, 1]},
+          {"type": ["I", "E"], "bobot": [3, 2]},
+          {"type": ["R", "I"], "bobot": [3, 2]},
+          {"type": ["I", "C"], "bobot": [3, 2]}
+        ],
         "karir": [
           "Ahli Geologi [21]",
           "Ahli Vulkanologi [20]",
@@ -159,6 +218,7 @@
           "Ahli Geoteknik [19]",
           "Ahli Pertambangan [20]"
         ],
+        "karir_riasec": ["I/R", "I/R", "I", "I/R", "I", "I/R", "R/I"],
         "jurusan_terkait": [
           "Geologi",
           "Geofisika",
@@ -177,6 +237,14 @@
           "Apakah Anda tertarik pada kecerdasan buatan dan bagaimana meniru fungsi otak? [4]",
           "Apakah Anda ingin membantu orang dengan gangguan neurologis atau psikiatri? [5]"
         ],
+        "riasecType": [
+          {"type": ["I"], "bobot": [6]},
+          {"type": ["I", "S"], "bobot": [4, 2]},
+          {"type": ["I", "S"], "bobot": [3, 2]},
+          {"type": ["I"], "bobot": [5]},
+          {"type": ["I", "A"], "bobot": [3, 1]},
+          {"type": ["S", "I"], "bobot": [3, 2]}
+        ],
         "karir": [
           "Peneliti Neurosains [22]",
           "Ahli Saraf (Neurolog) [21]",
@@ -185,6 +253,7 @@
           "Psikiater [20]",
           "Ahli Rehabilitasi Neurologis [19]"
         ],
+        "karir_riasec": ["I", "I/S", "R/I", "I", "I/S", "S/I"],
         "jurusan_terkait": [
           "Neurosains",
           "Psikologi",
@@ -203,6 +272,14 @@
           "Apakah Anda tertarik pada pengolahan citra medis dan analisis data kesehatan? [5]",
           "Apakah Anda ingin berkontribusi dalam inovasi teknologi kesehatan? [6]"
         ],
+        "riasecType": [
+          {"type": ["I", "R"], "bobot": [4, 2]},
+          {"type": ["I", "R", "A"], "bobot": [2, 2, 1]},
+          {"type": ["I", "R"], "bobot": [3, 2]},
+          {"type": ["R", "I"], "bobot": [3, 2]},
+          {"type": ["I", "C"], "bobot": [3, 2]},
+          {"type": ["I", "E"], "bobot": [4, 2]}
+        ],
         "karir": [
           "Insinyur Biomedis [21]",
           "Pengembang Alat Medis [20]",
@@ -211,6 +288,7 @@
           "Peneliti Biomaterial [20]",
           "Teknisi Peralatan Medis [17]"
         ],
+        "karir_riasec": ["I/R", "I/R/A", "I/R", "I/E", "I", "R/I"],
         "jurusan_terkait": [
           "Teknik Biomedis",
           "Teknologi Medis",

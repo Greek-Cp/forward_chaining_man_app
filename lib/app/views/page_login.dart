@@ -439,7 +439,7 @@ class StudentLoginPage extends StatelessWidget {
 
                     // App Title
                     const Text(
-                      'Forward Chaining',
+                      'EduGuide',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -526,7 +526,7 @@ class StudentLoginPage extends StatelessWidget {
                                 const SizedBox(height: 16),
 
                                 // Password field
-                                _buildTextField(
+                                CustomTextField(
                                   controller: controller.passwordController,
                                   label: 'Password',
                                   prefixIcon: Icons.lock_outline,
@@ -854,6 +854,75 @@ class StudentLoginPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class CustomTextField extends StatefulWidget {
+  final TextEditingController controller;
+  final String label;
+  final IconData prefixIcon;
+  final bool isPassword;
+  final TextInputType keyboardType;
+
+  const CustomTextField({
+    Key? key,
+    required this.controller,
+    required this.label,
+    required this.prefixIcon,
+    this.isPassword = false,
+    this.keyboardType = TextInputType.text,
+  }) : super(key: key);
+
+  @override
+  _CustomTextFieldState createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool _obscureText = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.isPassword;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: widget.controller,
+      obscureText: widget.isPassword ? _obscureText : false,
+      keyboardType: widget.keyboardType,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        prefixIcon: Icon(widget.prefixIcon, color: Colors.indigo.shade300),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.indigo.shade500),
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade50,
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey.shade600,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
+            : null,
       ),
     );
   }

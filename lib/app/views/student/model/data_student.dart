@@ -1,51 +1,53 @@
-// Models for the recommendation results
-class RecommendationResult {
-  final List<String> workingMemory;
-  final List<RecommendationItem> recommendations;
+/// Tambahan untuk Model Minat dengan RIASEC
+class Minat {
+  final List<String> pertanyaan;
+  final List<Map<String, dynamic>> riasecType; // Baru: list tipe RIASEC
+  final List<String> karir;
+  final List<String> karir_riasec; // Baru: kode RIASEC untuk setiap karir
+  final List<String> jurusanTerkait;
+  final List<String>? rekomendasi_kursus;
+  final List<String>? universitas_rekomendasi;
 
-  RecommendationResult({
-    required this.workingMemory,
-    required this.recommendations,
+  Minat({
+    required this.pertanyaan,
+    this.riasecType = const [], // Baru
+    required this.karir,
+    this.karir_riasec = const [], // Baru
+    required this.jurusanTerkait,
+    this.rekomendasi_kursus,
+    this.universitas_rekomendasi,
   });
+
+  factory Minat.fromJson(Map<String, dynamic> json) {
+    return Minat(
+      pertanyaan: List<String>.from(json['pertanyaan'] ?? []),
+      // Parsing untuk riasecType
+      riasecType: List<Map<String, dynamic>>.from((json['riasecType'] ?? [])
+          .map((item) => Map<String, dynamic>.from(item))),
+      karir: List<String>.from(json['karir'] ?? []),
+      // Parsing untuk karir_riasec
+      karir_riasec: List<String>.from(json['karir_riasec'] ?? []),
+      jurusanTerkait: List<String>.from(json['jurusan_terkait'] ?? []),
+      rekomendasi_kursus: List<String>.from(json['rekomendasi_kursus'] ?? []),
+      universitas_rekomendasi:
+          List<String>.from(json['universitas_rekomendasi'] ?? []),
+    );
+  }
 }
 
-// Using your existing RecommendationItem class
-class RecommendationItem {
-  final String title;
-  final int score;
-  final List<String> careers;
-  final List<String> majors;
-  final List<String> rules;
-  final int index;
-  final List<String>? recommendedCourses; // Baru
-  final List<String>? recommendedUniversities; // Baru
-
-  RecommendationItem({
-    required this.title,
-    required this.score,
-    required this.careers,
-    required this.majors,
-    required this.rules,
-    required this.index,
-    this.recommendedCourses,
-    this.recommendedUniversities,
-  });
-}
-//////////////////////////////////////////////
-// Bagian Model, Fungsi Pendukung, & Rule
-//////////////////////////////////////////////
-
-/// Representasi data utama (ProgramStudi) dari JSON
+/// Tambahan untuk ProgramStudi dengan RIASEC
 class ProgramStudi {
   final String name;
   final String description;
   final List<String> categories;
+  final Map<String, dynamic>? riasec; // Baru: info RIASEC program studi
   final Map<String, Minat> minat;
 
   ProgramStudi({
     required this.name,
     required this.description,
     required this.categories,
+    this.riasec, // Baru
     required this.minat,
   });
 
@@ -61,59 +63,36 @@ class ProgramStudi {
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       categories: List<String>.from(json['categories'] ?? []),
+      // Parsing untuk riasec
+      riasec: json['riasec'] != null
+          ? Map<String, dynamic>.from(json['riasec'])
+          : null,
       minat: minat,
     );
   }
 
-  /// Jika not found, kembalikan empty
   factory ProgramStudi.empty() {
     return ProgramStudi(
       name: '',
       description: '',
       categories: [],
+      riasec: null,
       minat: {},
     );
   }
 }
 
-/// Representasi Minat (sub-data program studi)
-class Minat {
-  final List<String> pertanyaan;
-  final List<String> karir;
-  final List<String> jurusanTerkait;
-  final List<String>? rekomendasi_kursus; // Baru
-  final List<String>? universitas_rekomendasi; // Baru
-
-  Minat({
-    required this.pertanyaan,
-    required this.karir,
-    required this.jurusanTerkait,
-    this.rekomendasi_kursus,
-    this.universitas_rekomendasi,
-  });
-
-  factory Minat.fromJson(Map<String, dynamic> json) {
-    return Minat(
-      pertanyaan: List<String>.from(json['pertanyaan'] ?? []),
-      karir: List<String>.from(json['karir'] ?? []),
-      jurusanTerkait: List<String>.from(json['jurusan_terkait'] ?? []),
-      // Tambahkan parsing untuk field baru
-      rekomendasi_kursus: List<String>.from(json['rekomendasi_kursus'] ?? []),
-      universitas_rekomendasi:
-          List<String>.from(json['universitas_rekomendasi'] ?? []),
-    );
-  }
-}
-
-/// Item pertanyaan di UI
+/// Tambahan untuk QuestionItem dengan RIASEC
 class QuestionItem {
-  final String id; // Q1, Q2, dst.
-  final String programName; // ex: "IPA (Sains Murni) - Kerja"
-  final String minatKey; // ex: "Kedokteran"
-  final String questionText; // teks pertanyaan (tanpa [n])
-  final String rawQuestionText; // teks asli (dengan [n])
-  final int bobot; // ex: 6
-  bool? userAnswer; // null=belum dijawab, true=Ya, false=Tidak
+  final String id;
+  final String programName;
+  final String minatKey;
+  final String questionText;
+  final String rawQuestionText;
+  final int bobot;
+  final List<String>? riasecTypes; // Baru: tipe RIASEC pertanyaan
+  final List<int>? riasecBobot; // Baru: bobot RIASEC pertanyaan
+  bool? userAnswer;
 
   QuestionItem({
     required this.id,
@@ -122,7 +101,64 @@ class QuestionItem {
     required this.questionText,
     required this.rawQuestionText,
     required this.bobot,
+    this.riasecTypes, // Baru
+    this.riasecBobot, // Baru
     this.userAnswer,
+  });
+}
+
+/// Model untuk hasil profil RIASEC
+class RiasecProfile {
+  final Map<String, int> scores; // Skor untuk masing-masing tipe (R,I,A,S,E,C)
+  final List<String> dominantTypes; // Tipe dominan, misal ["R", "I", "C"]
+  final String code; // Kode RIASEC, misal "RIC"
+  final List<String> matchingCareers; // Karir yang cocok berdasarkan RIASEC
+
+  RiasecProfile({
+    required this.scores,
+    required this.dominantTypes,
+    required this.code,
+    required this.matchingCareers,
+  });
+}
+
+/// Tambahan untuk RecommendationResult dengan RIASEC
+class RecommendationResult {
+  final List<String> workingMemory;
+  final List<RecommendationItem> recommendations;
+  final RiasecProfile? riasecProfile; // Baru: profil RIASEC pengguna
+
+  RecommendationResult({
+    required this.workingMemory,
+    required this.recommendations,
+    this.riasecProfile, // Baru
+  });
+}
+
+/// Tambahan untuk RecommendationItem dengan kesesuaian RIASEC
+class RecommendationItem {
+  final String title;
+  final int score;
+  final List<String> careers;
+  final List<String> majors;
+  final List<String> rules;
+  final int index;
+  final List<String>? recommendedCourses;
+  final List<String>? recommendedUniversities;
+  final double? riasecCompatibility; // Baru: persentase kesesuaian RIASEC
+  final List<String>? matchingRiasecCareers; // Baru: karir yang cocok RIASEC
+
+  RecommendationItem({
+    required this.title,
+    required this.score,
+    required this.careers,
+    required this.majors,
+    required this.rules,
+    required this.index,
+    this.recommendedCourses,
+    this.recommendedUniversities,
+    this.riasecCompatibility, // Baru
+    this.matchingRiasecCareers, // Baru
   });
 }
 

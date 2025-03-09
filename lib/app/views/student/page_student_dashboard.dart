@@ -411,7 +411,7 @@ class PageStudentDashboard extends StatelessWidget {
                   child: Column(
                     children: [
                       const Text(
-                        'Forward Chaining',
+                        'EduGuide',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -779,125 +779,6 @@ class PageStudentDashboard extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Developer Mode Card with improved visual cues
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.indigo.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.orange.shade100,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Icon(
-                                    Icons.code,
-                                    size: 20,
-                                    color: Colors.orange.shade800,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Mode Developer',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.indigo.shade800,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      const Text(
-                                        'Akses data & model AI',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Aktifkan mode developer untuk melihat data dan validasi model forward chaining yang digunakan dalam sistem rekomendasi.',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black54,
-                                height: 1.4,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Obx(() => Container(
-                                  decoration: BoxDecoration(
-                                    color: controller.isDeveloperMode.value
-                                        ? Colors.indigo.shade50
-                                        : Colors.grey.shade100,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: SwitchListTile(
-                                    title: Text(
-                                      controller.isDeveloperMode.value
-                                          ? 'Developer Mode Aktif'
-                                          : 'Developer Mode Nonaktif',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: controller.isDeveloperMode.value
-                                            ? Colors.indigo.shade800
-                                            : Colors.black54,
-                                      ),
-                                    ),
-                                    value: controller.isDeveloperMode.value,
-                                    onChanged: (value) =>
-                                        controller.toggleDeveloperMode(value),
-                                    activeColor: Colors.indigo,
-                                    activeTrackColor: Colors.indigo.shade300,
-                                    inactiveThumbColor: Colors.grey.shade400,
-                                    inactiveTrackColor: Colors.grey.shade300,
-                                    secondary: Icon(
-                                      controller.isDeveloperMode.value
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: controller.isDeveloperMode.value
-                                          ? Colors.indigo
-                                          : Colors.grey.shade500,
-                                      size: 20,
-                                    ),
-                                    dense: true,
-                                  ),
-                                )),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
                     // User tips card with action indicator
                     Stack(
                       children: [
@@ -1014,52 +895,6 @@ class PageStudentDashboard extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 16),
-
-                    // Developer mode button with attention-grabbing styling
-                    Obx(() => controller.isDeveloperMode.value
-                        ? Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.orange.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () =>
-                                  Get.to(() => const DevDataViewerPage()),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange.shade600,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 16),
-                                minimumSize: const Size(double.infinity, 56),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(Icons.data_array, size: 22),
-                                  SizedBox(width: 12),
-                                  Text(
-                                    'Data & Model Viewer',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        : const SizedBox.shrink()),
 
                     const SizedBox(height: 16),
 

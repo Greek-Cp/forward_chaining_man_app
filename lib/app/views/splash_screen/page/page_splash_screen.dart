@@ -302,7 +302,7 @@ class _SplashScreenState extends State<SplashScreen>
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: Text(
-                      'Forward Chaining',
+                      'EduGuide',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,

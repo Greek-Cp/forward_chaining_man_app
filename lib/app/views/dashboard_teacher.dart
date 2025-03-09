@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:forward_chaining_man_app/app/controllers/developer_controller.dart';
+import 'package:forward_chaining_man_app/app/views/developer/page/page_developer_viewer.dart';
 import 'package:forward_chaining_man_app/app/views/page_intro.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -8,27 +10,120 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class TeacherDashboardController extends GetxController {
+  // ========== INSTANCE & DEPENDENCIES ==========
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // ========== STATE VARIABLES ==========
+  // Loading state
   var isLoading = true.obs;
+
+  // Developer mode
+  final RxBool isDeveloperMode = developerMode.obs;
+
+  // User data
   var teacherName = ''.obs;
+
+  // Results data
   var studentResults = <DocumentSnapshot>[].obs;
   var filteredResults = <DocumentSnapshot>[].obs;
+
+  // Filter states
+  var selectedCategoryFilter = 'all'.obs;
+  var selectedDateFilter = 'all_time'.obs;
   var selectedFilter = 'all'.obs;
+  var selectedClass = 'Semua Kelas'.obs;
+  var availableClasses = <String>['Semua Kelas'].obs;
+
+  // Custom date filter
+  var selectedStartDate = DateTime.now().obs;
+  var selectedEndDate = DateTime.now().obs;
+  var isCustomDateSelected = false.obs;
+
+  // Statistics
   var stats = {
     'totalStudents': 0,
     'careerRecommendations': 0,
     'studyRecommendations': 0,
   }.obs;
+// Pertama, tambahkan variabel untuk pagination pada TeacherDashboardController
+  // ... variabel yang sudah ada ...
 
+  // Variabel untuk pagination
+  var currentPage = 0.obs;
+  var itemsPerPage = 10.obs; // Jumlah item per halaman
+  var totalPages = 0.obs;
+  var paginatedResults = <DocumentSnapshot>[].obs;
+
+  // Fungsi untuk mengatur jumlah item per halaman
+  void setItemsPerPage(int count) {
+    itemsPerPage.value = count;
+    updatePagination();
+  }
+
+  // Fungsi untuk pindah ke halaman tertentu
+  void goToPage(int page) {
+    if (page >= 0 && page < totalPages.value) {
+      currentPage.value = page;
+      updatePagination();
+    }
+  }
+
+  // Fungsi untuk halaman selanjutnya
+  void nextPage() {
+    if (currentPage.value < totalPages.value - 1) {
+      currentPage.value++;
+      updatePagination();
+    }
+  }
+
+  // Fungsi untuk halaman sebelumnya
+  void previousPage() {
+    if (currentPage.value > 0) {
+      currentPage.value--;
+      updatePagination();
+    }
+  }
+
+  void updatePagination() {
+    if (filteredResults.isEmpty) {
+      paginatedResults.clear();
+      totalPages.value = 0;
+      return;
+    }
+
+    totalPages.value = (filteredResults.length / itemsPerPage.value).ceil();
+
+    // Pastikan halaman saat ini valid
+    if (currentPage.value >= totalPages.value) {
+      currentPage.value = totalPages.value - 1;
+    }
+
+    int startIndex = currentPage.value * itemsPerPage.value;
+    int endIndex = startIndex + itemsPerPage.value;
+
+    // Pastikan endIndex tidak melebihi panjang array
+    if (endIndex > filteredResults.length) {
+      endIndex = filteredResults.length;
+    }
+
+    // Update data yang akan ditampilkan
+    paginatedResults.value = filteredResults.sublist(startIndex, endIndex);
+  }
+
+  // Cache untuk student class mapping
+  final Map<String, String> _studentClassCache = {};
+
+  // ========== LIFECYCLE METHODS ==========
   @override
   void onInit() {
     super.onInit();
     loadTeacherData();
     loadStudentResults();
+    loadAvailableClasses();
   }
 
+  // ========== DATA LOADING METHODS ==========
   Future<void> loadTeacherData() async {
     try {
       final User? currentUser = _auth.currentUser;
@@ -48,20 +143,76 @@ class TeacherDashboardController extends GetxController {
     try {
       isLoading.value = true;
 
-      final QuerySnapshot querySnapshot = await _firestore
-          .collection('recommendation_history')
-          .orderBy('timestamp', descending: true)
-          .get();
+      // Preload student class cache
+      await _preloadStudentClassCache();
 
-      studentResults.value = querySnapshot.docs;
-      filterResults(selectedFilter.value);
+      // Jika filter kelas sudah dipilih, gunakan query where
+      QuerySnapshot querySnapshot;
+      if (selectedClass.value != 'Semua Kelas') {
+        // Dapatkan semua ID siswa dengan kelas yang dipilih
+        List<String> studentIds =
+            await _getStudentIdsByClass(selectedClass.value);
+
+        if (studentIds.isEmpty) {
+          // Jika tidak ada siswa dengan kelas ini
+          studentResults.value = [];
+          filteredResults.value = [];
+          stats['totalStudents'] = 0;
+          stats['careerRecommendations'] = 0;
+          stats['studyRecommendations'] = 0;
+          isLoading.value = false;
+          return;
+        }
+
+        // Batasi ukuran chunk karena Firestore hanya mendukung hingga 10 where-in dalam satu query
+        List<DocumentSnapshot> allResults = [];
+        for (int i = 0; i < studentIds.length; i += 10) {
+          int end = (i + 10 < studentIds.length) ? i + 10 : studentIds.length;
+          List<String> chunk = studentIds.sublist(i, end);
+
+          QuerySnapshot chunkResult = await _firestore
+              .collection('recommendation_history')
+              .where('userId', whereIn: chunk)
+              .orderBy('timestamp', descending: true)
+              .get();
+
+          allResults.addAll(chunkResult.docs);
+        }
+
+        // Sort the combined results by timestamp
+        allResults.sort((a, b) {
+          Timestamp aTimestamp =
+              (a.data() as Map<String, dynamic>)['timestamp'] as Timestamp;
+          Timestamp bTimestamp =
+              (b.data() as Map<String, dynamic>)['timestamp'] as Timestamp;
+          return bTimestamp.compareTo(aTimestamp);
+        });
+
+        studentResults.value = allResults;
+      } else {
+        // Terapkan pagination jika perlu
+        querySnapshot = await _firestore
+            .collection('recommendation_history')
+            .orderBy('timestamp', descending: true)
+            .limit(100) // Batasi ke 100 hasil terakhir untuk mencegah lag
+            .get();
+
+        studentResults.value = querySnapshot.docs;
+      }
+
+      // Apply category and date filters
+      _applyFiltersWithoutClass();
 
       // Update stats
-      stats['totalStudents'] = querySnapshot.docs.length;
-      stats['careerRecommendations'] =
-          querySnapshot.docs.where((doc) => doc['isKerja'] == true).length;
-      stats['studyRecommendations'] =
-          querySnapshot.docs.where((doc) => doc['isKerja'] == false).length;
+      stats['totalStudents'] = studentResults.length;
+      stats['careerRecommendations'] = studentResults.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return data['isKerja'] == true;
+      }).length;
+      stats['studyRecommendations'] = studentResults.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return data['isKerja'] == false;
+      }).length;
     } catch (e) {
       print('Error loading student results: $e');
       Get.snackbar(
@@ -76,6 +227,184 @@ class TeacherDashboardController extends GetxController {
     }
   }
 
+  // Metode baru untuk memuat class cache
+  Future<void> _preloadStudentClassCache() async {
+    try {
+      if (_studentClassCache.isEmpty) {
+        // Ambil semua data student dan cache class mereka
+        final QuerySnapshot studentSnapshot =
+            await _firestore.collection('students').get();
+
+        for (var doc in studentSnapshot.docs) {
+          final data = doc.data() as Map<String, dynamic>;
+          if (data.containsKey('class') && data['class'] != null) {
+            _studentClassCache[doc.id] = data['class'].toString();
+          }
+        }
+      }
+    } catch (e) {
+      print('Error preloading student class cache: $e');
+    }
+  }
+
+  // Metode baru untuk mendapatkan student IDs berdasarkan kelas
+  Future<List<String>> _getStudentIdsByClass(String className) async {
+    List<String> studentIds = [];
+
+    try {
+      // Gunakan cache yang sudah kita buat
+      if (_studentClassCache.isNotEmpty) {
+        _studentClassCache.forEach((userId, userClass) {
+          if (userClass == className) {
+            studentIds.add(userId);
+          }
+        });
+      } else {
+        // Jika cache kosong, query database
+        final QuerySnapshot studentSnapshot = await _firestore
+            .collection('students')
+            .where('class', isEqualTo: className)
+            .get();
+
+        studentIds = studentSnapshot.docs.map((doc) => doc.id).toList();
+      }
+    } catch (e) {
+      print('Error getting student IDs by class: $e');
+    }
+
+    return studentIds;
+  }
+
+  Future<void> loadAvailableClasses() async {
+    try {
+      if (_studentClassCache.isNotEmpty) {
+        // Gunakan data dari cache yang sudah ada
+        final Set<String> classes = {'Semua Kelas'};
+        classes.addAll(_studentClassCache.values);
+        availableClasses.value = classes.toList()..sort();
+      } else {
+        final QuerySnapshot querySnapshot =
+            await _firestore.collection('students').get();
+
+        // Extract unique class values
+        final Set<String> classes = {'Semua Kelas'};
+
+        for (var doc in querySnapshot.docs) {
+          final data = doc.data() as Map<String, dynamic>;
+          if (data.containsKey('class') && data['class'] != null) {
+            classes.add(data['class'].toString());
+            // Update cache sambil kita ambil data
+            _studentClassCache[doc.id] = data['class'].toString();
+          }
+        }
+
+        availableClasses.value = classes.toList()..sort();
+      }
+    } catch (e) {
+      print('Error loading available classes: $e');
+    }
+  }
+
+  // ========== FILTERING METHODS ==========
+  // Metode dioptimalkan untuk filter tanpa perlu loading ulang data kelas
+  void _applyFiltersWithoutClass() {
+    List<DocumentSnapshot> result = studentResults;
+
+    // Apply category filter
+    if (selectedCategoryFilter.value != 'all') {
+      bool isKerja = selectedCategoryFilter.value == 'career';
+      result = result.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return data['isKerja'] == isKerja;
+      }).toList();
+    }
+
+    // Apply date filter
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+
+    if (isCustomDateSelected.value) {
+      final start = DateTime(selectedStartDate.value.year,
+          selectedStartDate.value.month, selectedStartDate.value.day);
+      final end = DateTime(selectedEndDate.value.year,
+          selectedEndDate.value.month, selectedEndDate.value.day, 23, 59, 59);
+
+      result = result.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        if (data['timestamp'] == null) return false;
+
+        final timestamp = data['timestamp'] as Timestamp;
+        final date = timestamp.toDate();
+        return date.isAfter(start.subtract(const Duration(seconds: 1))) &&
+            date.isBefore(end.add(const Duration(seconds: 1)));
+      }).toList();
+    } else if (selectedDateFilter.value == 'today') {
+      result = result.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        if (data['timestamp'] == null) return false;
+
+        final timestamp = data['timestamp'] as Timestamp;
+        final date = timestamp.toDate();
+        return date.isAfter(today.subtract(const Duration(seconds: 1)));
+      }).toList();
+    } else if (selectedDateFilter.value == 'this_month') {
+      result = result.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        if (data['timestamp'] == null) return false;
+
+        final timestamp = data['timestamp'] as Timestamp;
+        final date = timestamp.toDate();
+        return date
+            .isAfter(firstDayOfMonth.subtract(const Duration(seconds: 1)));
+      }).toList();
+    }
+
+    filteredResults.value = result;
+  }
+
+  // Master filter application - sekarang hanya memicu reload jika filter kelas berubah
+  Future<void> applyAllFilters() async {
+    // Jika filter kelas berubah, kita perlu memuat ulang data
+    if (selectedClass.value != 'Semua Kelas') {
+      await loadStudentResults();
+    } else {
+      _applyFiltersWithoutClass();
+    }
+  }
+
+  // Filter triggers
+  void filterByCategory(String category) {
+    selectedCategoryFilter.value = category;
+    _applyFiltersWithoutClass();
+  }
+
+  // Filter by date (all_time, today, this_month)
+  void filterByDate(String dateFilter) {
+    selectedDateFilter.value = dateFilter;
+    _applyFiltersWithoutClass();
+  }
+
+  // Filter by class - ini memerlukan reload karena mengubah query dasar
+  void filterByClass(String classFilter) {
+    selectedClass.value = classFilter;
+    loadStudentResults(); // Reload data dengan query baru
+  }
+
+  // Custom date filter methods
+  void setCustomDateRange(DateTime start, DateTime end) {
+    selectedStartDate.value = start;
+    selectedEndDate.value = end;
+    isCustomDateSelected.value = true;
+    selectedDateFilter.value = 'custom';
+    _applyFiltersWithoutClass();
+  }
+
+  void resetCustomDateFilter() {
+    isCustomDateSelected.value = false;
+  }
+
+  // Legacy filter - tetap dipertahankan untuk kompatibilitas
   void filterResults(String filter) {
     selectedFilter.value = filter;
 
@@ -95,50 +424,138 @@ class TeacherDashboardController extends GetxController {
     }
   }
 
-  Future<void> signOut() async {
-    try {
-      await _auth.signOut();
-
-      // Clear shared preferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-
-      // Navigate to login selection page
-      Get.off(IntroPage());
-    } catch (e) {
-      print('Error signing out: $e');
-      Get.snackbar(
-        'Error',
-        'Gagal keluar: ${e.toString()}',
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+  // ========== LEGACY FILTER METHODS - DIPERTAHANKAN UNTUK KOMPATIBILITAS ==========
+  List<DocumentSnapshot> _applyCategoryFilter(
+      List<DocumentSnapshot> docs, String filter) {
+    switch (filter) {
+      case 'career':
+        return docs.where((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return data['isKerja'] == true;
+        }).toList();
+      case 'study':
+        return docs.where((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return data['isKerja'] == false;
+        }).toList();
+      case 'all':
+      default:
+        return docs;
     }
   }
 
-  String formatTimestamp(dynamic timestamp) {
-    if (timestamp == null) return 'Waktu tidak tersedia';
+  List<DocumentSnapshot> _applyDateFilter(
+      List<DocumentSnapshot> docs, String filter) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
 
-    if (timestamp is Timestamp) {
-      final DateTime dateTime = timestamp.toDate();
-      return DateFormat('dd MMM yyyy, HH:mm').format(dateTime);
-    } else if (timestamp is String) {
+    switch (filter) {
+      case 'today':
+        return docs.where((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          if (data['timestamp'] == null) return false;
+
+          final timestamp = data['timestamp'] as Timestamp;
+          final date = timestamp.toDate();
+          return date.isAfter(today.subtract(const Duration(seconds: 1)));
+        }).toList();
+      case 'this_month':
+        return docs.where((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          if (data['timestamp'] == null) return false;
+
+          final timestamp = data['timestamp'] as Timestamp;
+          final date = timestamp.toDate();
+          return date
+              .isAfter(firstDayOfMonth.subtract(const Duration(seconds: 1)));
+        }).toList();
+      case 'all_time':
+      default:
+        return docs;
+    }
+  }
+
+  List<DocumentSnapshot> _applyCustomDateFilter(
+      List<DocumentSnapshot> docs, DateTime startDate, DateTime endDate) {
+    final start = DateTime(startDate.year, startDate.month, startDate.day);
+    final end = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
+
+    return docs.where((doc) {
+      final data = doc.data() as Map;
+      if (data['timestamp'] == null) return false;
+
+      final timestamp = data['timestamp'] as Timestamp;
+      final date = timestamp.toDate();
+      return date.isAfter(start.subtract(const Duration(seconds: 1))) &&
+          date.isBefore(end.add(const Duration(seconds: 1)));
+    }).toList();
+  }
+
+  // Optimasi: pakai cache untuk mencegah query ke database untuk setiap dokumen
+  Future<List<DocumentSnapshot>> _applyClassFilter(
+      List<DocumentSnapshot> docs, String filter) async {
+    if (filter == 'Semua Kelas') {
+      return docs;
+    }
+
+    List<DocumentSnapshot> filteredDocs = [];
+
+    for (var doc in docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final userId = data['userId'];
+
+      if (userId == null) continue;
+
+      // Gunakan cache terlebih dahulu
+      if (_studentClassCache.containsKey(userId)) {
+        if (_studentClassCache[userId] == filter) {
+          filteredDocs.add(doc);
+        }
+        continue;
+      }
+
+      // Jika tidak ada di cache, baru query database
       try {
-        final DateTime dateTime = DateTime.parse(timestamp);
-        return DateFormat('dd MMM yyyy, HH:mm').format(dateTime);
+        final studentDoc =
+            await _firestore.collection('students').doc(userId).get();
+        if (!studentDoc.exists) continue;
+
+        final studentData = studentDoc.data() as Map<String, dynamic>;
+        final studentClass = studentData['class'];
+
+        // Update cache
+        _studentClassCache[userId] = studentClass ?? '';
+
+        if (studentClass == filter) {
+          filteredDocs.add(doc);
+        }
       } catch (e) {
-        return timestamp;
+        print('Error fetching student class: $e');
       }
     }
 
-    return 'Format waktu tidak valid';
+    return filteredDocs;
   }
 
-  void viewStudentDetail(DocumentSnapshot doc) {
-    Get.to(() => StudentResultDetailPage(document: doc));
+  // ========== UTILITY METHODS ==========
+  String formatTimestamp(dynamic timestamp) {
+    if (timestamp == null) return 'Tanggal tidak tersedia';
+
+    try {
+      DateTime dateTime = (timestamp as Timestamp).toDate();
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return 'Format tanggal error';
+    }
   }
 
+  void toggleDeveloperMode(bool value) {
+    isDeveloperMode.value = value;
+    developerMode = value;
+  }
+
+  // ========== CHART DATA METHODS ==========
   List<PieChartSectionData> getPieChartData() {
     return [
       PieChartSectionData(
@@ -164,6 +581,33 @@ class TeacherDashboardController extends GetxController {
         ),
       ),
     ];
+  }
+
+  // ========== NAVIGATION METHODS ==========
+  void viewStudentDetail(DocumentSnapshot doc) {
+    Get.to(() => StudentResultDetailPage(document: doc));
+  }
+
+  Future<void> signOut() async {
+    try {
+      await _auth.signOut();
+
+      // Clear shared preferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+
+      // Navigate to login selection page
+      Get.off(IntroPage());
+    } catch (e) {
+      print('Error signing out: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal keluar: ${e.toString()}',
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade800,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 }
 
@@ -191,6 +635,8 @@ class TeacherDashboardPage extends StatelessWidget {
           child: Column(
             children: [
               _buildAppBar(controller),
+              // Developer Mode Card with improved visual cues
+
               Expanded(
                 child: Container(
                   margin: const EdgeInsets.only(top: 16),
@@ -361,6 +807,192 @@ class TeacherDashboardPage extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.analytics,
+                        size: 18, color: Colors.blue.shade800),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Akses Data Aplikasi',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue.shade800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.indigo.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.shade100,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              Icons.code,
+                              size: 20,
+                              color: Colors.orange.shade800,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Mode Developer',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.indigo.shade800,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                const Text(
+                                  'Akses data & model AI',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Aktifkan mode pengembang untuk melihat data dan validasi model forward chaining yang digunakan dalam sistem rekomendasi.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black54,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      Obx(() => Container(
+                            decoration: BoxDecoration(
+                              color: controller.isDeveloperMode.value
+                                  ? Colors.indigo.shade50
+                                  : Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: SwitchListTile(
+                              title: Text(
+                                controller.isDeveloperMode.value
+                                    ? 'Mode Pengembang Aktif'
+                                    : 'Mode Pengembang Nonaktif',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: controller.isDeveloperMode.value
+                                      ? Colors.indigo.shade800
+                                      : Colors.black54,
+                                ),
+                              ),
+                              value: controller.isDeveloperMode.value,
+                              onChanged: (value) =>
+                                  controller.toggleDeveloperMode(value),
+                              activeColor: Colors.indigo,
+                              activeTrackColor: Colors.indigo.shade300,
+                              inactiveThumbColor: Colors.grey.shade400,
+                              inactiveTrackColor: Colors.grey.shade300,
+                              secondary: Icon(
+                                controller.isDeveloperMode.value
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: controller.isDeveloperMode.value
+                                    ? Colors.indigo
+                                    : Colors.grey.shade500,
+                                size: 20,
+                              ),
+                              dense: true,
+                            ),
+                          )),
+                      const SizedBox(height: 12),
+
+                      // Developer mode button with attention-grabbing styling
+                      Obx(() => controller.isDeveloperMode.value
+                          ? Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.orange.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: ElevatedButton(
+                                onPressed: () =>
+                                    Get.to(() => const DevDataViewerPage()),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.orange.shade600,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 16),
+                                  minimumSize: const Size(double.infinity, 56),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Icon(Icons.data_array, size: 22),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      'Data Viewer',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink()),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           _buildStatisticsCards(controller),
           const SizedBox(height: 24),
           _buildFilterButtons(controller),
@@ -654,6 +1286,17 @@ class TeacherDashboardPage extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
+
+        // Category Filters
+        Text(
+          'Filter Kategori:',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey.shade700,
+          ),
+        ),
+        const SizedBox(height: 8),
         Row(
           children: [
             _buildFilterButton(
@@ -661,6 +1304,7 @@ class TeacherDashboardPage extends StatelessWidget {
               value: 'all',
               controller: controller,
               icon: Icons.list_alt,
+              filterType: 'category',
             ),
             const SizedBox(width: 12),
             _buildFilterButton(
@@ -668,6 +1312,7 @@ class TeacherDashboardPage extends StatelessWidget {
               value: 'career',
               controller: controller,
               icon: Icons.work,
+              filterType: 'category',
             ),
             const SizedBox(width: 12),
             _buildFilterButton(
@@ -675,10 +1320,217 @@ class TeacherDashboardPage extends StatelessWidget {
               value: 'study',
               controller: controller,
               icon: Icons.school,
+              filterType: 'category',
             ),
           ],
         ),
+
+        const SizedBox(height: 20),
+
+        // Date Filters
+        Text(
+          'Filter Waktu:',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey.shade700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            _buildFilterButton(
+              label: 'Semua Waktu',
+              value: 'all_time',
+              controller: controller,
+              icon: Icons.av_timer,
+              filterType: 'date',
+            ),
+            const SizedBox(width: 12),
+            _buildFilterButton(
+              label: 'Hari Ini',
+              value: 'today',
+              controller: controller,
+              icon: Icons.today,
+              filterType: 'date',
+            ),
+            const SizedBox(width: 12),
+            _buildFilterButton(
+              label: 'Bulan Ini',
+              value: 'this_month',
+              controller: controller,
+              icon: Icons.date_range,
+              filterType: 'date',
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _buildDatePickerButton(controller),
+            ),
+          ],
+        ),
+        Obx(() => controller.isCustomDateSelected.value
+            ? Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.date_range,
+                          size: 16, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${controller.selectedStartDate.value.day}/${controller.selectedStartDate.value.month}/${controller.selectedStartDate.value.year} - '
+                        '${controller.selectedEndDate.value.day}/${controller.selectedEndDate.value.month}/${controller.selectedEndDate.value.year}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.blue.shade800,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      InkWell(
+                        onTap: () {
+                          controller.resetCustomDateFilter();
+                          controller.filterByDate('all_time');
+                        },
+                        child: Icon(Icons.close,
+                            size: 16, color: Colors.red.shade700),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : const SizedBox.shrink()),
+
+        const SizedBox(height: 20),
+
+        // Class Filter DropDown
+        Text(
+          'Filter Kelas:',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey.shade700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.blue.shade200, width: 1),
+          ),
+          child: Obx(() => DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: controller.selectedClass.value,
+                  isExpanded: true,
+                  icon: Icon(Icons.keyboard_arrow_down,
+                      color: Colors.blue.shade700),
+                  elevation: 16,
+                  style: TextStyle(color: Colors.blue.shade700),
+                  onChanged: (String? newValue) {
+                    controller.filterByClass(newValue!);
+                  },
+                  items: controller.availableClasses
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              )),
+        ),
       ],
+    );
+  }
+
+  Widget _buildDatePickerButton(TeacherDashboardController controller) {
+    return ElevatedButton(
+      onPressed: () async {
+        // Tampilkan date range picker
+        final DateTimeRange? picked = await showDateRangePicker(
+          context: Get.context!,
+          firstDate: DateTime(2020),
+          lastDate: DateTime.now(),
+          initialDateRange: DateTimeRange(
+            start: controller.selectedStartDate.value,
+            end: controller.selectedEndDate.value,
+          ),
+          builder: (context, child) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: ColorScheme.light(
+                  primary: Colors.blue.shade700,
+                  onPrimary: Colors.white,
+                  onSurface: Colors.black,
+                ),
+                textButtonTheme: TextButtonThemeData(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.blue.shade700,
+                  ),
+                ),
+              ),
+              child: child!,
+            );
+          },
+        );
+
+        if (picked != null) {
+          controller.setCustomDateRange(picked.start, picked.end);
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: controller.isCustomDateSelected.value
+            ? Colors.blue.shade700
+            : Colors.white,
+        foregroundColor: controller.isCustomDateSelected.value
+            ? Colors.white
+            : Colors.blue.shade700,
+        elevation: controller.isCustomDateSelected.value ? 4 : 1,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+          side: BorderSide(
+            color: controller.isCustomDateSelected.value
+                ? Colors.transparent
+                : Colors.blue.shade200,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.calendar_month, size: 16),
+          const SizedBox(width: 8),
+          const Text(
+            'Pilih Tanggal',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -687,22 +1539,43 @@ class TeacherDashboardPage extends StatelessWidget {
     required String value,
     required TeacherDashboardController controller,
     required IconData icon,
+    required String filterType,
   }) {
     return Obx(() {
-      final isSelected = controller.selectedFilter.value == value;
+      final isSelected = filterType == 'category'
+          ? controller.selectedCategoryFilter.value == value
+          : controller.selectedDateFilter.value == value;
+
+      // Jika filter tanggal kustom aktif, nonaktifkan tombol filter tanggal lainnya
+      final isDateDisabled = filterType == 'date' &&
+          controller.isCustomDateSelected.value &&
+          value != 'custom';
 
       return Expanded(
         child: ElevatedButton(
-          onPressed: () => controller.filterResults(value),
+          onPressed: isDateDisabled
+              ? null
+              : () {
+                  if (filterType == 'category') {
+                    controller.filterByCategory(value);
+                  } else {
+                    controller.resetCustomDateFilter();
+                    controller.filterByDate(value);
+                  }
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: isSelected ? Colors.blue.shade700 : Colors.white,
             foregroundColor: isSelected ? Colors.white : Colors.blue.shade700,
+            disabledBackgroundColor: Colors.grey.shade200,
+            disabledForegroundColor: Colors.grey.shade600,
             elevation: isSelected ? 4 : 1,
             padding: const EdgeInsets.symmetric(vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
               side: BorderSide(
-                color: isSelected ? Colors.transparent : Colors.blue.shade200,
+                color: isSelected || isDateDisabled
+                    ? Colors.transparent
+                    : Colors.blue.shade200,
                 width: 1,
               ),
             ),
@@ -712,11 +1585,14 @@ class TeacherDashboardPage extends StatelessWidget {
             children: [
               Icon(icon, size: 16),
               const SizedBox(width: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+              Flexible(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -753,158 +1629,360 @@ class TeacherDashboardPage extends StatelessWidget {
         );
       }
 
-      return ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: controller.filteredResults.length,
-        itemBuilder: (context, index) {
-          final doc = controller.filteredResults[index];
-          final data = doc.data() as Map<String, dynamic>;
-          final isKerja = data['isKerja'] ?? false;
-          final recommendations =
-              List<Map<String, dynamic>>.from(data['recommendations'] ?? []);
+      // Panggil updatePagination jika belum dipanggil
+      if (controller.paginatedResults.isEmpty) {
+        controller.updatePagination();
+      }
 
-          // Get top recommendation
-          String topRecommendation = 'Tidak ada';
-          if (recommendations.isNotEmpty) {
-            topRecommendation = recommendations[0]['title'] ?? 'Tidak ada';
-          }
-
-          return Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: InkWell(
-              onTap: () => controller.viewStudentDetail(doc),
-              borderRadius: BorderRadius.circular(15),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      return Column(
+        children: [
+          // Informasi pagination
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Menampilkan ${controller.paginatedResults.length} dari ${controller.filteredResults.length} hasil',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                // Dropdown untuk mengatur jumlah item per halaman
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: isKerja
-                                ? Colors.blue.shade50
-                                : Colors.indigo.shade50,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(
-                            isKerja ? Icons.work : Icons.school,
-                            color: isKerja
-                                ? Colors.blue.shade400
-                                : Colors.indigo.shade400,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                data['userName'] ??
-                                    data['userEmail'] ??
-                                    'Siswa',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                controller.formatTimestamp(data['timestamp']),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isKerja
-                                ? Colors.blue.shade100
-                                : Colors.indigo.shade100,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            isKerja ? 'Karir' : 'Kuliah',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: isKerja
-                                  ? Colors.blue.shade700
-                                  : Colors.indigo.shade700,
-                            ),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      'Tampilkan: ',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    const Divider(),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Rekomendasi Utama',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                topRecommendation,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<int>(
+                          value: controller.itemsPerPage.value,
+                          items: [5, 10, 20, 50].map((int value) {
+                            return DropdownMenuItem<int>(
+                              value: value,
+                              child: Text('$value'),
+                            );
+                          }).toList(),
+                          onChanged: (int? newValue) {
+                            if (newValue != null) {
+                              controller.setItemsPerPage(newValue);
+                            }
+                          },
                         ),
-                        const SizedBox(width: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: IconButton(
-                            onPressed: () => controller.viewStudentDetail(doc),
-                            icon: const Icon(Icons.visibility),
-                            color: Colors.blue.shade700,
-                            tooltip: 'Lihat Detail',
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
+              ],
+            ),
+          ),
+
+          // Daftar siswa
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: controller.paginatedResults.length,
+            itemBuilder: (context, index) {
+              final doc = controller.paginatedResults[index];
+              final data = doc.data() as Map<String, dynamic>;
+              final isKerja = data['isKerja'] ?? false;
+              final recommendations = List<Map<String, dynamic>>.from(
+                  data['recommendations'] ?? []);
+
+              // Get top recommendation
+              String topRecommendation = 'Tidak ada';
+              if (recommendations.isNotEmpty) {
+                topRecommendation = recommendations[0]['title'] ?? 'Tidak ada';
+              }
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: InkWell(
+                  onTap: () => controller.viewStudentDetail(doc),
+                  borderRadius: BorderRadius.circular(15),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: isKerja
+                                    ? Colors.blue.shade50
+                                    : Colors.indigo.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                isKerja ? Icons.work : Icons.school,
+                                color: isKerja
+                                    ? Colors.blue.shade400
+                                    : Colors.indigo.shade400,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    data['userName'] ??
+                                        data['userEmail'] ??
+                                        'Siswa',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    controller
+                                        .formatTimestamp(data['timestamp']),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isKerja
+                                    ? Colors.blue.shade100
+                                    : Colors.indigo.shade100,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                isKerja ? 'Karir' : 'Kuliah',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: isKerja
+                                      ? Colors.blue.shade700
+                                      : Colors.indigo.shade700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Rekomendasi Utama',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    topRecommendation,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: IconButton(
+                                onPressed: () =>
+                                    controller.viewStudentDetail(doc),
+                                icon: const Icon(Icons.visibility),
+                                color: Colors.blue.shade700,
+                                tooltip: 'Lihat Detail',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // Kontrol pagination yang diperbaiki
+          if (controller.totalPages.value > 1)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Tombol Previous
+                  IconButton(
+                    onPressed: controller.currentPage.value > 0
+                        ? () => controller.previousPage()
+                        : null,
+                    icon: const Icon(Icons.chevron_left),
+                    color: Colors.blue.shade700,
+                    disabledColor: Colors.grey.shade400,
+                  ),
+
+                  // Indikator halaman dengan smart pagination
+                  Expanded(
+                    child: Center(
+                      child: _buildSmartPagination(controller),
+                    ),
+                  ),
+
+                  // Tombol Next
+                  IconButton(
+                    onPressed: controller.currentPage.value <
+                            controller.totalPages.value - 1
+                        ? () => controller.nextPage()
+                        : null,
+                    icon: const Icon(Icons.chevron_right),
+                    color: Colors.blue.shade700,
+                    disabledColor: Colors.grey.shade400,
+                  ),
+                ],
               ),
             ),
-          );
-        },
+        ],
       );
     });
+  }
+
+// Fungsi untuk membuat tombol halaman dengan pendekatan smart pagination
+  Widget _buildSmartPagination(TeacherDashboardController controller) {
+    // Variabel yang dibutuhkan
+    final int currentPage = controller.currentPage.value;
+    final int totalPages = controller.totalPages.value;
+
+    // Fungsi untuk membuat tombol halaman
+    Widget pageButton(int index) {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        child: ElevatedButton(
+          onPressed: () => controller.goToPage(index),
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                currentPage == index ? Colors.blue.shade700 : Colors.white,
+            foregroundColor:
+                currentPage == index ? Colors.white : Colors.blue.shade700,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: BorderSide(
+                color: currentPage == index
+                    ? Colors.transparent
+                    : Colors.blue.shade200,
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 0,
+            ),
+            minimumSize: const Size(32, 32),
+          ),
+          child: Text('${index + 1}'),
+        ),
+      );
+    }
+
+    // Widget untuk ellipsis
+    Widget ellipsis() {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Text(
+          '...',
+          style: TextStyle(
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+
+    // Buat list untuk tombol-tombol yang akan ditampilkan
+    List<Widget> paginationItems = [];
+
+    // Jika total halaman <= 7, tampilkan semua halaman
+    if (totalPages <= 7) {
+      for (int i = 0; i < totalPages; i++) {
+        paginationItems.add(pageButton(i));
+      }
+    }
+    // Jika halaman lebih dari 7, gunakan smart pagination
+    else {
+      // Selalu tampilkan halaman pertama
+      paginationItems.add(pageButton(0));
+
+      // Logika untuk menentukan halaman mana yang ditampilkan
+      if (currentPage < 3) {
+        // Dekat dengan awal: tampilkan halaman 0-4 kemudian ellipsis dan halaman terakhir
+        for (int i = 1; i <= 3; i++) {
+          paginationItems.add(pageButton(i));
+        }
+        paginationItems.add(ellipsis());
+        paginationItems.add(pageButton(totalPages - 1));
+      } else if (currentPage >= totalPages - 3) {
+        // Dekat dengan akhir: tampilkan halaman pertama, ellipsis, dan 4 halaman terakhir
+        paginationItems.add(ellipsis());
+        for (int i = totalPages - 4; i < totalPages; i++) {
+          paginationItems.add(pageButton(i));
+        }
+      } else {
+        // Di tengah: tampilkan halaman pertama, ellipsis, halaman saat ini dan tetangganya, ellipsis, halaman terakhir
+        paginationItems.add(ellipsis());
+        for (int i = currentPage - 1; i <= currentPage + 1; i++) {
+          paginationItems.add(pageButton(i));
+        }
+        paginationItems.add(ellipsis());
+        paginationItems.add(pageButton(totalPages - 1));
+      }
+    }
+
+    // Tampilkan dalam SingleChildScrollView untuk mencegah overflow
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: paginationItems,
+      ),
+    );
   }
 }
 

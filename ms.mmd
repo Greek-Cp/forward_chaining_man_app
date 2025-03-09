@@ -1,0 +1,60 @@
+flowchart TD
+    A[Mulai Proses Forward Chaining] --> B1[Inisialisasi Working Memory]
+    subgraph "1. Persiapan Working Memory"
+        B1 --> B2["Konversi Jawaban Pengguna ke Format Q{id}=Yes/No"]
+        B2 --> B3["Contoh: Q1=No, Q2=Yes, Q3=Yes, dst."]
+    end
+    subgraph "2. Perhitungan Bobot"
+        C1["Inisialisasi Map untuk Menyimpan Bobot: minatBobotTotal, minatBobotBenar, minatContrib"]
+        C2["Hitung Total Bobot per Minat, Contoh: IPA (Sains Murni) Farmasi: 31 poin"]
+    end
+    subgraph "3. Pembentukan Aturan"
+        D1["Buat Aturan untuk Setiap Pertanyaan"]
+        D2["Contoh: Jika Q2=Yes maka +6 poin ke IPA (Sains Murni) Farmasi"]
+    end
+    subgraph "4. Proses Penalaran"
+        E1["Jalankan Mesin Penalaran (Forward Chaining)"]
+        E2["Periksa Setiap Aturan, Jika Aturan Belum Dijalankan dan Kondisi JIKA Terpenuhi"]
+        E3["Eksekusi Bagian MAKA, Tambahkan Bobot dan Catat Aturan yang Dijalankan"]
+        E4["Ulangi Sampai Tidak Ada Aturan Baru yang Terpenuhi"]
+        
+        E1 --> E2
+        E2 --> E3
+        E3 --> E4
+        E4 -->|"Masih Ada Aturan"| E2
+    end
+    subgraph "5. Perhitungan Skor"
+        F1["Hitung Persentase Skor untuk Setiap Minat"]
+        F2["Contoh Hasil: IPA Farmasi 71%, Teknik Biomedis 69%, Lingkungan 55%"]
+    end
+    subgraph "6. Pengurutan dan Penyusunan Hasil"
+        G1["Urutkan Minat Berdasarkan Persentase"]
+        G2["Jika Persentase Sama, Urutkan Berdasarkan Total Bobot Benar"]
+        G3["Ambil 3 Rekomendasi Teratas"]
+        
+        G1 --> G2
+        G2 --> G3
+    end
+    subgraph "7. Pembentukan Hasil Akhir"
+        H1["Ambil Data untuk Setiap Rekomendasi: Karir, Jurusan, Aturan, Kursus, Universitas"]
+        H2["Contoh Rekomendasi 1: IPA Farmasi, Skor 71%, Karir: Apoteker, Peneliti Obat, Jurusan: Farmasi, Kimia"]
+    end
+    %% Alur proses
+    B3 --> C1
+    C1 --> C2
+    C2 --> D1
+    D1 --> D2
+    D2 --> E1
+    E4 -->|"Tidak Ada Aturan Baru"| F1
+    F1 --> F2
+    F2 --> G1
+    G3 --> H1
+    H1 --> H2
+    H2 --> I[Selesai: Hasilkan RecommendationResult]
+    
+    %% Tambahan info atau log
+    J1["Hasil Penalaran: 22 Aturan Terpenuhi dari Total 48 Pertanyaan"]
+    J2["Hasil Skor: Farmasi 71%, Teknik Biomedis 69%, Lingkungan 55%"]
+    
+    E4 -.-> J1
+    F2 -.-> J2

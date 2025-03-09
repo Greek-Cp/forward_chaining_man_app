@@ -8,6 +8,12 @@
       "Konstruksi",
       "Manufaktur"
     ],
+    "riasec": {
+      "primary": "R (Realistic)",
+      "secondary": "I (Investigative)",
+      "tertiary": "C (Conventional)",
+      "code": "RIC"
+    },
     "minat": {
       "Elektronika": {
         "pertanyaan": [
@@ -18,6 +24,14 @@
           "Apakah Anda tertarik mempelajari sistem kendali dan otomasi berbasis elektronika? [6]",
           "Apakah Anda ingin tahu lebih dalam tentang sistem komputer dan mikroprosesor? [5]"
         ],
+        "riasecType": [
+          {"type": ["R", "I"], "bobot": [3, 2]},
+          {"type": ["R", "I"], "bobot": [4, 2]},
+          {"type": ["R", "I"], "bobot": [3, 3]},
+          {"type": ["I", "R", "E"], "bobot": [2, 2, 1]},
+          {"type": ["R", "I"], "bobot": [3, 3]},
+          {"type": ["I", "R"], "bobot": [3, 2]}
+        ],
         "karir": [
           "Insinyur Elektro [20]",
           "Teknisi Elektronika [19]",
@@ -27,6 +41,7 @@
           "Insinyur Kontrol [18]",
           "Konsultan Elektronika [17]"
         ],
+        "karir_riasec": ["R/I", "R/C", "I/R", "R/I", "R/I/C", "R/I", "I/R/E"],
         "jurusan_terkait": [
           "Teknik Elektro",
           "Teknik Elektronika",
@@ -54,6 +69,14 @@
           "Apakah Anda tertarik dengan perkembangan kecerdasan buatan dan implementasinya pada robot? [6]",
           "Apakah Anda ingin belajar tentang pengembangan sistem otomasi industri? [5]"
         ],
+        "riasecType": [
+          {"type": ["R", "I"], "bobot": [3, 3]},
+          {"type": ["R", "I", "C"], "bobot": [3, 3, 1]},
+          {"type": ["I", "R"], "bobot": [3, 3]},
+          {"type": ["R", "I"], "bobot": [4, 2]},
+          {"type": ["I", "R"], "bobot": [4, 2]},
+          {"type": ["R", "I", "C"], "bobot": [3, 1, 1]}
+        ],
         "karir": [
           "Robotic Engineer [20]",
           "Automation Engineer [19]",
@@ -63,6 +86,7 @@
           "Pengembang Sistem Otomasi Industri [18]",
           "Konsultan Robotika [17]"
         ],
+        "karir_riasec": ["R/I", "R/I/C", "R/C", "I/R", "R/I", "R/I/C", "I/R/E"],
         "jurusan_terkait": [
           "Teknik Mekatronika",
           "Teknik Elektro",
@@ -90,6 +114,14 @@
           "Apakah Anda tertarik mempelajari algoritma dan struktur data? [6]",
           "Apakah Anda ingin mengembangkan keterampilan dalam kecerdasan buatan dan pembelajaran mesin? [6]"
         ],
+        "riasecType": [
+          {"type": ["I", "R", "A"], "bobot": [3, 2, 2]},
+          {"type": ["I", "R"], "bobot": [4, 3]},
+          {"type": ["I", "R", "C"], "bobot": [3, 2, 1]},
+          {"type": ["I", "E", "R"], "bobot": [3, 2, 1]},
+          {"type": ["I", "C"], "bobot": [4, 2]},
+          {"type": ["I", "R"], "bobot": [4, 2]}
+        ],
         "karir": [
           "Software Engineer [20]",
           "Data Scientist [19]",
@@ -99,6 +131,7 @@
           "Security Engineer [19]",
           "DevOps Engineer [19]"
         ],
+        "karir_riasec": ["I/R", "I/C", "I/R", "I/A/R", "I/A/R", "I/C/R", "I/R/C"],
         "jurusan_terkait": [
           "Teknik Informatika",
           "Ilmu Komputer",
@@ -127,6 +160,14 @@
           "Apakah Anda ingin mempelajari cara membangun dan mengatur server? [5]",
           "Apakah Anda tertarik dengan pengelolaan big data dan infrastrukturnya? [5]"
         ],
+        "riasecType": [
+          {"type": ["R", "C", "I"], "bobot": [3, 2, 1]},
+          {"type": ["I", "C", "R"], "bobot": [3, 2, 1]},
+          {"type": ["C", "R"], "bobot": [3, 2]},
+          {"type": ["I", "R"], "bobot": [3, 3]},
+          {"type": ["R", "C"], "bobot": [3, 2]},
+          {"type": ["I", "C", "R"], "bobot": [2, 2, 1]}
+        ],
         "karir": [
           "Network Engineer [19]",
           "System Administrator [18]",
@@ -136,6 +177,7 @@
           "Database Administrator [17]",
           "IT Consultant [18]"
         ],
+        "karir_riasec": ["R/C", "C/R", "C/R/E", "I/R/C", "I/C", "C/I", "I/E/C"],
         "jurusan_terkait": [
           "Teknik Informatika",
           "Sistem Informasi",
@@ -164,6 +206,14 @@
           "Apakah Anda tertarik dengan pengembangan sistem termal dan fluida? [5]",
           "Apakah Anda ingin mempelajari tentang desain dan analisis struktural mekanik? [5]"
         ],
+        "riasecType": [
+          {"type": ["R", "I"], "bobot": [4, 2]},
+          {"type": ["R", "I", "C"], "bobot": [3, 2, 1]},
+          {"type": ["I", "R"], "bobot": [3, 2]},
+          {"type": ["R", "I", "E"], "bobot": [3, 2, 1]},
+          {"type": ["I", "R"], "bobot": [3, 2]},
+          {"type": ["R", "I"], "bobot": [3, 2]}
+        ],
         "karir": [
           "Insinyur Mesin [20]",
           "Teknisi Mesin [19]",
@@ -173,6 +223,7 @@
           "Insinyur Otomotif [19]",
           "Konsultan Teknik Mesin [17]"
         ],
+        "karir_riasec": ["R/I", "R/C", "I/R", "R/I/A", "R/C/I", "R/I", "I/R/E"],
         "jurusan_terkait": [
           "Teknik Mesin",
           "Teknik Industri",
@@ -201,6 +252,14 @@
           "Apakah Anda tertarik dengan perencanaan infrastruktur seperti jalan dan sistem transportasi? [6]",
           "Apakah Anda ingin belajar tentang manajemen sumber daya air dan penanganan bencana? [5]"
         ],
+        "riasecType": [
+          {"type": ["R", "A", "I"], "bobot": [3, 2, 1]},
+          {"type": ["R", "I"], "bobot": [3, 3]},
+          {"type": ["I", "R", "C"], "bobot": [3, 2, 1]},
+          {"type": ["R", "I"], "bobot": [3, 2]},
+          {"type": ["R", "I", "C"], "bobot": [3, 2, 1]},
+          {"type": ["I", "R", "S"], "bobot": [2, 2, 1]}
+        ],
         "karir": [
           "Insinyur Sipil [20]",
           "Pengawas Konstruksi [19]",
@@ -210,6 +269,7 @@
           "Insinyur Geoteknik [18]",
           "Urban Planner [17]"
         ],
+        "karir_riasec": ["R/I", "R/C", "R/I/C", "I/R", "E/C/R", "I/R", "I/S/E"],
         "jurusan_terkait": [
           "Teknik Sipil",
           "Teknik Konstruksi",
@@ -238,6 +298,14 @@
           "Apakah Anda tertarik mengembangkan produk berbasis kimia yang ramah lingkungan? [6]",
           "Apakah Anda ingin mempelajari teknologi pemrosesan minyak bumi dan gas alam? [5]"
         ],
+        "riasecType": [
+          {"type": ["I", "R"], "bobot": [4, 2]},
+          {"type": ["I", "R", "C"], "bobot": [3, 1, 1]},
+          {"type": ["R", "I", "C"], "bobot": [2, 2, 1]},
+          {"type": ["I", "S", "R"], "bobot": [2, 2, 1]},
+          {"type": ["I", "R", "S"], "bobot": [3, 2, 1]},
+          {"type": ["R", "I"], "bobot": [3, 2]}
+        ],
         "karir": [
           "Insinyur Kimia [20]",
           "Proses Engineer [19]",
@@ -247,6 +315,7 @@
           "Insinyur Bioproses [18]",
           "Konsultan Teknik Kimia [17]"
         ],
+        "karir_riasec": ["I/R", "R/I/C", "I/S", "I/R", "C/I", "I/R", "I/E/C"],
         "jurusan_terkait": [
           "Teknik Kimia",
           "Teknik Lingkungan",
@@ -275,6 +344,14 @@
           "Apakah Anda menyukai kombinasi antara teknik, bisnis, dan manajemen? [6]",
           "Apakah Anda ingin mempelajari cara mendesain sistem kerja yang ergonomis? [5]"
         ],
+        "riasecType": [
+          {"type": ["I", "C", "R"], "bobot": [3, 2, 1]},
+          {"type": ["I", "C", "E"], "bobot": [3, 2, 1]},
+          {"type": ["C", "E", "I"], "bobot": [2, 2, 1]},
+          {"type": ["I", "E", "C"], "bobot": [2, 2, 1]},
+          {"type": ["E", "C", "I"], "bobot": [3, 2, 1]},
+          {"type": ["I", "R", "S"], "bobot": [3, 1, 1]}
+        ],
         "karir": [
           "Insinyur Industri [20]",
           "Supply Chain Manager [19]",
@@ -284,6 +361,7 @@
           "Business Process Analyst [17]",
           "Project Manager [18]"
         ],
+        "karir_riasec": ["I/C/R", "C/E", "C/I", "I/E/C", "E/C", "I/C/E", "E/C/I"],
         "jurusan_terkait": [
           "Teknik Industri",
           "Manajemen Rekayasa",
@@ -312,6 +390,14 @@
           "Apakah Anda ingin berkontribusi pada solusi energi masa depan? [5]",
           "Apakah Anda tertarik dengan manajemen energi di industri dan bangunan? [5]"
         ],
+        "riasecType": [
+          {"type": ["I", "R", "S"], "bobot": [2, 2, 2]},
+          {"type": ["R", "I"], "bobot": [3, 3]},
+          {"type": ["S", "I", "R"], "bobot": [2, 2, 1]},
+          {"type": ["R", "I"], "bobot": [3, 3]},
+          {"type": ["I", "S", "E"], "bobot": [2, 2, 1]},
+          {"type": ["C", "R", "I"], "bobot": [2, 2, 1]}
+        ],
         "karir": [
           "Insinyur Energi [20]",
           "Renewable Energy Specialist [19]",
@@ -321,6 +407,7 @@
           "Environmental Engineer [17]",
           "Peneliti Energi Terbarukan [19]"
         ],
+        "karir_riasec": ["R/I", "I/R/S", "R/I", "I/S/C", "R/I", "I/S", "I/R"],
         "jurusan_terkait": [
           "Teknik Energi",
           "Teknik Elektro (Konsentrasi Energi)",

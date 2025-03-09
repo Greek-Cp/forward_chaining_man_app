@@ -155,6 +155,8 @@ class RecommendationResultsScreen extends StatelessWidget {
                         const SizedBox(height: 24),
                         _buildTopRecommendations(context),
                         const SizedBox(height: 24),
+                        _buildRiasecProfile(context, result),
+                        const SizedBox(height: 24),
                         _buildCareerPathways(context),
                         const SizedBox(height: 24),
                         _buildSkillDistributionChart(context),
@@ -177,6 +179,682 @@ class RecommendationResultsScreen extends StatelessWidget {
           child: const Icon(Icons.chat_bubble_outline_rounded,
               color: Colors.white),
         ).animate(onPlay: (controller) => controller.repeat()));
+  }
+
+  String _getRiasecFullName(String code) {
+    switch (code) {
+      case 'R':
+        return 'Realistic';
+      case 'I':
+        return 'Investigative';
+      case 'A':
+        return 'Artistic';
+      case 'S':
+        return 'Social';
+      case 'E':
+        return 'Enterprising';
+      case 'C':
+        return 'Conventional';
+      default:
+        return code;
+    }
+  }
+
+  Widget _buildRiasecProfile(
+      BuildContext context, RecommendationResult result) {
+    // Jika tidak ada profil RIASEC, return widget kosong
+    if (result.riasecProfile == null) {
+      return const SizedBox.shrink();
+    }
+
+    final riasecProfile = result.riasecProfile!;
+
+    // Tentukan warna untuk setiap tipe RIASEC
+    final riasecColors = {
+      'R': Colors.blue.shade700, // Realistic
+      'I': Colors.purple.shade700, // Investigative
+      'A': Colors.red.shade700, // Artistic
+      'S': Colors.green.shade700, // Social
+      'E': Colors.amber.shade700, // Enterprising
+      'C': Colors.teal.shade700, // Conventional
+    };
+
+    // Deskripsi setiap tipe RIASEC
+    final riasecDescriptions = {
+      'R': 'Praktis, menyukai bekerja dengan alat, mesin, dan objek nyata.',
+      'I': 'Analitis, menyukai pemecahan masalah dan penelitian.',
+      'A': 'Kreatif, menyukai ekspresi diri melalui seni dan desain.',
+      'S': 'Membantu, menyukai bekerja dengan orang dan mendukung orang lain.',
+      'E': 'Persuasif, menyukai memimpin dan mempengaruhi orang lain.',
+      'C':
+          'Terorganisir, menyukai bekerja dengan data dan detail yang terstruktur.'
+    };
+
+    final sortedScores = riasecProfile.scores.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Profil RIASEC Kamu',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 5,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Card(
+          elevation: 8,
+          shadowColor: Colors.black38,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white,
+                  Colors.blue.shade50,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.indigo.shade100,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.psychology,
+                        color: Colors.indigo.shade800,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Kode RIASEC Kamu',
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            riasecProfile.code,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              color: Colors.indigo.shade900,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Deskripsi kode RIASEC
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.blue.shade100),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.info_outline, color: Colors.blue.shade700),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Apa itu RIASEC?',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.blue.shade700,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'RIASEC adalah model yang mengklasifikasikan minat dan kepribadian karir ke dalam 6 tipe: Realistic (R), Investigative (I), Artistic (A), Social (S), Enterprising (E), dan Conventional (C). Tipe dominanmu adalah kombinasi dari tipe-tipe teratas.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade800,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                Text(
+                  'Tipe Dominan',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.indigo.shade800,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Tipe dominan dengan deskripsi
+                ...riasecProfile.dominantTypes.map((type) {
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: riasecColors[type] ?? Colors.grey.shade300,
+                        width: 2,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color:
+                                    riasecColors[type] ?? Colors.grey.shade700,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                _getRiasecFullName(type),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '(${type})',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    riasecColors[type] ?? Colors.grey.shade700,
+                              ),
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'Skor: ${riasecProfile.scores[type] ?? 0}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          riasecDescriptions[type] ?? 'Tidak ada deskripsi',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade800,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+
+                const SizedBox(height: 20),
+
+                // Bar chart untuk semua skor RIASEC
+                Container(
+                  height: 230,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Distribusi Skor RIASEC',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade800,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: BarChart(
+                          BarChartData(
+                            alignment: BarChartAlignment.spaceAround,
+                            maxY: sortedScores.isNotEmpty
+                                ? (sortedScores[0].value * 1.2).toDouble()
+                                : 10,
+                            barTouchData: BarTouchData(
+                              enabled: true,
+                              touchTooltipData: BarTouchTooltipData(
+                                getTooltipItem:
+                                    (group, groupIndex, rod, rodIndex) {
+                                  final riasecType =
+                                      sortedScores[groupIndex].key;
+                                  return BarTooltipItem(
+                                    '${_getRiasecFullName(riasecType)}\n',
+                                    const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            '${sortedScores[groupIndex].value}',
+                                        style: const TextStyle(
+                                          color: Colors.amber,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ),
+                            titlesData: FlTitlesData(
+                              show: true,
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget:
+                                      (double value, TitleMeta meta) {
+                                    final index = value.toInt();
+                                    if (index >= 0 &&
+                                        index < sortedScores.length) {
+                                      return SideTitleWidget(
+                                        axisSide: meta.axisSide,
+                                        child: Text(
+                                          sortedScores[index].key,
+                                          style: TextStyle(
+                                            color: riasecColors[
+                                                    sortedScores[index].key] ??
+                                                Colors.grey.shade700,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return const SizedBox.shrink();
+                                  },
+                                  reservedSize: 30,
+                                ),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget:
+                                      (double value, TitleMeta meta) {
+                                    return SideTitleWidget(
+                                      axisSide: meta.axisSide,
+                                      child: Text(
+                                        value.toInt().toString(),
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  reservedSize: 40,
+                                ),
+                              ),
+                              topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              rightTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                            ),
+                            borderData: FlBorderData(
+                              show: false,
+                            ),
+                            barGroups: List.generate(
+                              sortedScores.length,
+                              (index) => BarChartGroupData(
+                                x: index,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: sortedScores[index].value.toDouble(),
+                                    color:
+                                        riasecColors[sortedScores[index].key] ??
+                                            Colors.grey.shade700,
+                                    width: 20,
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(6),
+                                      topRight: Radius.circular(6),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            gridData: FlGridData(
+                              show: true,
+                              drawVerticalLine: false,
+                              getDrawingHorizontalLine: (value) => FlLine(
+                                color: Colors.grey.shade200,
+                                strokeWidth: 1,
+                              ),
+                            ),
+                          ),
+                          swapAnimationDuration:
+                              const Duration(milliseconds: 1500),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Karir yang cocok dengan RIASEC
+                if (riasecProfile.matchingCareers.isNotEmpty) ...[
+                  const SizedBox(height: 20),
+                  Text(
+                    'Karir yang Cocok dengan Profil RIASEC',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.indigo.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.amber.shade200),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Career items with icons
+                        ...riasecProfile.matchingCareers.map((career) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.star,
+                                  size: 16,
+                                  color: Colors.amber.shade700,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    career,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey.shade800,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        )
+            .animate()
+            .fadeIn(delay: const Duration(milliseconds: 300))
+            .slideY(begin: 0.2, end: 0),
+      ],
+    );
+  }
+
+// Fungsi untuk menampilkan kesesuaian RIASEC dalam detail rekomendasi
+  Widget _buildRiasecCompatibility(RecommendationItem item) {
+    // Jika tidak ada data kesesuaian RIASEC, return widget kosong
+    if (item.riasecCompatibility == null ||
+        item.matchingRiasecCareers == null ||
+        item.matchingRiasecCareers!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final compatibility = item.riasecCompatibility!;
+    final matchingCareers = item.matchingRiasecCareers!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        _buildSectionTitle('Kesesuaian RIASEC:', Icons.psychology),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.purple.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.purple.shade200),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  // Circular progress indicator untuk persentase kesesuaian
+                  SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: Stack(
+                      children: [
+                        CircularProgressIndicator(
+                          value: compatibility / 100,
+                          strokeWidth: 8,
+                          backgroundColor: Colors.grey.shade300,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            compatibility >= 70
+                                ? Colors.green.shade600
+                                : compatibility >= 40
+                                    ? Colors.amber.shade600
+                                    : Colors.red.shade600,
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            '${compatibility.toStringAsFixed(0)}%',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.indigo.shade900,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Kesesuaian dengan Profil RIASEC',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple.shade800,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          compatibility >= 70
+                              ? 'Sangat sesuai dengan kepribadian karir kamu'
+                              : compatibility >= 40
+                                  ? 'Cukup sesuai dengan kepribadian karir kamu'
+                                  : 'Kurang sesuai dengan kepribadian karir kamu',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              if (matchingCareers.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 12),
+                Text(
+                  'Karir yang Cocok dengan Profil RIASEC Kamu:',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.purple.shade800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: matchingCareers.map((career) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(
+                          color: Colors.purple.shade300,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.purple.shade200.withOpacity(0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            size: 14,
+                            color: Colors.purple.shade700,
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              career,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade800,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+// Fungsi untuk membuat judul seksi dengan ikon
+  Widget _buildSectionTitle(String title, IconData icon) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: Colors.blue.shade700,
+            size: 18,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildScoreCard(BuildContext context) {
