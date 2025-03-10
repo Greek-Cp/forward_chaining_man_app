@@ -702,7 +702,7 @@ class TeacherDashboardPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Forward Chaining',
+                  'EduGuide',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

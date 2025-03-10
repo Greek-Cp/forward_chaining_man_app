@@ -562,99 +562,93 @@ class QuestionController extends GetxController {
   /// Modified: Return RecommendationResult object instead of a string
   /// Modified: Return RecommendationResult object with balanced scoring
   RecommendationResult runForwardChaining() {
-    // 1. Working Memory: "Q1=Yes" atau "Q1=No"
     final workingMemoryList = <String>[];
     final workingMemory = <String>{};
 
-    // Menampilkan log tentang Working Memory
-    print('Initial Working Memory: $workingMemoryList');
+    // 1️⃣ Menampilkan semua pertanyaan dan jawaban pengguna dengan detail lengkap
+    print('📌 DAFTAR PERTANYAAN & JAWABAN PENGGUNA:');
+    for (var q in allQuestions) {
+      String answer = q.userAnswer == true ? "✅ Yes" : "❌ No";
+      print('\n'
+          '❓ ID: ${q.id}\n'
+          '🔹 Program: ${q.programName}\n'
+          '🔹 Minat: ${q.minatKey}\n'
+          '🔹 Pertanyaan: ${q.questionText}\n'
+          '🔹 Bobot: ${q.bobot}\n'
+          '🔹 Raw Question: ${q.rawQuestionText}\n'
+          '🔸 Jawaban: $answer\n');
+    }
+
+    // 2️⃣ Inisialisasi working memory
+    print('\n🔹 Initial Working Memory: $workingMemoryList');
 
     for (var q in allQuestions) {
       if (q.userAnswer == true) {
-        workingMemory.add('${q.id}=Yes'); // misal "Q1=Yes"
+        workingMemory.add('${q.id}=Yes');
         workingMemoryList.add('${q.id}=Yes');
       } else if (q.userAnswer == false) {
-        workingMemory.add('${q.id}=No'); // "Q1=No" (opsional)
+        workingMemory.add('${q.id}=No');
         workingMemoryList.add('${q.id}=No');
       }
     }
 
-    print('Final Working Memory: $workingMemoryList');
+    print('🔹 Final Working Memory: $workingMemoryList\n');
 
-    // 2. Inisialisasi struktur data untuk minat & RIASEC
+    // 3️⃣ Inisialisasi struktur data untuk menyimpan informasi bobot
     final minatBobotTotal = <String, int>{};
     final minatBobotBenar = <String, int>{};
     final minatContrib = <String, List<String>>{};
 
-    // RIASEC: tambahkan struktur untuk tracking skor RIASEC
-    final riasecScores = <String, int>{
-      'R': 0,
-      'I': 0,
-      'A': 0,
-      'S': 0,
-      'E': 0,
-      'C': 0
-    };
-    final riasecContrib = <String, List<String>>{}; // Penjelasan RIASEC
-
-    // 3. Hitung total bobot per minat dari semua pertanyaan
+    // 4️⃣ Hitung total bobot per minat
     for (var q in allQuestions) {
       final keyMinat = '${q.programName}|${q.minatKey}';
       minatBobotTotal[keyMinat] = (minatBobotTotal[keyMinat] ?? 0) + q.bobot;
     }
 
-    print('Total Bobot per Minat: $minatBobotTotal');
+    print('📌 TOTAL BOBOT PER MINAT:');
+    minatBobotTotal.forEach((key, value) {
+      print('   🔹 $key → Total Bobot: $value');
+    });
+    print('');
 
-    // 5. Generate rules untuk minat dan RIASEC
+    // 5️⃣ Generate rules untuk forward chaining
     final rules = <Rule>[];
     for (var q in allQuestions) {
       final rule = Rule(
-        ifFacts: ['${q.id}=Yes'], // kondisi: Qx=Yes
+        ifFacts: ['${q.id}=Yes'],
         thenAction: (wm) {
           final keyMinat = '${q.programName}|${q.minatKey}';
 
-          // Tambahkan bobot ke skor minat
+          // Tambahkan bobot ke skor benar
           minatBobotBenar[keyMinat] =
               (minatBobotBenar[keyMinat] ?? 0) + q.bobot;
 
           // Catat rule fired untuk penjelasan
           minatContrib[keyMinat] ??= [];
           minatContrib[keyMinat]!
-              .add('IF (${q.id}=Yes) THEN +${q.bobot} skor → $keyMinat\n'
+              .add('✅ IF (${q.id}=Yes) THEN +${q.bobot} skor → $keyMinat\n'
                   '   [Pertanyaan: "${q.questionText}"]');
-
-          // RIASEC: tambahkan skor ke RIASEC jika pertanyaan memiliki tipe RIASEC
-          if (q.riasecTypes != null && q.riasecBobot != null) {
-            for (int i = 0; i < q.riasecTypes!.length; i++) {
-              final riasecType = q.riasecTypes![i];
-              final riasecBobot =
-                  i < q.riasecBobot!.length ? q.riasecBobot![i] : 1;
-
-              riasecScores[riasecType] =
-                  (riasecScores[riasecType] ?? 0) + riasecBobot;
-
-              // Catat kontribusi untuk penjelasan
-              riasecContrib[riasecType] ??= [];
-              riasecContrib[riasecType]!.add(
-                  'Pertanyaan "${q.questionText}" memberikan $riasecBobot poin ke tipe $riasecType');
-            }
-          }
         },
       );
       rules.add(rule);
     }
 
-    // 6. Jalankan Forward Chaining
+    print('📌 GENERATED RULES:');
+    for (var r in rules) {
+      print('- IF ${r.ifFacts} THEN Update Skor');
+    }
+    print('');
+
+    // 6️⃣ Jalankan Forward Chaining
     bool firedSomething = true;
     final firedRules = <Rule>{};
 
-    print('Starting Forward Chaining...');
+    print('🚀 Starting Forward Chaining...\n');
 
     while (firedSomething) {
       firedSomething = false;
       for (var r in rules) {
         if (firedRules.contains(r)) continue;
-
         final allMatch =
             r.ifFacts.every((fact) => workingMemory.contains(fact));
 
@@ -662,67 +656,33 @@ class QuestionController extends GetxController {
           r.thenAction(workingMemory);
           firedRules.add(r);
           firedSomething = true;
-          print('Fired rule: ${r.ifFacts}');
+          print('🔥 Fired Rule: ${r.ifFacts}');
         }
       }
     }
 
-    // 7. Hitung skor persentase untuk minat
+    // 7️⃣ Hitung skor persentase per minat
     final minatScores = <String, int>{};
 
+    print('\n📌 PERHITUNGAN SKOR MINAT:');
     for (var entry in minatBobotTotal.entries) {
       final keyMinat = entry.key;
       final totalBobot = entry.value;
       final bobotBenar = minatBobotBenar[keyMinat] ?? 0;
-
       int percentage = 0;
+
       if (totalBobot > 0) {
         percentage = ((bobotBenar / totalBobot) * 100).round();
       }
 
       minatScores[keyMinat] = percentage;
-      print(
-          '$keyMinat: Bobot Benar = $bobotBenar, Total Bobot = $totalBobot, Persentase = $percentage%');
+
+      print('➡️ $keyMinat: ($bobotBenar / $totalBobot) * 100 = $percentage%');
     }
 
-    print('Final Minat Scores: $minatScores');
+    print('\n🔹 Final Minat Scores: $minatScores\n');
 
-    // 8. Buat profil RIASEC
-    // Tentukan tipe dominan (3 teratas)
-    final sortedRiasecTypes = riasecScores.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-
-    final dominantTypes = sortedRiasecTypes
-        .take(3)
-        .where((e) => e.value > 0)
-        .map((e) => e.key)
-        .toList();
-
-    // Buat kode RIASEC
-    final riasecCode = dominantTypes.join('');
-
-    print('RIASEC Profile: $riasecScores');
-    print('Dominant Types: $dominantTypes');
-    print('RIASEC Code: $riasecCode');
-
-    // Cari karir yang cocok dengan RIASEC
-    final matchingCareers = <String>[];
-
-    // Urutkan minat
-    if (minatScores.isEmpty) {
-      return RecommendationResult(
-        workingMemory: workingMemoryList,
-        recommendations: [],
-        riasecProfile: RiasecProfile(
-          scores: riasecScores,
-          dominantTypes: dominantTypes,
-          code: riasecCode,
-          matchingCareers: matchingCareers,
-        ),
-      );
-    }
-
-    // 9. Urutkan berdasarkan persentase
+    // 8️⃣ Urutkan minat berdasarkan persentase tertinggi
     final sorted = minatScores.entries.toList();
     sorted.sort((a, b) {
       final percentageComparison = b.value.compareTo(a.value);
@@ -733,20 +693,18 @@ class QuestionController extends GetxController {
           .compareTo(minatBobotBenar[a.key] ?? 0);
     });
 
-    print('Sorted Minat Scores: $sorted');
+    print('📌 Sorted Minat Scores: $sorted\n');
 
-    // 10. Ambil top 3 (atau kurang jika tidak cukup)
-    final topRecommendations = sorted.take(min(3, sorted.length)).toList();
-
-    // 11. Buat list rekomendasi
+    // 9️⃣ Ambil top 3 rekomendasi
+    final topRecommendations = sorted.take(3).toList();
     final recommendations = <RecommendationItem>[];
-    print('Top Recommendations:');
 
+    print('📌 TOP RECOMMENDATIONS:');
     for (int i = 0; i < topRecommendations.length; i++) {
       final minatKey = topRecommendations[i].key;
       final score = topRecommendations[i].value;
-
       final parts = minatKey.split('|');
+
       if (parts.length == 2) {
         final progName = parts[0];
         final mKey = parts[1];
@@ -758,51 +716,10 @@ class QuestionController extends GetxController {
         final minatObj = programStudi.minat[mKey];
 
         if (minatObj != null) {
-          // Dapatkan data terkait
           final careers = minatObj.karir;
           final majors = minatObj.jurusanTerkait;
           final rules = minatContrib[minatKey] ?? [];
 
-          // Get additional data if available
-          List<String>? recommendedCourses = minatObj.rekomendasi_kursus;
-          List<String>? recommendedUniversities =
-              minatObj.universitas_rekomendasi;
-
-          // Tambahan RIASEC: cari karir yang cocok dengan profil RIASEC pengguna
-          final matchingRiasecCareers = <String>[];
-          double riasecCompatibility = 0.0;
-
-          // Jika minat memiliki karir_riasec
-          if (minatObj.karir_riasec.isNotEmpty) {
-            int matchCount = 0;
-
-            for (int j = 0; j < minatObj.karir.length; j++) {
-              if (j < minatObj.karir_riasec.length) {
-                final careerRiasec = minatObj.karir_riasec[j];
-
-                // Hitung kemiripan RIASEC karir dengan pengguna
-                bool isMatching = false;
-                for (final type in dominantTypes) {
-                  if (careerRiasec.contains(type)) {
-                    isMatching = true;
-                    break;
-                  }
-                }
-
-                if (isMatching) {
-                  matchCount++;
-                  matchingRiasecCareers.add(minatObj.karir[j]);
-                }
-              }
-            }
-
-            // Hitung persentase kesesuaian
-            if (minatObj.karir.isNotEmpty) {
-              riasecCompatibility = (matchCount / minatObj.karir.length) * 100;
-            }
-          }
-
-          // Tambahkan rekomendasi lengkap dengan data RIASEC
           recommendations.add(
             RecommendationItem(
               title: minatKey,
@@ -811,35 +728,21 @@ class QuestionController extends GetxController {
               majors: majors,
               rules: rules,
               index: i,
-              recommendedCourses: recommendedCourses,
-              recommendedUniversities: recommendedUniversities,
-              riasecCompatibility: riasecCompatibility,
-              matchingRiasecCareers: matchingRiasecCareers,
             ),
           );
 
-          // Log each recommendation
-          print('Recommendation ${i + 1}: $minatKey, Score: $score');
-          print('Careers: $careers');
-          print('Majors: $majors');
-          print('RIASEC Compatibility: $riasecCompatibility%');
-          print('Matching RIASEC Careers: $matchingRiasecCareers');
+          print('⭐ Recommendation ${i + 1}: $minatKey');
+          print('   🔹 Score: $score%');
+          print('   📌 Careers: $careers');
+          print('   🎓 Majors: $majors');
+          print('   🔎 Rules Applied: $rules\n');
         }
       }
     }
 
-    // Buat profil RIASEC lengkap
-    final riasecProfile = RiasecProfile(
-      scores: riasecScores,
-      dominantTypes: dominantTypes,
-      code: riasecCode,
-      matchingCareers: matchingCareers,
-    );
-
     return RecommendationResult(
       workingMemory: workingMemoryList,
       recommendations: recommendations,
-      riasecProfile: riasecProfile,
     );
   }
 
