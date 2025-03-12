@@ -17,6 +17,7 @@ import 'package:get/get.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -761,10 +762,35 @@ class QuestionController extends GetxController {
         return;
       }
 
-      // Dapatkan informasi kelas siswa dari Firestore
+      // Get schoolId from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      String? schoolId = prefs.getString('school_id');
+
+      // If schoolId is not found in SharedPreferences, try to find it by searching all schools
+      if (schoolId == null || schoolId.isEmpty) {
+        schoolId = await _findStudentSchoolId(user.uid);
+
+        if (schoolId == null || schoolId.isEmpty) {
+          Get.snackbar(
+            'Error',
+            'Tidak dapat menemukan sekolah terkait',
+            backgroundColor: Colors.red.shade100,
+            colorText: Colors.red.shade800,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          return;
+        }
+
+        // Save school ID for future use
+        await prefs.setString('school_id', schoolId);
+      }
+
+      // Dapatkan informasi kelas siswa dari Firestore dengan struktur baru
       String? studentClass;
       try {
         DocumentSnapshot studentDoc = await FirebaseFirestore.instance
+            .collection('schools')
+            .doc(schoolId)
             .collection('students')
             .doc(user.uid)
             .get();
@@ -822,14 +848,13 @@ class QuestionController extends GetxController {
         };
       }
 
-      // Save to Firestore
-      await FirebaseFirestore.instance
-          .collection('recommendation_history')
-          .add({
+      // Prepare recommendation data
+      Map<String, dynamic> recommendationData = {
         'userId': user.uid,
         'userEmail': user.email,
         'userName': user.displayName,
-        'studentClass': studentClass, // Tambahkan informasi kelas
+        'schoolId': schoolId, // Add schoolId to data
+        'studentClass': studentClass,
         'timestamp': FieldValue.serverTimestamp(),
         'formattedTimestamp': timestamp.toString(),
         'isKerja': isKerja,
@@ -839,9 +864,16 @@ class QuestionController extends GetxController {
         'recommendations': recommendationsData,
         'totalQuestions': totalCount,
         'answeredQuestions': answeredCount,
-        // Tambahkan data RIASEC profile
         'riasecProfile': riasecProfileData,
-      });
+      };
+
+      // Save to the school's recommendation_history subcollection with user ID as document ID
+      await FirebaseFirestore.instance
+          .collection('schools')
+          .doc(schoolId)
+          .collection('recommendation_history')
+          .doc(user.uid)
+          .set(recommendationData, SetOptions(merge: true));
 
       Get.snackbar(
         'Berhasil',
@@ -859,6 +891,27 @@ class QuestionController extends GetxController {
         colorText: Colors.red.shade800,
         snackPosition: SnackPosition.BOTTOM,
       );
+    }
+  }
+
+// Helper function to find a student's school ID
+  Future<String?> _findStudentSchoolId(String userId) async {
+    try {
+      final schoolsSnapshot =
+          await FirebaseFirestore.instance.collection('schools').get();
+
+      for (var schoolDoc in schoolsSnapshot.docs) {
+        final studentDoc =
+            await schoolDoc.reference.collection('students').doc(userId).get();
+
+        if (studentDoc.exists) {
+          return schoolDoc.id;
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error finding student school ID: $e');
+      return null;
     }
   }
 

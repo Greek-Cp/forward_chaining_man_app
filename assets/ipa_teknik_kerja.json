@@ -42,7 +42,14 @@
           "Teknisi Telekomunikasi [18]"
         ],
         "karir_riasec": ["R/I", "R/I", "R/C", "R", "R/C", "R/I", "R/I"],
-        "jurusan_terkait": [],
+        "jurusan_terkait": [
+          "D3 Teknik Elektronika",
+          "D3 Teknik Telekomunikasi",
+          "D3 Teknik Listrik",
+          "D3 Teknik Komputer",
+          "S1 Teknik Elektro",
+          "D3 Instrumentasi dan Kontrol Industri"
+        ],
         "rekomendasi_kursus": [
           "Sertifikasi Teknisi Elektronika Dasar",
           "Kursus Perbaikan Smartphone dan Komputer",
@@ -51,7 +58,7 @@
           "Pelatihan Perakitan PCB"
         ]
       },
-      "Robotika": {
+      "Mekatronika & Otomasi": {
         "pertanyaan": [
           "Apakah Anda tertarik untuk mengembangkan robot atau mesin otomatis dengan belajar mandiri? [7]",
           "Apakah Anda ingin bekerja dengan sistem robot dan otomatisasi tanpa kuliah formal? [7]",
@@ -69,16 +76,19 @@
           {"type": ["R", "E"], "bobot": [4, 2]}
         ],
         "karir": [
-          "Teknisi Robotika [20]",
-          "Operator Robot Industri [18]",
-          "Teknisi Pemeliharaan Sistem Otomasi [19]",
-          "Asisten Pengembang Robot [17]",
-          "Teknisi IoT dan Smart Systems [18]",
-          "Teknisi Mekatronika [19]",
-          "Assembly Line Automation Technician [17]"
+          "Operator Mesin Produksi [18]",
+          "Teknisi Maintenance Pabrik [19]",
+          "Petugas Lini Produksi [17]"
         ],
-        "karir_riasec": ["R/I", "R", "R/I", "I/R", "I/R", "R/I", "R/C"],
-        "jurusan_terkait": [],
+        "karir_riasec": ["R", "R/I", "R/C"],
+        "jurusan_terkait": [
+          "D3 Mekatronika",
+          "D3 Teknik Otomasi",
+          "S1 Teknik Elektro",
+          "D3 Teknik Elektronika",
+          "S1 Teknik Mesin",
+          "D3 Instrumentasi dan Kontrol Industri"
+        ],
         "rekomendasi_kursus": [
           "Pelatihan Arduino dan Mikrokontroler",
           "Sertifikasi Teknisi Otomasi Industri",
@@ -109,12 +119,18 @@
           "Junior Mobile App Developer [19]",
           "Front-End Developer [18]",
           "Technical Support [17]",
-          "Junior Software Tester [17]",
-          "Junior UI/UX Designer [18]",
+          "Content Creator Digital [17]",
           "Freelance Programmer [19]"
         ],
-        "karir_riasec": ["I/A", "I/A", "I/A", "I/S", "I/C", "A/I", "I/A/E"],
-        "jurusan_terkait": [],
+        "karir_riasec": ["I/A", "I/A", "I/A", "I/S", "I/A", "I/A/E"],
+        "jurusan_terkait": [
+          "D3 Teknik Informatika",
+          "D3 Manajemen Informatika",
+          "S1 Teknik Informatika",
+          "S1 Ilmu Komputer",
+          "D3 Sistem Informasi",
+          "D3 Rekayasa Perangkat Lunak"
+        ],
         "rekomendasi_kursus": [
           "Bootcamp Pemrograman Web/Mobile",
           "Sertifikasi HTML, CSS, JavaScript",
@@ -146,12 +162,17 @@
           "IT Support Specialist [19]",
           "Network Technician [19]",
           "Helpdesk Support [17]",
-          "Junior System Administrator [18]",
-          "Teknisi Instalasi Internet [18]",
-          "Teknisi Keamanan IT [19]"
+          "Teknisi Instalasi Internet [18]"
         ],
-        "karir_riasec": ["R/I", "R/S/I", "R/I", "S/I", "I/C", "R/I", "I/C"],
-        "jurusan_terkait": [],
+        "karir_riasec": ["R/I", "R/S/I", "R/I", "S/I", "R/I"],
+        "jurusan_terkait": [
+          "D3 Teknik Komputer Jaringan",
+          "D3 Teknik Informatika",
+          "S1 Sistem Informasi",
+          "D3 Manajemen Informatika",
+          "S1 Teknik Komputer",
+          "D3 Keamanan Sistem Informasi"
+        ],
         "rekomendasi_kursus": [
           "Sertifikasi CompTIA A+",
           "Sertifikasi CompTIA Network+",
@@ -183,12 +204,18 @@
           "Operator Mesin CNC [19]",
           "Teknisi Pemeliharaan Industri [19]",
           "Teknisi Otomotif [18]",
-          "Drafter CAD [17]",
           "Operator Alat Berat [18]",
           "Welder/Tukang Las [17]"
         ],
-        "karir_riasec": ["R", "R/C", "R", "R", "R/A/C", "R", "R"],
-        "jurusan_terkait": [],
+        "karir_riasec": ["R", "R/C", "R", "R", "R", "R"],
+        "jurusan_terkait": [
+          "D3 Teknik Mesin",
+          "D3 Teknik Manufaktur",
+          "D3 Otomotif",
+          "S1 Teknik Mesin",
+          "D3 Teknik Alat Berat",
+          "D3 Teknologi Produksi dan Manufaktur"
+        ],
         "rekomendasi_kursus": [
           "Pelatihan Operator Mesin CNC",
           "Sertifikasi Teknisi Mesin Industri",
@@ -216,16 +243,21 @@
           {"type": ["R", "I"], "bobot": [4, 2]}
         ],
         "karir": [
-          "Teknisi Sipil [20]",
-          "Pengawas Konstruksi [19]",
+          "Pelaksana Lapangan Konstruksi [19]",
           "Surveyor Lapangan [18]",
-          "Drafter CAD Konstruksi [17]",
-          "Estimator Biaya Proyek [18]",
-          "Teknisi Pengujian Material [17]",
-          "Asisten Kontraktor [16]"
+          "Juru Gambar/Drafter [17]",
+          "Mandor Bangunan [18]",
+          "Tenaga Administrasi Proyek [16]"
         ],
-        "karir_riasec": ["R/I", "R/E", "R/I", "R/A/C", "C/I", "R/I", "R/E"],
-        "jurusan_terkait": [],
+        "karir_riasec": ["R/E", "R/I", "R/A/C", "R/E", "C/R"],
+        "jurusan_terkait": [
+          "D3 Teknik Sipil",
+          "D3 Konstruksi Gedung",
+          "D3 Teknik Survey dan Pemetaan",
+          "S1 Teknik Sipil",
+          "D3 Arsitektur",
+          "D3 Konstruksi Sipil"
+        ],
         "rekomendasi_kursus": [
           "Pelatihan AutoCAD untuk Konstruksi",
           "Kursus Quantity Surveying",
@@ -253,16 +285,21 @@
           {"type": ["I", "C"], "bobot": [3, 2]}
         ],
         "karir": [
-          "Teknisi Kimia [20]",
           "Operator Proses Kimia [19]",
-          "Quality Control Produk Kimia [18]",
-          "Teknisi Laboratorium Kimia [19]",
-          "Teknisi Pengolahan Limbah [18]",
+          "Petugas Pengecekan Produk [18]",
+          "Petugas Instalasi Pengolahan Limbah [18]",
           "Operator Instalasi Pengolahan Air [17]",
-          "Teknisi Health & Safety [16]"
+          "Petugas K3 Pabrik [16]"
         ],
-        "karir_riasec": ["R/I", "R/C", "C/I", "I/R", "R/I", "R", "C/S"],
-        "jurusan_terkait": [],
+        "karir_riasec": ["R/C", "C/I", "R/I", "R", "C/S"],
+        "jurusan_terkait": [
+          "D3 Teknik Kimia",
+          "D3 Analis Kimia",
+          "S1 Teknik Kimia",
+          "D3 Teknik Lingkungan",
+          "D3 K3 (Keselamatan dan Kesehatan Kerja)",
+          "D3 Kimia Industri"
+        ],
         "rekomendasi_kursus": [
           "Sertifikasi K3 Kimia",
           "Pelatihan Operator Proses Kimia Industri",
@@ -294,12 +331,17 @@
           "Teknisi Panel Surya [19]",
           "Operator Pembangkit Listrik [18]",
           "Teknisi Instalasi Listrik [18]",
-          "Teknisi Turbin Angin [17]",
-          "Teknisi Pemeliharaan Sistem Energi [19]",
-          "Teknisi Smart Grid [18]"
+          "Teknisi Pemeliharaan Sistem Energi [19]"
         ],
-        "karir_riasec": ["R", "R/I", "R/C", "R", "R/I", "R/C", "R/I"],
-        "jurusan_terkait": [],
+        "karir_riasec": ["R", "R/I", "R/C", "R", "R/C"],
+        "jurusan_terkait": [
+          "D3 Teknik Listrik",
+          "D3 Teknik Elektro",
+          "D3 Teknik Energi Terbarukan",
+          "S1 Teknik Elektro",
+          "D3 Teknik Tenaga Listrik",
+          "D3 Instrumentasi dan Kontrol Industri"
+        ],
         "rekomendasi_kursus": [
           "Sertifikasi Teknisi Listrik",
           "Pelatihan Instalasi Panel Surya",
@@ -328,15 +370,21 @@
         ],
         "karir": [
           "Mekanik Otomotif [20]",
-          "Teknisi Mobil Listrik/Hybrid [19]",
-          "Teknisi Diagnostik Kendaraan [18]",
+          "Mekanik Sepeda Motor [19]",
           "Teknisi Kelistrikan Otomotif [18]",
           "Teknisi AC Mobil [17]",
           "Service Advisor [16]",
-          "Teknisi Mesin Industri [17]"
+          "Petugas Bengkel Umum [17]"
         ],
-        "karir_riasec": ["R", "R/I", "R/I", "R/I", "R", "S/E/R", "R"],
-        "jurusan_terkait": [],
+        "karir_riasec": ["R", "R", "R/I", "R", "S/E/R", "R"],
+        "jurusan_terkait": [
+          "D3 Teknik Otomotif",
+          "D3 Teknik Mesin",
+          "S1 Teknik Otomotif",
+          "D3 Teknologi Kendaraan Ringan",
+          "D3 Mekatronika",
+          "D3 Alat Berat"
+        ],
         "rekomendasi_kursus": [
           "Sertifikasi Mekanik Otomotif",
           "Pelatihan Teknisi Mobil Listrik",

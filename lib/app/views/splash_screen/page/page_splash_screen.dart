@@ -7,6 +7,8 @@ import 'package:forward_chaining_man_app/app/views/student/page_student_dashboar
 import 'package:get/get.dart';
 import 'dart:math' as math;
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -141,14 +143,49 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       User? currentUser = _auth.currentUser;
       if (currentUser != null) {
-        // Check if user data exists in Firestore
-        final docSnapshot =
-            await _firestore.collection('students').doc(currentUser.uid).get();
-        if (docSnapshot.exists) {
-          // Navigate to dashboard
-          Get.offAll(() => const PageStudentDashboard());
-        } else {
-          // User authenticated but no profile
+        // Get the schoolId from shared preferences
+        final prefs = await SharedPreferences.getInstance();
+        final schoolId = prefs.getString('school_id');
+
+        if (schoolId != null && schoolId.isNotEmpty) {
+          // Check if user data exists in the specific school
+          final docSnapshot = await _firestore
+              .collection('schools')
+              .doc(schoolId)
+              .collection('students')
+              .doc(currentUser.uid)
+              .get();
+
+          if (docSnapshot.exists) {
+            // Navigate to dashboard
+            Get.offAll(() => const PageStudentDashboard());
+            return;
+          }
+        }
+
+        // If no school ID found or user not found in that school, search all schools
+        final schoolsSnapshot = await _firestore.collection('schools').get();
+        bool foundInAnySchool = false;
+
+        for (var schoolDoc in schoolsSnapshot.docs) {
+          final studentDoc = await schoolDoc.reference
+              .collection('students')
+              .doc(currentUser.uid)
+              .get();
+
+          if (studentDoc.exists) {
+            // Found student in this school, save the school ID
+            await prefs.setString('school_id', schoolDoc.id);
+            foundInAnySchool = true;
+
+            // Navigate to dashboard
+            Get.offAll(() => const PageStudentDashboard());
+            break;
+          }
+        }
+
+        if (!foundInAnySchool) {
+          // User authenticated but no profile found in any school
           Get.offAll(() => const IntroPage());
         }
       } else {

@@ -1,0 +1,184 @@
+{
+    "beasiswa": [
+      {
+        "nama": "Beasiswa Indonesia Maju (BIM)",
+        "penyelenggara": "Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi",
+        "jenjang": ["S1", "S2"],
+        "bidang_studi": ["Semua Bidang Studi"],
+        "deskripsi": "Beasiswa bergelar (S1 dan S2) serta beasiswa non-gelar (Program Persiapan S1 Luar Negeri).",
+        "persyaratan": [
+          "WNI",
+          "Memiliki IPK minimal 3.0",
+          "Lolos seleksi administrasi, substansi, dan wawancara"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://bim-pusatprestasinasional.kemdikbud.go.id/"
+      },
+      {
+        "nama": "Beasiswa KIP Kuliah",
+        "penyelenggara": "Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Semua Bidang Studi"],
+        "deskripsi": "Bantuan biaya pendidikan dan biaya hidup bagi mahasiswa dari keluarga kurang mampu.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki KIP",
+          "Lolos seleksi administrasi"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://kip-kuliah.kemdikbud.go.id/"
+      },
+      {
+        "nama": "Beasiswa LPDP (Lembaga Pengelola Dana Pendidikan)",
+        "penyelenggara": "Kementerian Keuangan RI",
+        "jenjang": ["S1", "S2", "S3"],
+        "bidang_studi": ["Semua Bidang Studi"],
+        "deskripsi": "Beasiswa penuh yang mencakup biaya pendidikan dan biaya hidup untuk pendidikan dalam dan luar negeri.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki IPK minimal 3.0 untuk S1, 3.25 untuk S2/S3",
+          "Usia maksimal 21 tahun untuk S1, 35 tahun untuk S2, 40 tahun untuk S3",
+          "Lolos seleksi administrasi, substansi, dan wawancara"
+        ],
+        "deadline": "Biasanya dibuka 2-3 kali setahun",
+        "link": "https://www.lpdp.kemenkeu.go.id"
+      },
+      {
+        "nama": "Beasiswa S1 Glow and Lovely Bintang Beasiswa",
+        "penyelenggara": "Glow and Lovely",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Semua Bidang Studi"],
+        "deskripsi": "Beasiswa penuh untuk program S1 di bidang yang relevan.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki prestasi akademik yang baik"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://www.glowandlovely.in"
+      },
+      {
+        "nama": "Beasiswa Bank Indonesia",
+        "penyelenggara": "Bank Indonesia",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Ekonomi", "Keuangan", "Pendidikan"],
+        "deskripsi": "Bantuan dana pendidikan bulanan, pelatihan soft skill dan hard skill, serta workshop.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki IPK minimal 3.0",
+          "Lolos seleksi administrasi dan wawancara"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://www.kompas.com/edu/read/2025/01/27/125955371/beasiswa-bank-indonesia-2025-dibuka-cek-syarat-dan-cara-daftar"
+      },
+      {
+        "nama": "Beasiswa Van Deventer-Maas Indonesia (VDMI)",
+        "penyelenggara": "VDMI",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Semua Bidang Studi"],
+        "deskripsi": "Bantuan dana bulanan, bonus lulus tepat waktu, bonus TOEFL, serta pelatihan pengembangan kapasitas pribadi.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki prestasi akademik yang baik",
+          "Lolos seleksi administrasi dan wawancara"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://beasiswapascasarjana.com"
+      },
+      {
+        "nama": "Beasiswa Dataprint",
+        "penyelenggara": "Dataprint",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Semua Bidang Studi"],
+        "deskripsi": "Bantuan dana sebesar Rp500.000 yang diberikan satu kali.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki prestasi akademik yang baik"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://indbeasiswa.com/beasiswa-dataprint/"
+      },
+      {
+        "nama": "Beasiswa Pertamina Sobat Bumi",
+        "penyelenggara": "Pertamina",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Semua Bidang Studi"],
+        "deskripsi": "Dana hidup bulanan dan dana program pengabdian untuk desa.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki IPK minimal 3.0",
+          "Lolos seleksi administrasi"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://indbeasiswa.com/beasiswa-pertamina-sobat-bumi/"
+      },
+      {
+        "nama": "Beasiswa Karya Salemba Empat (KSE)",
+        "penyelenggara": "Karya Salemba Empat",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Semua Bidang Studi"],
+        "deskripsi": "Bantuan dana pendidikan dan pengembangan diri.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki IPK minimal 3.0",
+          "Lolos seleksi administrasi"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://indbeasiswa.com/beasiswa-karya-salemba-empat/"
+      },
+      {
+        "nama": "Beasiswa Djarum Plus",
+        "penyelenggara": "Djarum Foundation",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Semua Bidang Studi"],
+        "deskripsi": "Bantuan dana bulanan dan program pengembangan diri.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki prestasi akademik yang baik"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://indbeasiswa.com/beasiswa-djarum-plus/"
+      },
+      {
+        "nama": "Beasiswa Tanoto Foundation",
+        "penyelenggara": "Tanoto Foundation",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Semua Bidang Studi"],
+        "deskripsi": "Bantuan biaya pendidikan dan biaya hidup.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki IPK minimal 3.0",
+          "Lolos seleksi administrasi dan wawancara"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://indbeasiswa.com/beasiswa-tanoto-foundation/"
+      },
+      {
+        "nama": "Beasiswa Bakti BCA",
+        "penyelenggara": "BCA",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Ekonomi", "Pendidikan", "Keuangan"],
+        "deskripsi": "Uang saku bulanan dan bantuan UKT (Uang Kuliah Tunggal).",
+        "persyaratan": [
+          "WNI",
+          "Memiliki IPK minimal 3.0",
+          "Lolos seleksi administrasi dan wawancara"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://indbeasiswa.com/beasiswa-bakti-bca/"
+      },
+      {
+        "nama": "Beasiswa BCA Finance",
+        "penyelenggara": "BCA Finance",
+        "jenjang": ["S1"],
+        "bidang_studi": ["Ekonomi", "Keuangan"],
+        "deskripsi": "Bantuan biaya kuliah per semester.",
+        "persyaratan": [
+          "WNI",
+          "Memiliki IPK minimal 3.0"
+        ],
+        "deadline": "Biasanya dibuka setiap tahun",
+        "link": "https://indbeasiswa.com/beasiswa-bca-finance/"
+      }
+    ]
+  }
+  

@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -999,8 +1000,32 @@ class RecommendationDetailPage extends StatelessWidget {
 
   void _deleteRecommendation() async {
     try {
-      // Delete from Firestore
+      final prefs = await SharedPreferences.getInstance();
+
+      String? schoolId = prefs.getString('school_id');
+
+      // Check if we have the schoolId
+      if (schoolId == null || schoolId!.isEmpty) {
+        // Try to get schoolId from SharedPreferences if not provided
+        final prefs = await SharedPreferences.getInstance();
+        schoolId = prefs.getString('school_id');
+
+        if (schoolId == null || schoolId!.isEmpty) {
+          Get.snackbar(
+            'Error',
+            'Tidak dapat menemukan data sekolah',
+            backgroundColor: Colors.red.shade100,
+            colorText: Colors.red.shade800,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          return;
+        }
+      }
+
+      // Delete from school's recommendation_history subcollection
       await FirebaseFirestore.instance
+          .collection('schools')
+          .doc(schoolId)
           .collection('recommendation_history')
           .doc(documentId)
           .delete();

@@ -17,6 +17,7 @@ import 'package:forward_chaining_man_app/app/views/student/model/data_student.da
 import 'package:get/get.dart';
 import 'dart:math' as math;
 import 'package:intl/intl.dart' as intl;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'feature/quiz/view/page_select_economy.dart';
@@ -235,10 +236,34 @@ class DevDataViewerController extends GetxController {
 
 class PageStudentDashboard extends StatelessWidget {
   const PageStudentDashboard({Key? key}) : super(key: key);
+  Future<DocumentSnapshot> _findStudentInAllSchools(String? userId) async {
+    if (userId == null) {
+      // Return an empty document that won't exist
+      return FirebaseFirestore.instance.collection('dummy').doc('dummy').get();
+    }
+
+    final schoolsSnapshot =
+        await FirebaseFirestore.instance.collection('schools').get();
+
+    for (var schoolDoc in schoolsSnapshot.docs) {
+      final studentDoc =
+          await schoolDoc.reference.collection('students').doc(userId).get();
+
+      if (studentDoc.exists) {
+        // Save the school ID for future use
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('school_id', schoolDoc.id);
+
+        return studentDoc;
+      }
+    }
+
+    // If student not found in any school, return an empty document
+    return FirebaseFirestore.instance.collection('dummy').doc('dummy').get();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(DeveloperModeController());
     final User? currentUser = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
@@ -436,66 +461,88 @@ class PageStudentDashboard extends StatelessWidget {
               const SizedBox(height: 24),
 
               // User welcome section
-              FutureBuilder<DocumentSnapshot>(
-                future: FirebaseFirestore.instance
-                    .collection('students')
-                    .doc(currentUser?.uid)
-                    .get(),
-                builder: (context, snapshot) {
-                  String userName = "Siswa";
-                  String userClass = "";
-
-                  if (snapshot.hasData && snapshot.data!.exists) {
-                    final userData =
-                        snapshot.data!.data() as Map<String, dynamic>;
-                    userName = userData['name'] ?? "Siswa";
-                    userClass = userData['class'] ?? "";
+              FutureBuilder<String>(
+                // First, get the school ID from SharedPreferences
+                future: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  return prefs.getString('school_id') ?? '';
+                }(),
+                builder: (context, schoolSnapshot) {
+                  if (schoolSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
                   }
 
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.waving_hand_rounded,
-                          color: Colors.amber.shade300,
-                          size: 24,
+                  // Once we have the school ID (or not), proceed
+                  String schoolId = schoolSnapshot.data ?? '';
+
+                  return FutureBuilder<DocumentSnapshot>(
+                    future: schoolId.isNotEmpty
+                        // If we have a school ID, try to get the student directly
+                        ? FirebaseFirestore.instance
+                            .collection('schools')
+                            .doc(schoolId)
+                            .collection('students')
+                            .doc(currentUser?.uid)
+                            .get()
+                        // If no school ID, find the student in all schools
+                        : _findStudentInAllSchools(currentUser?.uid),
+                    builder: (context, snapshot) {
+                      String userName = "Siswa";
+                      String userClass = "";
+
+                      if (snapshot.hasData && snapshot.data!.exists) {
+                        final userData =
+                            snapshot.data!.data() as Map<String, dynamic>;
+                        userName = userData['name'] ?? "Siswa";
+                        userClass = userData['class'] ?? "";
+                      }
+
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Hai, $userName!',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              if (userClass.isNotEmpty)
-                                Text(
-                                  'Kelas $userClass',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white70,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.waving_hand_rounded,
+                              color: Colors.amber.shade300,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Hai, $userName!',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                            ],
-                          ),
+                                  if (userClass.isNotEmpty)
+                                    Text(
+                                      'Kelas $userClass',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   );
                 },
               ),
-
               const SizedBox(height: 16),
 
               // User Recommendation History
@@ -550,15 +597,14 @@ class PageStudentDashboard extends StatelessWidget {
                       const SizedBox(height: 8),
                       SizedBox(
                         height: 170, // Fixed height for the history list
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('recommendation_history')
-                              .where('userId', isEqualTo: currentUser.uid)
-                              .orderBy('timestamp', descending: true)
-                              .limit(5)
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
+                        child: FutureBuilder<String>(
+                          // First get the school ID
+                          future: () async {
+                            final prefs = await SharedPreferences.getInstance();
+                            return prefs.getString('school_id') ?? '';
+                          }(),
+                          builder: (context, schoolSnapshot) {
+                            if (schoolSnapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return const Center(
                                 child: CircularProgressIndicator(
@@ -569,149 +615,194 @@ class PageStudentDashboard extends StatelessWidget {
                               );
                             }
 
-                            if (snapshot.hasError) {
-                              return Center(
-                                child: Text(
-                                  'Error: ${snapshot.error}',
-                                  style: const TextStyle(color: Colors.white70),
-                                ),
-                              );
+                            if (schoolSnapshot.hasError ||
+                                !schoolSnapshot.hasData ||
+                                schoolSnapshot.data!.isEmpty) {
+                              // If we can't get school ID, search in all schools
+                              return _buildAllSchoolsStreamBuilder(
+                                  currentUser.uid);
                             }
 
-                            if (!snapshot.hasData ||
-                                snapshot.data!.docs.isEmpty) {
-                              return Container(
-                                height: 170,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.05),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    'Belum ada riwayat rekomendasi.\nMulai aplikasi untuk mendapatkan rekomendasi.',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 13,
+                            final schoolId = schoolSnapshot.data!;
+
+                            // Now we have the school ID, use it to query the subcollection
+                            return StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('schools')
+                                  .doc(schoolId)
+                                  .collection('recommendation_history')
+                                  .where('userId', isEqualTo: currentUser.uid)
+                                  .orderBy('timestamp', descending: true)
+                                  .limit(5)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white70),
+                                      strokeWidth: 2,
                                     ),
-                                  ),
-                                ),
-                              );
-                            }
-
-                            return ListView.builder(
-                              padding: EdgeInsets.zero,
-                              itemCount: snapshot.data!.docs.length,
-                              itemBuilder: (context, index) {
-                                final doc = snapshot.data!.docs[index];
-                                final data = doc.data() as Map<String, dynamic>;
-
-                                // Extract recommendation data
-                                String questionMode =
-                                    data['questionMode'] ?? 'Tidak diketahui';
-                                final timestamp =
-                                    data['timestamp'] as Timestamp?;
-                                final formattedDate = timestamp != null
-                                    ? intl.DateFormat('dd/MM/yyyy HH:mm')
-                                        .format(timestamp.toDate())
-                                    : 'Tidak ada tanggal';
-
-                                // Get top recommendation if available
-                                String topRecommendation =
-                                    'Tidak ada rekomendasi';
-                                if (data['recommendations'] != null &&
-                                    (data['recommendations'] as List)
-                                        .isNotEmpty) {
-                                  final recommendations =
-                                      data['recommendations'] as List;
-                                  if (recommendations.isNotEmpty) {
-                                    topRecommendation = recommendations[0]
-                                            ['title'] ??
-                                        'Tidak ada judul';
-                                  }
+                                  );
                                 }
 
-                                return GestureDetector(
-                                  onTap: () {
-                                    // Navigate to recommendation detail
-                                    Get.to(() => RecommendationDetailPage(
-                                          data: data,
-                                          documentId: doc.id,
-                                        ));
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.only(bottom: 8),
-                                    padding: const EdgeInsets.all(12),
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text(
+                                      'Error: ${snapshot.error}',
+                                      style: const TextStyle(
+                                          color: Colors.white70),
+                                    ),
+                                  );
+                                }
+
+                                if (!snapshot.hasData ||
+                                    snapshot.data!.docs.isEmpty) {
+                                  return Container(
+                                    height: 170,
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.1),
+                                      color: Colors.white.withOpacity(0.05),
                                       borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: Colors.white.withOpacity(0.1),
-                                        width: 1,
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        'Belum ada riwayat rekomendasi.\nMulai aplikasi untuk mendapatkan rekomendasi.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 13,
+                                        ),
                                       ),
                                     ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            color: questionMode
-                                                    .contains('Karir')
-                                                ? Colors.orange.withOpacity(0.2)
-                                                : Colors.green.withOpacity(0.2),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                  );
+                                }
+
+                                return ListView.builder(
+                                  padding: EdgeInsets.zero,
+                                  itemCount: snapshot.data!.docs.length,
+                                  itemBuilder: (context, index) {
+                                    final doc = snapshot.data!.docs[index];
+                                    final data =
+                                        doc.data() as Map<String, dynamic>;
+
+                                    // Extract recommendation data
+                                    String questionMode =
+                                        data['questionMode'] ??
+                                            'Tidak diketahui';
+                                    final timestamp =
+                                        data['timestamp'] as Timestamp?;
+                                    final formattedDate = timestamp != null
+                                        ? intl.DateFormat('dd/MM/yyyy HH:mm')
+                                            .format(timestamp.toDate())
+                                        : 'Tidak ada tanggal';
+
+                                    // Get top recommendation if available
+                                    String topRecommendation =
+                                        'Tidak ada rekomendasi';
+                                    if (data['recommendations'] != null &&
+                                        (data['recommendations'] as List)
+                                            .isNotEmpty) {
+                                      final recommendations =
+                                          data['recommendations'] as List;
+                                      if (recommendations.isNotEmpty) {
+                                        topRecommendation = recommendations[0]
+                                                ['title'] ??
+                                            'Tidak ada judul';
+                                      }
+                                    }
+
+                                    return GestureDetector(
+                                      onTap: () {
+                                        // Navigate to recommendation detail with school ID
+                                        Get.to(() => RecommendationDetailPage(
+                                              data: data,
+                                              documentId: doc.id,
+                                            ));
+                                      },
+                                      child: Container(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 8),
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color:
+                                                Colors.white.withOpacity(0.1),
+                                            width: 1,
                                           ),
-                                          child: Center(
-                                            child: Icon(
-                                              questionMode.contains('Karir')
-                                                  ? Icons.work
-                                                  : Icons.school,
-                                              color:
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                color: questionMode
+                                                        .contains('Karir')
+                                                    ? Colors.orange
+                                                        .withOpacity(0.2)
+                                                    : Colors.green
+                                                        .withOpacity(0.2),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Center(
+                                                child: Icon(
                                                   questionMode.contains('Karir')
+                                                      ? Icons.work
+                                                      : Icons.school,
+                                                  color: questionMode
+                                                          .contains('Karir')
                                                       ? Colors.orange.shade300
                                                       : Colors.green.shade300,
+                                                  size: 20,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    topRecommendation,
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    '$questionMode • $formattedDate',
+                                                    style: TextStyle(
+                                                      color: Colors.white
+                                                          .withOpacity(0.7),
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Icon(
+                                              Icons.chevron_right,
+                                              color:
+                                                  Colors.white.withOpacity(0.5),
                                               size: 20,
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                topRecommendation,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                '$questionMode • $formattedDate',
-                                                style: TextStyle(
-                                                  color: Colors.white
-                                                      .withOpacity(0.7),
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Icon(
-                                          Icons.chevron_right,
-                                          color: Colors.white.withOpacity(0.5),
-                                          size: 20,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                             );
@@ -920,5 +1011,243 @@ class PageStudentDashboard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildAllSchoolsStreamBuilder(String userId) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('schools').snapshots(),
+      builder: (context, schoolsSnapshot) {
+        if (schoolsSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+              strokeWidth: 2,
+            ),
+          );
+        }
+
+        if (schoolsSnapshot.hasError ||
+            !schoolsSnapshot.hasData ||
+            schoolsSnapshot.data!.docs.isEmpty) {
+          return Container(
+            height: 170,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(
+              child: Text(
+                'Tidak dapat menemukan data sekolah',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          );
+        }
+
+        // Use FutureBuilder to find the right school and its recommendation history
+        return FutureBuilder<List<QueryDocumentSnapshot>>(
+          future: _findUserRecommendations(userId, schoolsSnapshot.data!.docs),
+          builder: (context, recommendationsSnapshot) {
+            if (recommendationsSnapshot.connectionState ==
+                ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+                  strokeWidth: 2,
+                ),
+              );
+            }
+
+            if (recommendationsSnapshot.hasError ||
+                !recommendationsSnapshot.hasData ||
+                recommendationsSnapshot.data!.isEmpty) {
+              return Container(
+                height: 170,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Belum ada riwayat rekomendasi.\nMulai aplikasi untuk mendapatkan rekomendasi.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            List<QueryDocumentSnapshot> recommendations =
+                recommendationsSnapshot.data!;
+
+            // Sort recommendations by timestamp
+            recommendations.sort((a, b) {
+              final aTimestamp =
+                  (a.data() as Map<String, dynamic>)['timestamp'] as Timestamp?;
+              final bTimestamp =
+                  (b.data() as Map<String, dynamic>)['timestamp'] as Timestamp?;
+              if (aTimestamp == null) return 1;
+              if (bTimestamp == null) return -1;
+              return bTimestamp.compareTo(aTimestamp);
+            });
+
+            // Limit to 5 recommendations
+            if (recommendations.length > 5) {
+              recommendations = recommendations.sublist(0, 5);
+            }
+
+            return ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: recommendations.length,
+              itemBuilder: (context, index) {
+                final doc = recommendations[index];
+                final data = doc.data() as Map<String, dynamic>;
+                final schoolId = doc.reference.parent.parent!.id;
+
+                // Extract recommendation data
+                String questionMode = data['questionMode'] ?? 'Tidak diketahui';
+                final timestamp = data['timestamp'] as Timestamp?;
+                final formattedDate = timestamp != null
+                    ? intl.DateFormat('dd/MM/yyyy HH:mm')
+                        .format(timestamp.toDate())
+                    : 'Tidak ada tanggal';
+
+                // Get top recommendation if available
+                String topRecommendation = 'Tidak ada rekomendasi';
+                if (data['recommendations'] != null &&
+                    (data['recommendations'] as List).isNotEmpty) {
+                  final recommendations = data['recommendations'] as List;
+                  if (recommendations.isNotEmpty) {
+                    topRecommendation =
+                        recommendations[0]['title'] ?? 'Tidak ada judul';
+                  }
+                }
+
+                return GestureDetector(
+                  onTap: () {
+                    // Save the found school ID for future use
+                    SharedPreferences.getInstance().then((prefs) {
+                      prefs.setString('school_id', schoolId);
+                    });
+
+                    // Navigate to recommendation detail
+                    Get.to(() => RecommendationDetailPage(
+                          data: data,
+                          documentId: doc.id,
+                        ));
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.1),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: questionMode.contains('Karir')
+                                ? Colors.orange.withOpacity(0.2)
+                                : Colors.green.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              questionMode.contains('Karir')
+                                  ? Icons.work
+                                  : Icons.school,
+                              color: questionMode.contains('Karir')
+                                  ? Colors.orange.shade300
+                                  : Colors.green.shade300,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                topRecommendation,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '$questionMode • $formattedDate',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: Colors.white.withOpacity(0.5),
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+// Helper function to find user recommendations across all schools
+  Future<List<QueryDocumentSnapshot>> _findUserRecommendations(
+      String userId, List<QueryDocumentSnapshot> schools) async {
+    List<QueryDocumentSnapshot> results = [];
+
+    for (var schoolDoc in schools) {
+      try {
+        QuerySnapshot recommendationsSnapshot = await schoolDoc.reference
+            .collection('recommendation_history')
+            .where('userId', isEqualTo: userId)
+            .orderBy('timestamp', descending: true)
+            .limit(5)
+            .get();
+
+        if (recommendationsSnapshot.docs.isNotEmpty) {
+          results.addAll(recommendationsSnapshot.docs);
+
+          // Save the school ID for future use if we found recommendations
+          if (recommendationsSnapshot.docs.isNotEmpty) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('school_id', schoolDoc.id);
+          }
+        }
+      } catch (e) {
+        print('Error fetching recommendations from school ${schoolDoc.id}: $e');
+      }
+    }
+
+    return results;
   }
 }

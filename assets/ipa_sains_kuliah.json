@@ -32,11 +32,11 @@
         "karir": [
           "Dokter Umum [22]",
           "Dokter Spesialis [21]",
-          "Tenaga Medis [18]",
+          "Perawat Medis [18]",
           "Dokter Gigi [20]",
           "Ahli Bedah [23]",
           "Dokter Forensik [19]",
-          "Peneliti Kedokteran [20]"
+          "Dosen/Peneliti Kedokteran [20]"
         ],
         "karir_riasec": ["I/S", "I/S", "S/I", "I/S", "I/R", "I/R", "I"],
         "jurusan_terkait": [
@@ -46,6 +46,15 @@
           "Kesehatan Masyarakat",
           "Keperawatan",
           "Kebidanan"
+        ],
+        "universitas_rekomendasi": [
+          "Universitas Indonesia (UI)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Airlangga (UNAIR)",
+          "Universitas Padjadjaran (UNPAD)",
+          "Universitas Hasanuddin (UNHAS)",
+          "Universitas Diponegoro (UNDIP)",
+          "Universitas Brawijaya (UB)"
         ]
       },
       "Sains": {
@@ -68,11 +77,11 @@
         "karir": [
           "Peneliti Biologi [22]",
           "Peneliti Kimia [22]",
-          "Asisten Dosen [19]",
+          "Asisten Dosen/Dosen [19]",
           "Scientist R&D [21]",
           "Ahli Ekologi [20]",
           "Ahli Fisika [21]",
-          "Klimatolog [19]",
+          "Ahli Meteorologi [19]",
           "Ahli Geologi [20]"
         ],
         "karir_riasec": ["I", "I", "I/S", "I", "I/R", "I", "I", "I/R"],
@@ -81,9 +90,18 @@
           "Kimia",
           "Fisika",
           "Matematika",
-          "Astronomi",
+          "Fisika (peminatan Astrofisika)",
           "Geofisika",
-          "Meteorologi"
+          "Meteorologi dan Klimatologi"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Universitas Gadjah Mada (UGM)",
+          "Institut Pertanian Bogor (IPB)",
+          "Universitas Padjadjaran (UNPAD)",
+          "Universitas Airlangga (UNAIR)",
+          "Institut Teknologi Sepuluh Nopember (ITS)"
         ]
       },
       "Farmasi": {
@@ -107,9 +125,9 @@
           "Apoteker [21]",
           "Peneliti Obat [22]",
           "Quality Control Farmasi [19]",
-          "Asisten Farmasi [18]",
+          "Asisten Apoteker [18]",
           "Ahli Formulasi [20]",
-          "Konsultan Obat [19]"
+          "Apoteker Klinis [19]"
         ],
         "karir_riasec": ["I/C", "I", "C/I", "C/I", "I/R", "I/S"],
         "jurusan_terkait": [
@@ -119,6 +137,15 @@
           "Bioteknologi",
           "Teknik Kimia",
           "Biokimia"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Airlangga (UNAIR)",
+          "Universitas Padjadjaran (UNPAD)",
+          "Universitas Sanata Dharma (USD)",
+          "Universitas Hasanuddin (UNHAS)"
         ]
       },
       "Bioteknologi": {
@@ -142,7 +169,7 @@
           "Peneliti Bioteknologi [22]",
           "Ahli Mikrobiologi [20]",
           "Teknisi Laboratorium [18]",
-          "Ahli Genetika [21]",
+          "Peneliti Biologi Molekuler [21]",
           "Peneliti Industri Pangan [19]",
           "Ilmuwan Riset dan Pengembangan [21]"
         ],
@@ -153,7 +180,16 @@
           "Mikrobiologi",
           "Teknik Biomedis",
           "Biologi Molekuler",
-          "Rekayasa Genetika"
+          "Biologi (peminatan Genetika)"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Institut Pertanian Bogor (IPB)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Brawijaya (UB)",
+          "Universitas Airlangga (UNAIR)",
+          "Universitas Indonesia (UI)",
+          "Universitas Surabaya (UBAYA)"
         ]
       },
       "Lingkungan dan Konservasi": {
@@ -185,11 +221,20 @@
         "karir_riasec": ["I/S", "I/R", "I/E", "R/C", "I", "S/E", "I/R"],
         "jurusan_terkait": [
           "Ilmu Lingkungan",
-          "Biologi Konservasi",
+          "Biologi (peminatan Konservasi)",
           "Kehutanan",
           "Teknik Lingkungan",
           "Oseanografi",
           "Meteorologi dan Geofisika"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Pertanian Bogor (IPB)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Indonesia (UI)",
+          "Universitas Diponegoro (UNDIP)",
+          "Universitas Hasanuddin (UNHAS)",
+          "Universitas Padjajaran (UNPAD)",
+          "Universitas Mulawarman (UNMUL)"
         ]
       },
       "Geosains": {
@@ -226,6 +271,15 @@
           "Teknik Pertambangan",
           "Oseanografi",
           "Geodesi"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Indonesia (UI)",
+          "Universitas Padjadjaran (UNPAD)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Pembangunan Nasional Veteran Yogyakarta (UPN)",
+          "Universitas Hasanuddin (UNHAS)"
         ]
       },
       "Neurosains": {
@@ -246,21 +300,30 @@
           {"type": ["S", "I"], "bobot": [3, 2]}
         ],
         "karir": [
-          "Peneliti Neurosains [22]",
+          "Peneliti di Bidang Neurologi [22]",
           "Ahli Saraf (Neurolog) [21]",
           "Teknisi Pemindaian Otak [18]",
-          "Neurofarmakolog [20]",
+          "Farmakolog Klinis [20]",
           "Psikiater [20]",
-          "Ahli Rehabilitasi Neurologis [19]"
+          "Fisioterapis Spesialis Neurologis [19]"
         ],
         "karir_riasec": ["I", "I/S", "R/I", "I", "I/S", "S/I"],
         "jurusan_terkait": [
-          "Neurosains",
+          "Kedokteran (spesialisasi Neurologi)",
           "Psikologi",
-          "Kedokteran",
           "Biologi",
           "Teknologi Medis",
-          "Ilmu Biomedis"
+          "Ilmu Biomedis",
+          "Farmakologi"
+        ],
+        "universitas_rekomendasi": [
+          "Universitas Indonesia (UI)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Airlangga (UNAIR)",
+          "Universitas Padjadjaran (UNPAD)",
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Brawijaya (UB)",
+          "Universitas Katolik Indonesia Atma Jaya"
         ]
       },
       "Teknik Biomedis": {
@@ -283,19 +346,28 @@
         "karir": [
           "Insinyur Biomedis [21]",
           "Pengembang Alat Medis [20]",
-          "Spesialis Pencitraan Medis [19]",
-          "Konsultan Teknologi Kesehatan [18]",
-          "Peneliti Biomaterial [20]",
+          "Radiografer [19]",
+          "Spesialis Teknik Elektromedis [18]",
+          "Peneliti Alat Kesehatan [20]",
           "Teknisi Peralatan Medis [17]"
         ],
         "karir_riasec": ["I/R", "I/R/A", "I/R", "I/E", "I", "R/I"],
         "jurusan_terkait": [
           "Teknik Biomedis",
           "Teknologi Medis",
-          "Fisika Medis",
+          "Fisika (peminatan Medis)",
           "Teknik Elektro",
           "Ilmu Komputer",
           "Teknik Mesin"
+        ],
+        "universitas_rekomendasi": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Universitas Airlangga (UNAIR)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Gadjah Mada (UGM)",
+          "Universitas Diponegoro (UNDIP)",
+          "Swiss German University"
         ]
       }
     }

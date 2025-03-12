@@ -24,6 +24,9 @@ class TeacherDashboardController extends GetxController {
   // User data
   var teacherName = ''.obs;
 
+  // School data
+  var schoolId = ''.obs;
+
   // Results data
   var studentResults = <DocumentSnapshot>[].obs;
   var filteredResults = <DocumentSnapshot>[].obs;
@@ -46,8 +49,6 @@ class TeacherDashboardController extends GetxController {
     'careerRecommendations': 0,
     'studyRecommendations': 0,
   }.obs;
-// Pertama, tambahkan variabel untuk pagination pada TeacherDashboardController
-  // ... variabel yang sudah ada ...
 
   // Variabel untuk pagination
   var currentPage = 0.obs;
@@ -111,8 +112,11 @@ class TeacherDashboardController extends GetxController {
     paginatedResults.value = filteredResults.sublist(startIndex, endIndex);
   }
 
-  // Cache untuk student class mapping
+  // Cache untuk student class mapping - user ID to class mapping
   final Map<String, String> _studentClassCache = {};
+
+  // Cache untuk student school mapping - user ID to school ID mapping
+  final Map<String, String> _studentSchoolCache = {};
 
   // ========== LIFECYCLE METHODS ==========
   @override
@@ -128,10 +132,13 @@ class TeacherDashboardController extends GetxController {
     try {
       final User? currentUser = _auth.currentUser;
       if (currentUser != null) {
+        // Tetap menggunakan koleksi teachers seperti yang diminta
         final teacherDoc =
             await _firestore.collection('teachers').doc(currentUser.uid).get();
         if (teacherDoc.exists) {
           teacherName.value = teacherDoc.data()?['name'] ?? 'Guru';
+          // Ambil schoolId dari data guru jika ada
+          schoolId.value = teacherDoc.data()?['schoolId'] ?? '';
         }
       }
     } catch (e) {
@@ -142,6 +149,23 @@ class TeacherDashboardController extends GetxController {
   Future<void> loadStudentResults() async {
     try {
       isLoading.value = true;
+
+      // Get the teacher's school ID
+      final prefs = await SharedPreferences.getInstance();
+      final teacherSchoolId = prefs.getString('school_id') ?? schoolId.value;
+
+      if (teacherSchoolId.isEmpty) {
+        // If no school ID, handle the error
+        Get.snackbar(
+          'Error',
+          'Tidak dapat menentukan sekolah Anda',
+          backgroundColor: Colors.red.shade100,
+          colorText: Colors.red.shade800,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        isLoading.value = false;
+        return;
+      }
 
       // Preload student class cache
       await _preloadStudentClassCache();
@@ -170,7 +194,10 @@ class TeacherDashboardController extends GetxController {
           int end = (i + 10 < studentIds.length) ? i + 10 : studentIds.length;
           List<String> chunk = studentIds.sublist(i, end);
 
+          // Query from the school-specific recommendation_history subcollection
           QuerySnapshot chunkResult = await _firestore
+              .collection('schools')
+              .doc(teacherSchoolId)
               .collection('recommendation_history')
               .where('userId', whereIn: chunk)
               .orderBy('timestamp', descending: true)
@@ -190,8 +217,10 @@ class TeacherDashboardController extends GetxController {
 
         studentResults.value = allResults;
       } else {
-        // Terapkan pagination jika perlu
+        // Terapkan pagination jika perlu - query from school-specific collection
         querySnapshot = await _firestore
+            .collection('schools')
+            .doc(teacherSchoolId)
             .collection('recommendation_history')
             .orderBy('timestamp', descending: true)
             .limit(100) // Batasi ke 100 hasil terakhir untuk mencegah lag
@@ -227,18 +256,46 @@ class TeacherDashboardController extends GetxController {
     }
   }
 
-  // Metode baru untuk memuat class cache
+  // Metode baru untuk memuat class cache - diperbarui untuk struktur firestore baru
   Future<void> _preloadStudentClassCache() async {
     try {
       if (_studentClassCache.isEmpty) {
-        // Ambil semua data student dan cache class mereka
-        final QuerySnapshot studentSnapshot =
-            await _firestore.collection('students').get();
+        // Dapatkan shared preferences untuk school ID
+        final prefs = await SharedPreferences.getInstance();
+        final teacherSchoolId = prefs.getString('school_id') ?? schoolId.value;
 
-        for (var doc in studentSnapshot.docs) {
-          final data = doc.data() as Map<String, dynamic>;
-          if (data.containsKey('class') && data['class'] != null) {
-            _studentClassCache[doc.id] = data['class'].toString();
+        if (teacherSchoolId.isEmpty) {
+          // Jika tidak ada schoolId, coba ambil dari semua sekolah
+          final QuerySnapshot schoolsSnapshot =
+              await _firestore.collection('schools').get();
+
+          for (var schoolDoc in schoolsSnapshot.docs) {
+            // Ambil semua siswa dari setiap sekolah
+            final QuerySnapshot studentsSnapshot =
+                await schoolDoc.reference.collection('students').get();
+
+            for (var doc in studentsSnapshot.docs) {
+              final data = doc.data() as Map<String, dynamic>;
+              if (data.containsKey('class') && data['class'] != null) {
+                _studentClassCache[doc.id] = data['class'].toString();
+                _studentSchoolCache[doc.id] = schoolDoc.id;
+              }
+            }
+          }
+        } else {
+          // Jika ada schoolId, ambil hanya dari sekolah tersebut
+          final QuerySnapshot studentsSnapshot = await _firestore
+              .collection('schools')
+              .doc(teacherSchoolId)
+              .collection('students')
+              .get();
+
+          for (var doc in studentsSnapshot.docs) {
+            final data = doc.data() as Map<String, dynamic>;
+            if (data.containsKey('class') && data['class'] != null) {
+              _studentClassCache[doc.id] = data['class'].toString();
+              _studentSchoolCache[doc.id] = teacherSchoolId;
+            }
           }
         }
       }
@@ -247,7 +304,7 @@ class TeacherDashboardController extends GetxController {
     }
   }
 
-  // Metode baru untuk mendapatkan student IDs berdasarkan kelas
+  // Metode untuk mendapatkan student IDs berdasarkan kelas - diperbarui untuk struktur firestore baru
   Future<List<String>> _getStudentIdsByClass(String className) async {
     List<String> studentIds = [];
 
@@ -260,13 +317,46 @@ class TeacherDashboardController extends GetxController {
           }
         });
       } else {
-        // Jika cache kosong, query database
-        final QuerySnapshot studentSnapshot = await _firestore
-            .collection('students')
-            .where('class', isEqualTo: className)
-            .get();
+        // Jika cache kosong, kita perlu query database
+        // Dapatkan shared preferences untuk school ID
+        final prefs = await SharedPreferences.getInstance();
+        final teacherSchoolId = prefs.getString('school_id') ?? schoolId.value;
 
-        studentIds = studentSnapshot.docs.map((doc) => doc.id).toList();
+        if (teacherSchoolId.isEmpty) {
+          // Jika tidak ada schoolId, cari di semua sekolah
+          final QuerySnapshot schoolsSnapshot =
+              await _firestore.collection('schools').get();
+
+          for (var schoolDoc in schoolsSnapshot.docs) {
+            final QuerySnapshot studentsSnapshot = await schoolDoc.reference
+                .collection('students')
+                .where('class', isEqualTo: className)
+                .get();
+
+            for (var doc in studentsSnapshot.docs) {
+              studentIds.add(doc.id);
+              // Update cache
+              _studentClassCache[doc.id] = className;
+              _studentSchoolCache[doc.id] = schoolDoc.id;
+            }
+          }
+        } else {
+          // Jika ada schoolId, ambil hanya dari sekolah tersebut
+          final QuerySnapshot studentsSnapshot = await _firestore
+              .collection('schools')
+              .doc(teacherSchoolId)
+              .collection('students')
+              .where('class', isEqualTo: className)
+              .get();
+
+          studentIds = studentsSnapshot.docs.map((doc) => doc.id).toList();
+
+          // Update cache
+          for (var doc in studentsSnapshot.docs) {
+            _studentClassCache[doc.id] = className;
+            _studentSchoolCache[doc.id] = teacherSchoolId;
+          }
+        }
       }
     } catch (e) {
       print('Error getting student IDs by class: $e');
@@ -283,18 +373,48 @@ class TeacherDashboardController extends GetxController {
         classes.addAll(_studentClassCache.values);
         availableClasses.value = classes.toList()..sort();
       } else {
-        final QuerySnapshot querySnapshot =
-            await _firestore.collection('students').get();
+        // Dapatkan shared preferences untuk school ID
+        final prefs = await SharedPreferences.getInstance();
+        final teacherSchoolId = prefs.getString('school_id') ?? schoolId.value;
 
         // Extract unique class values
         final Set<String> classes = {'Semua Kelas'};
 
-        for (var doc in querySnapshot.docs) {
-          final data = doc.data() as Map<String, dynamic>;
-          if (data.containsKey('class') && data['class'] != null) {
-            classes.add(data['class'].toString());
-            // Update cache sambil kita ambil data
-            _studentClassCache[doc.id] = data['class'].toString();
+        if (teacherSchoolId.isEmpty) {
+          // Jika tidak ada schoolId, ambil dari semua sekolah
+          final QuerySnapshot schoolsSnapshot =
+              await _firestore.collection('schools').get();
+
+          for (var schoolDoc in schoolsSnapshot.docs) {
+            final QuerySnapshot studentsSnapshot =
+                await schoolDoc.reference.collection('students').get();
+
+            for (var doc in studentsSnapshot.docs) {
+              final data = doc.data() as Map<String, dynamic>;
+              if (data.containsKey('class') && data['class'] != null) {
+                classes.add(data['class'].toString());
+                // Update cache sambil kita ambil data
+                _studentClassCache[doc.id] = data['class'].toString();
+                _studentSchoolCache[doc.id] = schoolDoc.id;
+              }
+            }
+          }
+        } else {
+          // Jika ada schoolId, ambil hanya dari sekolah tersebut
+          final QuerySnapshot studentsSnapshot = await _firestore
+              .collection('schools')
+              .doc(teacherSchoolId)
+              .collection('students')
+              .get();
+
+          for (var doc in studentsSnapshot.docs) {
+            final data = doc.data() as Map<String, dynamic>;
+            if (data.containsKey('class') && data['class'] != null) {
+              classes.add(data['class'].toString());
+              // Update cache sambil kita ambil data
+              _studentClassCache[doc.id] = data['class'].toString();
+              _studentSchoolCache[doc.id] = teacherSchoolId;
+            }
           }
         }
 
@@ -361,6 +481,7 @@ class TeacherDashboardController extends GetxController {
     }
 
     filteredResults.value = result;
+    updatePagination();
   }
 
   // Master filter application - sekarang hanya memicu reload jika filter kelas berubah
@@ -422,6 +543,7 @@ class TeacherDashboardController extends GetxController {
         filteredResults.value = studentResults;
         break;
     }
+    updatePagination();
   }
 
   // ========== LEGACY FILTER METHODS - DIPERTAHANKAN UNTUK KOMPATIBILITAS ==========
@@ -492,7 +614,7 @@ class TeacherDashboardController extends GetxController {
     }).toList();
   }
 
-  // Optimasi: pakai cache untuk mencegah query ke database untuk setiap dokumen
+  // Optimasi: pakai cache untuk mencegah query ke database untuk setiap dokumen - diperbarui untuk struktur baru
   Future<List<DocumentSnapshot>> _applyClassFilter(
       List<DocumentSnapshot> docs, String filter) async {
     if (filter == 'Semua Kelas') {
@@ -515,20 +637,63 @@ class TeacherDashboardController extends GetxController {
         continue;
       }
 
-      // Jika tidak ada di cache, baru query database
+      // Jika tidak ada di cache, coba query database
       try {
-        final studentDoc =
-            await _firestore.collection('students').doc(userId).get();
-        if (!studentDoc.exists) continue;
+        // Dapatkan schoolId dari cache atau shared preferences
+        String? studentSchoolId = _studentSchoolCache[userId];
 
-        final studentData = studentDoc.data() as Map<String, dynamic>;
-        final studentClass = studentData['class'];
+        if (studentSchoolId == null) {
+          // Jika tidak ada di cache, coba cari di semua sekolah
+          bool found = false;
+          final schoolsSnapshot = await _firestore.collection('schools').get();
 
-        // Update cache
-        _studentClassCache[userId] = studentClass ?? '';
+          for (var schoolDoc in schoolsSnapshot.docs) {
+            final studentDoc = await schoolDoc.reference
+                .collection('students')
+                .doc(userId)
+                .get();
 
-        if (studentClass == filter) {
-          filteredDocs.add(doc);
+            if (studentDoc.exists) {
+              final studentData = studentDoc.data() as Map<String, dynamic>;
+              final studentClass = studentData['class'];
+
+              // Update cache
+              _studentClassCache[userId] = studentClass ?? '';
+              _studentSchoolCache[userId] = schoolDoc.id;
+
+              if (studentClass == filter) {
+                filteredDocs.add(doc);
+              }
+
+              found = true;
+              break;
+            }
+          }
+
+          if (!found) {
+            // Siswa tidak ditemukan di database
+            continue;
+          }
+        } else {
+          // Jika ada schoolId di cache, gunakan untuk query langsung
+          final studentDoc = await _firestore
+              .collection('schools')
+              .doc(studentSchoolId)
+              .collection('students')
+              .doc(userId)
+              .get();
+
+          if (!studentDoc.exists) continue;
+
+          final studentData = studentDoc.data() as Map<String, dynamic>;
+          final studentClass = studentData['class'];
+
+          // Update cache
+          _studentClassCache[userId] = studentClass ?? '';
+
+          if (studentClass == filter) {
+            filteredDocs.add(doc);
+          }
         }
       } catch (e) {
         print('Error fetching student class: $e');

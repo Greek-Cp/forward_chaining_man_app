@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -58,14 +59,14 @@ class RecommendationHistoryPage extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('recommendation_history')
-                .where('userId', isEqualTo: currentUser?.uid)
-                .orderBy('timestamp', descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+          child: FutureBuilder<String>(
+            // First get the school ID
+            future: () async {
+              final prefs = await SharedPreferences.getInstance();
+              return prefs.getString('school_id') ?? '';
+            }(),
+            builder: (context, schoolSnapshot) {
+              if (schoolSnapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -73,145 +74,175 @@ class RecommendationHistoryPage extends StatelessWidget {
                 );
               }
 
-              if (snapshot.hasError) {
-                return Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.error_outline,
-                          color: Colors.white, size: 48),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Error: ${snapshot.error}',
-                        style: const TextStyle(color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                );
+              if (schoolSnapshot.hasError ||
+                  !schoolSnapshot.hasData ||
+                  schoolSnapshot.data!.isEmpty) {
+                // If we can't get school ID, search in all schools
+                return _buildAllSchoolsHistoryView(currentUser?.uid);
               }
 
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.history,
-                          color: Colors.white.withOpacity(0.7), size: 64),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Belum ada riwayat rekomendasi',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+              final schoolId = schoolSnapshot.data!;
+
+              // Now use the school ID to query the subcollection
+              return StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('schools')
+                    .doc(schoolId)
+                    .collection('recommendation_history')
+                    .where('userId', isEqualTo: currentUser?.uid)
+                    .orderBy('timestamp', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Mulai aplikasi untuk mendapatkan rekomendasi karir atau kuliah',
-                        style: TextStyle(color: Colors.white70),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 32),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Get.back(); // Go back to previous screen
-                        },
-                        icon: const Icon(Icons.arrow_back),
-                        label: const Text('Kembali'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.indigo.shade800,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.error_outline,
+                              color: Colors.white, size: 48),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Error: ${snapshot.error}',
+                            style: const TextStyle(color: Colors.white),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              }
-
-              // Group by date for better organization
-              final Map<String, List<DocumentSnapshot>> groupedHistory = {};
-
-              for (var doc in snapshot.data!.docs) {
-                final data = doc.data() as Map<String, dynamic>;
-                final timestamp = data['timestamp'] as Timestamp?;
-
-                if (timestamp != null) {
-                  final date =
-                      intl.DateFormat('yyyy-MM-dd').format(timestamp.toDate());
-                  if (!groupedHistory.containsKey(date)) {
-                    groupedHistory[date] = [];
-                  }
-                  groupedHistory[date]!.add(doc);
-                } else {
-                  final date = 'Tidak ada tanggal';
-                  if (!groupedHistory.containsKey(date)) {
-                    groupedHistory[date] = [];
-                  }
-                  groupedHistory[date]!.add(doc);
-                }
-              }
-
-              // Sort dates in descending order
-              final sortedDates = groupedHistory.keys.toList()
-                ..sort((a, b) => b.compareTo(a));
-
-              return ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: sortedDates.length,
-                itemBuilder: (context, dateIndex) {
-                  final date = sortedDates[dateIndex];
-                  final docs = groupedHistory[date]!;
-
-                  // Format the date for display
-                  String formattedDate;
-                  try {
-                    final DateTime parsedDate = DateTime.parse(date);
-                    formattedDate =
-                        intl.DateFormat('EEEE, d MMMM yyyy', 'id_ID')
-                            .format(parsedDate);
-                  } catch (e) {
-                    formattedDate = date;
+                    );
                   }
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Date header
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8, bottom: 8),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.calendar_today,
-                              size: 16,
-                              color: Colors.amber.shade300,
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.history,
+                              color: Colors.white.withOpacity(0.7), size: 64),
+                          const SizedBox(height: 24),
+                          const Text(
+                            'Belum ada riwayat rekomendasi',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              formattedDate,
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Mulai aplikasi untuk mendapatkan rekomendasi karir atau kuliah',
+                            style: TextStyle(color: Colors.white70),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 32),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Get.back(); // Go back to previous screen
+                            },
+                            icon: const Icon(Icons.arrow_back),
+                            label: const Text('Kembali'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.indigo.shade800,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
+                    );
+                  }
 
-                      // History items for this date
-                      ...docs.map((doc) => _buildHistoryItem(doc)),
+                  // Group by date for better organization
+                  final Map<String, List<DocumentSnapshot>> groupedHistory = {};
 
-                      // Add space between date groups
-                      const SizedBox(height: 16),
-                    ],
+                  for (var doc in snapshot.data!.docs) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final timestamp = data['timestamp'] as Timestamp?;
+
+                    if (timestamp != null) {
+                      final date = intl.DateFormat('yyyy-MM-dd')
+                          .format(timestamp.toDate());
+                      if (!groupedHistory.containsKey(date)) {
+                        groupedHistory[date] = [];
+                      }
+                      groupedHistory[date]!.add(doc);
+                    } else {
+                      final date = 'Tidak ada tanggal';
+                      if (!groupedHistory.containsKey(date)) {
+                        groupedHistory[date] = [];
+                      }
+                      groupedHistory[date]!.add(doc);
+                    }
+                  }
+
+                  // Sort dates in descending order
+                  final sortedDates = groupedHistory.keys.toList()
+                    ..sort((a, b) => b.compareTo(a));
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: sortedDates.length,
+                    itemBuilder: (context, dateIndex) {
+                      final date = sortedDates[dateIndex];
+                      final docs = groupedHistory[date]!;
+
+                      // Format the date for display
+                      String formattedDate;
+                      try {
+                        final DateTime parsedDate = DateTime.parse(date);
+                        formattedDate =
+                            intl.DateFormat('EEEE, d MMMM yyyy', 'id_ID')
+                                .format(parsedDate);
+                      } catch (e) {
+                        formattedDate = date;
+                      }
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Date header
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8, bottom: 8),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_today,
+                                  size: 16,
+                                  color: Colors.amber.shade300,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  formattedDate,
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // History items for this date with schoolId passed
+                          ...docs
+                              .map((doc) => _buildHistoryItem(doc, schoolId)),
+
+                          // Add space between date groups
+                          const SizedBox(height: 16),
+                        ],
+                      );
+                    },
                   );
                 },
               );
@@ -222,7 +253,7 @@ class RecommendationHistoryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHistoryItem(DocumentSnapshot doc) {
+  Widget _buildHistoryItem(DocumentSnapshot doc, String schoolId) {
     final data = doc.data() as Map<String, dynamic>;
 
     // Extract data
@@ -268,7 +299,7 @@ class RecommendationHistoryPage extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // Navigate to detail page
+            // Navigate to detail page with school ID
             Get.to(() => RecommendationDetailPage(
                   data: data,
                   documentId: doc.id,
@@ -444,5 +475,254 @@ class RecommendationHistoryPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildAllSchoolsHistoryView(String? userId) {
+    if (userId == null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.history, color: Colors.white.withOpacity(0.7), size: 64),
+            const SizedBox(height: 24),
+            const Text(
+              'Silakan login terlebih dahulu',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: () {
+                Get.back(); // Go back to previous screen
+              },
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Kembali'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.indigo.shade800,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('schools').snapshots(),
+      builder: (context, schoolsSnapshot) {
+        if (schoolsSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          );
+        }
+
+        if (schoolsSnapshot.hasError ||
+            !schoolsSnapshot.hasData ||
+            schoolsSnapshot.data!.docs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white, size: 48),
+                const SizedBox(height: 16),
+                const Text(
+                  'Tidak dapat menemukan data sekolah',
+                  style: TextStyle(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Use FutureBuilder to find the right school and its recommendation history
+        return FutureBuilder<Map<String, List<DocumentSnapshot>>>(
+          future:
+              _findUserHistoryAcrossSchools(userId, schoolsSnapshot.data!.docs),
+          builder: (context, historySnapshot) {
+            if (historySnapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              );
+            }
+
+            if (historySnapshot.hasError ||
+                !historySnapshot.hasData ||
+                historySnapshot.data!.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.history,
+                        color: Colors.white.withOpacity(0.7), size: 64),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Belum ada riwayat rekomendasi',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Mulai aplikasi untuk mendapatkan rekomendasi karir atau kuliah',
+                      style: TextStyle(color: Colors.white70),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Get.back(); // Go back to previous screen
+                      },
+                      icon: const Icon(Icons.arrow_back),
+                      label: const Text('Kembali'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.indigo.shade800,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // Group all recommendations by date
+            final Map<String, List<Map<String, dynamic>>> groupedHistory = {};
+            historySnapshot.data!.forEach((schoolId, docs) {
+              for (var doc in docs) {
+                final data = doc.data() as Map<String, dynamic>;
+                final timestamp = data['timestamp'] as Timestamp?;
+
+                String date;
+                if (timestamp != null) {
+                  date =
+                      intl.DateFormat('yyyy-MM-dd').format(timestamp.toDate());
+                } else {
+                  date = 'Tidak ada tanggal';
+                }
+
+                if (!groupedHistory.containsKey(date)) {
+                  groupedHistory[date] = [];
+                }
+
+                groupedHistory[date]!.add({'doc': doc, 'schoolId': schoolId});
+              }
+            });
+
+            // Sort dates in descending order
+            final sortedDates = groupedHistory.keys.toList()
+              ..sort((a, b) => b.compareTo(a));
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: sortedDates.length,
+              itemBuilder: (context, dateIndex) {
+                final date = sortedDates[dateIndex];
+                final items = groupedHistory[date]!;
+
+                // Format the date for display
+                String formattedDate;
+                try {
+                  final DateTime parsedDate = DateTime.parse(date);
+                  formattedDate = intl.DateFormat('EEEE, d MMMM yyyy', 'id_ID')
+                      .format(parsedDate);
+                } catch (e) {
+                  formattedDate = date;
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Date header
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today,
+                            size: 16,
+                            color: Colors.amber.shade300,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            formattedDate,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.9),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // History items for this date
+                    ...items.map((item) =>
+                        _buildHistoryItem(item['doc'], item['schoolId'])),
+
+                    // Add space between date groups
+                    const SizedBox(height: 16),
+                  ],
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+// Make sure to update your _buildHistoryItem method to accept schoolId
+
+// Helper function to find user's recommendation history across all schools
+  Future<Map<String, List<DocumentSnapshot>>> _findUserHistoryAcrossSchools(
+      String userId, List<QueryDocumentSnapshot> schools) async {
+    Map<String, List<DocumentSnapshot>> results = {};
+    String? primarySchoolId;
+
+    for (var schoolDoc in schools) {
+      try {
+        QuerySnapshot historySnapshot = await schoolDoc.reference
+            .collection('recommendation_history')
+            .where('userId', isEqualTo: userId)
+            .orderBy('timestamp', descending: true)
+            .get();
+
+        if (historySnapshot.docs.isNotEmpty) {
+          results[schoolDoc.id] = historySnapshot.docs;
+
+          // If this is the first school with recommendations, save it as primary
+          if (primarySchoolId == null) {
+            primarySchoolId = schoolDoc.id;
+
+            // Save the school ID for future use
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('school_id', primarySchoolId);
+          }
+        }
+      } catch (e) {
+        print('Error fetching history from school ${schoolDoc.id}: $e');
+      }
+    }
+
+    return results;
   }
 }

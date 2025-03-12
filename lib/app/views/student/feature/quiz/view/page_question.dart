@@ -196,7 +196,7 @@ class QuestionPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          isKerja ? 'Kuisioner Karir' : 'Kuisioner Kuliah',
+          isKerja ? 'Kuisioner Kerja' : 'Kuisioner Kuliah',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.blue.shade700,
@@ -363,7 +363,7 @@ class QuestionPage extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
                         child: Text(
                           isKerja
-                              ? 'Pertanyaan Minat Karir'
+                              ? 'Pertanyaan Minat Kerja'
                               : 'Pertanyaan Minat Kuliah',
                           style: TextStyle(
                             fontSize: 18,

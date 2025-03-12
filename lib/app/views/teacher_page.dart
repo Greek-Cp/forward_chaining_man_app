@@ -99,7 +99,7 @@ class TeacherLoginController extends GetxController {
         }
 
         // Save login session
-        await saveLoginSession(userCredential.user!.uid);
+        await saveLoginSession(userCredential.user!.uid, teacherDoc);
 
         // Navigate to teacher dashboard
         Get.offAll(() => const TeacherDashboardPage());
@@ -125,13 +125,23 @@ class TeacherLoginController extends GetxController {
     }
   }
 
-  // Save login session to shared preferences
-  Future<void> saveLoginSession(String uid) async {
+// Save login session to shared preferences
+  Future<void> saveLoginSession(String uid, DocumentSnapshot teacherDoc) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_uid', uid);
       await prefs.setBool('is_logged_in', true);
       await prefs.setString('user_role', 'teacher');
+
+      // Extract schoolId from teacher document if it exists
+      final teacherData = teacherDoc.data() as Map<String, dynamic>?;
+      if (teacherData != null && teacherData.containsKey('schoolId')) {
+        final schoolId = teacherData['schoolId'];
+        if (schoolId != null && schoolId is String && schoolId.isNotEmpty) {
+          // Save the school ID to shared preferences
+          await prefs.setString('school_id', schoolId);
+        }
+      }
 
       // Update last login timestamp
       await _firestore.collection('teachers').doc(uid).update({

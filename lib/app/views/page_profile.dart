@@ -19,27 +19,25 @@ class ProfileController extends GetxController {
   var isLoading = false.obs;
   var isEditing = false.obs;
   var userProfile = Rx<Map<String, dynamic>>({});
+  var schoolId = ''.obs;
 
   final nameController = TextEditingController();
   final selectedClass = Rx<String?>(null);
 
   // Class options for the dropdown
   final List<String> classOptions = [
-    'X IPA 1',
-    'X IPA 2',
-    'X IPA 3',
-    'X IPS 1',
-    'X IPS 2',
-    'XI IPA 1',
-    'XI IPA 2',
-    'XI IPA 3',
-    'XI IPS 1',
-    'XI IPS 2',
-    'XII IPA 1',
-    'XII IPA 2',
-    'XII IPA 3',
-    'XII IPS 1',
-    'XII IPS 2',
+    'X IPA a',
+    'X IPA b',
+    'X IPA c',
+    'X IPA d',
+    'XI IPA a',
+    'XI IPA b',
+    'XI IPA c',
+    'XI IPA d',
+    'XII IPA a',
+    'XII IPA b',
+    'XII IPA c',
+    'XII IPA d',
   ];
 
   @override
@@ -64,15 +62,34 @@ class ProfileController extends GetxController {
         return;
       }
 
-      final docSnapshot =
-          await _firestore.collection('students').doc(currentUser.uid).get();
+      // Get schoolId from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final storedSchoolId = prefs.getString('school_id');
 
-      if (docSnapshot.exists) {
-        userProfile.value = docSnapshot.data() as Map<String, dynamic>;
+      if (storedSchoolId != null && storedSchoolId.isNotEmpty) {
+        schoolId.value = storedSchoolId;
 
-        // Initialize controllers with current values
-        nameController.text = userProfile.value['name'] ?? '';
-        selectedClass.value = userProfile.value['class'];
+        // Get student data from the subcollection
+        final docSnapshot = await _firestore
+            .collection('schools')
+            .doc(schoolId.value)
+            .collection('students')
+            .doc(currentUser.uid)
+            .get();
+
+        if (docSnapshot.exists) {
+          userProfile.value = docSnapshot.data() as Map<String, dynamic>;
+
+          // Initialize controllers with current values
+          nameController.text = userProfile.value['name'] ?? '';
+          selectedClass.value = userProfile.value['class'];
+        } else {
+          // Student not found in this school
+          await _findStudentInAllSchools(currentUser);
+        }
+      } else {
+        // School ID not found in shared preferences, search in all schools
+        await _findStudentInAllSchools(currentUser);
       }
     } catch (e) {
       Get.snackbar(
@@ -83,6 +100,56 @@ class ProfileController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // Helper method to find a student in all schools
+  Future<void> _findStudentInAllSchools(User currentUser) async {
+    try {
+      final schoolsSnapshot = await _firestore.collection('schools').get();
+      bool found = false;
+
+      for (var schoolDoc in schoolsSnapshot.docs) {
+        final studentDoc = await schoolDoc.reference
+            .collection('students')
+            .doc(currentUser.uid)
+            .get();
+
+        if (studentDoc.exists) {
+          // Found the student
+          schoolId.value = schoolDoc.id;
+          userProfile.value = studentDoc.data() as Map<String, dynamic>;
+
+          // Save school ID to SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('school_id', schoolId.value);
+
+          // Initialize controllers with current values
+          nameController.text = userProfile.value['name'] ?? '';
+          selectedClass.value = userProfile.value['class'];
+          found = true;
+          break;
+        }
+      }
+
+      // If student was not found in any school
+      if (!found) {
+        nameController.text = currentUser.displayName ?? '';
+        selectedClass.value = null;
+
+        Get.snackbar(
+          'Perhatian',
+          'Profil tidak ditemukan. Silakan lengkapi data profil Anda.',
+          backgroundColor: Colors.orange.shade100,
+          colorText: Colors.orange.shade800,
+        );
+
+        // Enter edit mode automatically
+        isEditing.value = true;
+      }
+    } catch (e) {
+      print('Error finding student in schools: $e');
+      throw e;
     }
   }
 
@@ -102,7 +169,9 @@ class ProfileController extends GetxController {
     try {
       isLoading.value = true;
 
-      if (nameController.text.trim().isEmpty || selectedClass.value == null) {
+      if (nameController.text.trim().isEmpty ||
+          selectedClass.value == null ||
+          selectedClass.value!.isEmpty) {
         Get.snackbar(
           'Error',
           'Nama dan kelas tidak boleh kosong',
@@ -117,12 +186,41 @@ class ProfileController extends GetxController {
         return;
       }
 
-      // Update Firestore
-      await _firestore.collection('students').doc(currentUser.uid).update({
+      // If schoolId is empty, we need to select a school
+      if (schoolId.value.isEmpty) {
+        // For simplicity, using the first school available
+        // In a real app, you might want to show a school selection UI
+        final schoolsSnapshot = await _firestore.collection('schools').get();
+        if (schoolsSnapshot.docs.isNotEmpty) {
+          schoolId.value = schoolsSnapshot.docs.first.id;
+
+          // Save school ID to SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('school_id', schoolId.value);
+        } else {
+          Get.snackbar(
+            'Error',
+            'Tidak ada sekolah yang tersedia',
+            backgroundColor: Colors.red.shade100,
+            colorText: Colors.red.shade800,
+          );
+          return;
+        }
+      }
+
+      // Update Firestore in the appropriate subcollection
+      await _firestore
+          .collection('schools')
+          .doc(schoolId.value)
+          .collection('students')
+          .doc(currentUser.uid)
+          .set({
         'name': nameController.text.trim(),
         'class': selectedClass.value,
+        'email': currentUser.email,
+        'photoURL': currentUser.photoURL,
         'updatedAt': FieldValue.serverTimestamp(),
-      });
+      }, SetOptions(merge: true));
 
       // Update display name if needed
       if (currentUser.displayName != nameController.text.trim()) {

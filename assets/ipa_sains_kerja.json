@@ -36,13 +36,19 @@
           "Asisten Medis [21]",
           "Tenaga Kesehatan [19]",
           "Staf Klinik [18]",
-          "Perawat (dengan sertifikasi) [20]",
           "Administrasi Rumah Sakit [17]",
           "Teknisi Alat Kesehatan [18]",
           "Customer Service Asuransi Kesehatan [16]"
         ],
-        "karir_riasec": ["S/I", "S/I", "S/C", "S/I", "C", "R/I", "S/C"],
-        "jurusan_terkait": [],
+        "karir_riasec": ["S/I", "S/I", "S/C", "C", "R/I", "S/C"],
+        "jurusan_terkait": [
+          "D3 Keperawatan",
+          "D3 Teknologi Laboratorium Medik",
+          "D3 Farmasi",
+          "D3 Rekam Medis dan Informasi Kesehatan",
+          "D3 Teknologi Bank Darah",
+          "S1 Kesehatan Masyarakat"
+        ],
         "rekomendasi_kursus": [
           "Pelatihan Bantuan Hidup Dasar (BHD)",
           "Kursus Asisten Perawat Tersertifikasi",
@@ -69,15 +75,28 @@
         ],
         "karir": [
           "Teknisi Laboratorium [20]",
-          "Asisten Peneliti [19]",
           "Teknisi Peralatan Sains [18]",
           "Staf R&D [18]",
           "Pengumpul Data Lapangan [17]",
           "Operator Peralatan Penelitian [18]",
           "Staf Pengujian Kualitas [19]"
         ],
-        "karir_riasec": ["I/R", "I", "R/I", "I", "I/R", "R/I", "I/C"],
-        "jurusan_terkait": [],
+        "karir_riasec": [
+          "I/R",
+          "R/I",
+          "I",
+          "I/R",
+          "R/I",
+          "I/C"
+        ],
+        "jurusan_terkait": [
+          "D3 Analis Kimia",
+          "D3 Teknik Kimia",
+          "S1 Kimia",
+          "S1 Biologi",
+          "S1 Fisika",
+          "D3 MIPA"
+        ],
         "rekomendasi_kursus": [
           "Sertifikasi Teknisi Laboratorium",
           "Pelatihan Good Laboratory Practice (GLP)",
@@ -112,8 +131,22 @@
           "Sales Representative Produk Farmasi [17]",
           "Staf Administrasi Apotek [16]"
         ],
-        "karir_riasec": ["I/C", "I/R", "R/C", "I/C", "C", "E/S", "C"],
-        "jurusan_terkait": [],
+        "karir_riasec": [
+          "I/C",
+          "I/R",
+          "R/C",
+          "I/C",
+          "C",
+          "E/S",
+          "C"
+        ],
+        "jurusan_terkait": [
+          "D3 Farmasi",
+          "S1 Farmasi",
+          "D3 Teknik Kimia",
+          "D3 Analis Kimia",
+          "S1 Kimia Farmasi"
+        ],
         "rekomendasi_kursus": [
           "Pelatihan Asisten Apoteker",
           "Sertifikasi Good Manufacturing Practice (GMP)",
@@ -142,14 +175,25 @@
         "karir": [
           "Teknisi Laboratorium Klinik [20]",
           "Teknisi Laboratorium Industri [19]",
-          "Asisten Analis Laboratorium [18]",
           "Staf Pengujian Kualitas [19]",
-          "Teknisi Mikrobiologi [18]",
           "Teknisi Instrumentasi [17]",
           "Staf Pengambilan Sampel [16]"
         ],
-        "karir_riasec": ["I/R", "I/R", "I", "I/C", "I/R", "R/I", "R"],
-        "jurusan_terkait": [],
+        "karir_riasec": [
+          "I/R",
+          "I/R",
+          "I/C",
+          "R/I",
+          "R"
+        ],
+        "jurusan_terkait": [
+          "D3 Teknologi Laboratorium Medik",
+          "D3 Analis Kimia",
+          "D3 Analis Kesehatan",
+          "S1 Kimia",
+          "S1 Biologi",
+          "D3 Mikrobiologi"
+        ],
         "rekomendasi_kursus": [
           "Sertifikasi Teknisi Laboratorium",
           "Pelatihan Teknik Dasar Mikrobiologi",
@@ -181,11 +225,23 @@
           "Asisten Pengambil Sampel Lingkungan [17]",
           "Operator Pengolahan Air [18]",
           "Staf Lapangan Konservasi [17]",
-          "Teknisi Pengendalian Polusi [18]",
-          "Edukator Lingkungan [16]"
+          "Teknisi Pengendalian Polusi [18]"
         ],
-        "karir_riasec": ["I/R", "R/C", "R/I", "R", "R/S", "I/R", "S"],
-        "jurusan_terkait": [],
+        "karir_riasec": [
+          "I/R",
+          "R/C",
+          "R/I",
+          "R",
+          "R/S",
+          "I/R"
+        ],
+        "jurusan_terkait": [
+          "D3 Teknik Lingkungan",
+          "S1 Teknik Lingkungan",
+          "S1 Ilmu Lingkungan",
+          "S1 Biologi Lingkungan",
+          "D3 Pengelolaan Sumber Daya Air dan Lingkungan"
+        ],
         "rekomendasi_kursus": [
           "Sertifikasi Teknisi Lingkungan",
           "Pelatihan Pengelolaan Limbah",
@@ -216,12 +272,24 @@
           "Asisten Quality Control Makanan [18]",
           "Staf Produksi Industri Pangan [17]",
           "Teknisi Pengolahan Makanan [18]",
-          "Asisten Konsultan Nutrisi [16]",
           "Staf Pengembangan Produk Pangan [18]",
           "Asisten Food Safety [17]"
         ],
-        "karir_riasec": ["I/R", "C/I", "R", "R/I", "S/I", "I/R", "C/I"],
-        "jurusan_terkait": [],
+        "karir_riasec": [
+          "I/R",
+          "C/I",
+          "R",
+          "R/I",
+          "I/R",
+          "C/I"
+        ],
+        "jurusan_terkait": [
+          "D3 Teknologi Pangan",
+          "S1 Ilmu dan Teknologi Pangan",
+          "D3 Gizi",
+          "S1 Ilmu Gizi",
+          "D3 Pengawasan Mutu Pangan"
+        ],
         "rekomendasi_kursus": [
           "Sertifikasi Keamanan Pangan (HACCP)",
           "Pelatihan Quality Control Makanan",
@@ -249,15 +317,25 @@
         ],
         "karir": [
           "Teknisi Peralatan Medis [20]",
-          "Asisten Teknologi Radiologi [19]",
           "Teknisi Laboratorium Medis [18]",
           "Staf Penjualan Alat Kesehatan [17]",
           "Teknisi Pemeliharaan Alat Medis [19]",
-          "Asisten Teknologi Elektrokardiogram [18]",
           "Staf Logistik Peralatan Medis [16]"
         ],
-        "karir_riasec": ["R/I", "R/I", "I/R", "E/S", "R", "R/I", "C/R"],
-        "jurusan_terkait": [],
+        "karir_riasec": [
+          "R/I",
+          "I/R",
+          "E/S",
+          "R",
+          "C/R"
+        ],
+        "jurusan_terkait": [
+          "D3 Teknik Elektromedik",
+          "D3 Teknik Elektronika",
+          "D3 Teknik Biomedis",
+          "S1 Teknik Biomedis",
+          "D3 Teknik Instrumentasi"
+        ],
         "rekomendasi_kursus": [
           "Sertifikasi Teknisi Peralatan Medis",
           "Pelatihan Dasar Radiologi",

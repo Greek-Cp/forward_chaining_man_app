@@ -15,13 +15,15 @@ class StudentLoginController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var isRegistering = false.obs;
-
+  var isRegisterUsingGoogle = false.obs;
   // Text controllers for login/register form
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final nameController = TextEditingController();
   final selectedClass = Rx<String?>(null);
+  final selectedSchoolId = Rx<String?>(null);
+
   void checkValidClass() {
     if (selectedClass.value != null &&
         !classOptions.contains(selectedClass.value)) {
@@ -29,23 +31,21 @@ class StudentLoginController extends GetxController {
     }
   }
 
-  // Class options for the dropdown
+  final List<String> asalSekolah = ["MAN 1 NGANJUK"];
+
   final List<String> classOptions = [
-    'X IPA 1',
-    'X IPA 2',
-    'X IPA 3',
-    'X IPS 1',
-    'X IPS 2',
-    'XI IPA 1',
-    'XI IPA 2',
-    'XI IPA 3',
-    'XI IPS 1',
-    'XI IPS 2',
-    'XII IPA 1',
-    'XII IPA 2',
-    'XII IPA 3',
-    'XII IPS 1',
-    'XII IPS 2',
+    'X IPA a',
+    'X IPA b',
+    'X IPA c',
+    'X IPA d',
+    'XI IPA a',
+    'XI IPA b',
+    'XI IPA c',
+    'XI IPA d',
+    'XII IPA a',
+    'XII IPA b',
+    'XII IPA c',
+    'XII IPA d',
   ];
 
   @override
@@ -68,16 +68,33 @@ class StudentLoginController extends GetxController {
     try {
       User? currentUser = _auth.currentUser;
       if (currentUser != null) {
-        // Check if user data exists in Firestore
-        final docSnapshot =
-            await _firestore.collection('students').doc(currentUser.uid).get();
-        if (docSnapshot.exists) {
-          // Save login session
-          await saveLoginSession(currentUser.uid);
-          // Navigate to main app
-          Get.offAll(() => const PageStudentDashboard());
+        // Get the schoolId from shared preferences or another source
+        final prefs = await SharedPreferences.getInstance();
+        final schoolId = prefs.getString('school_id');
+
+        if (schoolId != null) {
+          // Check if user data exists in Firestore as a subcollection of schools
+          final docSnapshot = await _firestore
+              .collection('schools')
+              .doc(schoolId)
+              .collection('students')
+              .doc(currentUser.uid)
+              .get();
+
+          if (docSnapshot.exists) {
+            // Save login session
+            await saveLoginSession(currentUser.uid, schoolId);
+            // Navigate to main app
+            Get.offAll(() => const PageStudentDashboard());
+          } else {
+            // User authenticated but no profile exists
+            if (currentUser.displayName != null) {
+              nameController.text = currentUser.displayName!;
+            }
+            isRegistering.value = true;
+          }
         } else {
-          // User authenticated but no profile exists
+          // No school selected yet, user needs to complete registration
           if (currentUser.displayName != null) {
             nameController.text = currentUser.displayName!;
           }
@@ -90,14 +107,20 @@ class StudentLoginController extends GetxController {
   }
 
   // Save login session to shared preferences
-  Future<void> saveLoginSession(String uid) async {
+  Future<void> saveLoginSession(String uid, String schoolId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_uid', uid);
+      await prefs.setString('school_id', schoolId);
       await prefs.setBool('is_logged_in', true);
 
       // Update last login timestamp
-      await _firestore.collection('students').doc(uid).update({
+      await _firestore
+          .collection('schools')
+          .doc(schoolId)
+          .collection('students')
+          .doc(uid)
+          .update({
         'lastLogin': FieldValue.serverTimestamp(),
       });
     } catch (e) {
@@ -136,10 +159,33 @@ class StudentLoginController extends GetxController {
       );
 
       if (userCredential.user != null) {
-        // Save login session
-        await saveLoginSession(userCredential.user!.uid);
-        // Navigate to main app
-        Get.offAll(() => const PageStudentDashboard());
+        // Find which school this user belongs to
+        String? schoolId;
+
+        // Query all schools to find the student
+        final schoolsSnapshot = await _firestore.collection('schools').get();
+
+        for (var schoolDoc in schoolsSnapshot.docs) {
+          final studentDoc = await schoolDoc.reference
+              .collection('students')
+              .doc(userCredential.user!.uid)
+              .get();
+
+          if (studentDoc.exists) {
+            schoolId = schoolDoc.id;
+            break;
+          }
+        }
+
+        if (schoolId != null) {
+          // Save login session with school ID
+          await saveLoginSession(userCredential.user!.uid, schoolId);
+          // Navigate to main app
+          Get.offAll(() => const PageStudentDashboard());
+        } else {
+          errorMessage.value = 'Akun tidak ditemukan di sekolah manapun';
+          await _auth.signOut();
+        }
       }
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -168,11 +214,12 @@ class StudentLoginController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // Validation
+      // Validasi input
       if (emailController.text.trim().isEmpty ||
           passwordController.text.isEmpty ||
           nameController.text.trim().isEmpty ||
-          selectedClass.value == null) {
+          selectedClass.value == null ||
+          selectedSchoolId.value == null) {
         errorMessage.value = 'Semua field harus diisi';
         return;
       }
@@ -187,22 +234,32 @@ class StudentLoginController extends GetxController {
         return;
       }
 
-      // Create user
+      // Buat akun user
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text,
       );
 
       if (userCredential.user != null) {
-        // Update display name
+        String studentId = userCredential.user!.uid;
+        String schoolId = selectedSchoolId.value!; // Pastikan schoolId valid
+
+        // Pastikan sekolah ada di Firestore
+        DocumentReference schoolRef =
+            _firestore.collection('schools').doc(schoolId);
+        DocumentSnapshot schoolSnapshot = await schoolRef.get();
+
+        if (!schoolSnapshot.exists) {
+          errorMessage.value = 'Sekolah yang dipilih tidak ditemukan';
+          return;
+        }
+
+        // Perbarui nama tampilan di Firebase Auth
         await userCredential.user!
             .updateDisplayName(nameController.text.trim());
 
-        // Save user data to Firestore
-        await _firestore
-            .collection('students')
-            .doc(userCredential.user!.uid)
-            .set({
+        // Simpan data siswa dalam subkoleksi `students` di dalam `schools`
+        await schoolRef.collection('students').doc(studentId).set({
           'name': nameController.text.trim(),
           'class': selectedClass.value,
           'email': userCredential.user!.email,
@@ -211,10 +268,10 @@ class StudentLoginController extends GetxController {
           'lastLogin': FieldValue.serverTimestamp(),
         });
 
-        // Save login session
-        await saveLoginSession(userCredential.user!.uid);
+        // Simpan sesi login
+        await saveLoginSession(studentId, schoolId);
 
-        // Navigate to main app
+        // Navigasi ke dashboard siswa
         Get.offAll(() => const PageStudentDashboard());
       }
     } on FirebaseAuthException catch (e) {
@@ -238,7 +295,11 @@ class StudentLoginController extends GetxController {
     }
   }
 
-  // Sign in with Google
+// First, add this to your StudentLoginController class:
+
+// Add this reactive variable to track Google sign-in state
+
+// Updated Google Sign-In method with the new variable
   Future<void> signInWithGoogle() async {
     try {
       isLoading.value = true;
@@ -267,31 +328,51 @@ class StudentLoginController extends GetxController {
       final user = userCredential.user;
 
       if (user != null) {
-        // Check if user exists in Firestore
-        final docRef = _firestore.collection('students').doc(user.uid);
-        final docSnapshot = await docRef.get();
+        // Find which school this user belongs to
+        String? schoolId;
+        bool userExists = false;
 
-        if (docSnapshot.exists) {
-          // Existing user - update login time
-          await docRef.update({
-            'lastLogin': FieldValue.serverTimestamp(),
-          });
+        // Query all schools to find the student
+        final schoolsSnapshot = await _firestore.collection('schools').get();
 
-          // Save login session
-          await saveLoginSession(user.uid);
+        for (var schoolDoc in schoolsSnapshot.docs) {
+          final studentDoc = await schoolDoc.reference
+              .collection('students')
+              .doc(user.uid)
+              .get();
 
+          if (studentDoc.exists) {
+            schoolId = schoolDoc.id;
+            userExists = true;
+            // Update login time
+            await schoolDoc.reference
+                .collection('students')
+                .doc(user.uid)
+                .update({
+              'lastLogin': FieldValue.serverTimestamp(),
+            });
+            break;
+          }
+        }
+
+        if (userExists && schoolId != null) {
+          // Existing user - save login session
+          await saveLoginSession(user.uid, schoolId);
           // Navigate to main app
           Get.offAll(() => const PageStudentDashboard());
         } else {
           // New user - need to complete profile
           // Pre-fill name from Google account
           nameController.text = user.displayName ?? '';
+          emailController.text = user.email ?? '';
           isRegistering.value = true;
+          isRegisterUsingGoogle.value =
+              true; // Set to true when signing in with Google
 
           // Show toast message
           Get.snackbar(
             'Lengkapi Profil',
-            'Silakan pilih kelas untuk melanjutkan',
+            'Silakan pilih kelas dan sekolah untuk melanjutkan',
             backgroundColor: Colors.blue.shade100,
             colorText: Colors.blue.shade800,
             snackPosition: SnackPosition.BOTTOM,
@@ -306,7 +387,7 @@ class StudentLoginController extends GetxController {
     }
   }
 
-  // Complete Google sign-in profile for new users
+// Modify the completeGoogleProfile method to use the isRegisterUsingGoogle flag
   Future<void> completeGoogleProfile() async {
     try {
       isLoading.value = true;
@@ -318,13 +399,29 @@ class StudentLoginController extends GetxController {
         return;
       }
 
-      if (nameController.text.trim().isEmpty || selectedClass.value == null) {
-        errorMessage.value = 'Nama dan kelas tidak boleh kosong';
+      if (nameController.text.trim().isEmpty ||
+          selectedClass.value == null ||
+          selectedSchoolId.value == null) {
+        errorMessage.value = 'Nama, kelas, dan sekolah tidak boleh kosong';
         return;
       }
 
-      // Save user data to Firestore
-      await _firestore.collection('students').doc(currentUser.uid).set({
+      String studentId = currentUser.uid;
+      String schoolId =
+          selectedSchoolId.value!; // Pastikan schoolId dipilih dan valid
+
+      // Pastikan sekolah sudah ada di Firestore
+      DocumentReference schoolRef =
+          _firestore.collection('schools').doc(schoolId);
+      DocumentSnapshot schoolSnapshot = await schoolRef.get();
+
+      if (!schoolSnapshot.exists) {
+        errorMessage.value = 'Sekolah yang dipilih tidak ditemukan';
+        return;
+      }
+
+      // Simpan data siswa dalam subkoleksi students di dalam sekolah
+      await schoolRef.collection('students').doc(studentId).set({
         'name': nameController.text.trim(),
         'class': selectedClass.value,
         'email': currentUser.email,
@@ -334,15 +431,18 @@ class StudentLoginController extends GetxController {
         'lastLogin': FieldValue.serverTimestamp(),
       });
 
-      // Update display name if needed
+      // Update display name jika perlu
       if (currentUser.displayName != nameController.text.trim()) {
         await currentUser.updateDisplayName(nameController.text.trim());
       }
 
-      // Save login session
-      await saveLoginSession(currentUser.uid);
+      // Simpan sesi login
+      await saveLoginSession(studentId, schoolId);
 
-      // Navigate to main app
+      // Reset the isRegisterUsingGoogle flag
+      isRegisterUsingGoogle.value = false;
+
+      // Navigasi ke dashboard
       Get.offAll(() => const PageStudentDashboard());
     } catch (e) {
       errorMessage.value = 'Gagal menyimpan profil: ${e.toString()}';
@@ -511,43 +611,127 @@ class StudentLoginPage extends StatelessWidget {
                                     label: 'Nama Lengkap',
                                     prefixIcon: Icons.person_outline,
                                   ),
-
-                                  const SizedBox(height: 16),
                                 ],
 
-                                // Email field
-                                _buildTextField(
-                                  controller: controller.emailController,
-                                  label: 'Email',
-                                  prefixIcon: Icons.email_outlined,
-                                  keyboardType: TextInputType.emailAddress,
-                                ),
+// Email field - Hide if Google sign-in
+                                Obx(() => controller.isRegisterUsingGoogle.value
+                                    ? const SizedBox
+                                        .shrink() // Hide if Google sign-in
+                                    : _buildTextField(
+                                        controller: controller.emailController,
+                                        label: 'Email',
+                                        prefixIcon: Icons.email_outlined,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                      )),
 
-                                const SizedBox(height: 16),
+                                Obx(() => controller.isRegisterUsingGoogle.value
+                                    ? const SizedBox
+                                        .shrink() // No spacer if email is hidden
+                                    : const SizedBox(height: 16)),
 
-                                // Password field
-                                CustomTextField(
-                                  controller: controller.passwordController,
-                                  label: 'Password',
-                                  prefixIcon: Icons.lock_outline,
-                                  isPassword: true,
-                                ),
+// Password field - Hide if Google sign-in
+                                Obx(() => controller.isRegisterUsingGoogle.value
+                                    ? const SizedBox
+                                        .shrink() // Hide if Google sign-in
+                                    : CustomTextField(
+                                        controller:
+                                            controller.passwordController,
+                                        label: 'Password',
+                                        prefixIcon: Icons.lock_outline,
+                                        isPassword: true,
+                                      )),
 
+// Only show confirm password in registration mode and not Google sign-in
                                 if (controller.isRegistering.value) ...[
+                                  Obx(() => controller
+                                          .isRegisterUsingGoogle.value
+                                      ? const SizedBox
+                                          .shrink() // No spacer if password is hidden
+                                      : const SizedBox(height: 16)),
+
+                                  // Confirm password field - Hide if Google sign-in
+                                  Obx(() => controller
+                                          .isRegisterUsingGoogle.value
+                                      ? const SizedBox
+                                          .shrink() // Hide if Google sign-in
+                                      : _buildTextField(
+                                          controller: controller
+                                              .confirmPasswordController,
+                                          label: 'Konfirmasi Password',
+                                          prefixIcon: Icons.lock_outline,
+                                          isPassword: true,
+                                        )),
+
                                   const SizedBox(height: 16),
 
-                                  // Confirm password field
-                                  _buildTextField(
-                                    controller:
-                                        controller.confirmPasswordController,
-                                    label: 'Konfirmasi Password',
-                                    prefixIcon: Icons.lock_outline,
-                                    isPassword: true,
+                                  // School selection - Always show in registration
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(
+                                          color: Colors.grey.shade300),
+                                    ),
+                                    child: Obx(() =>
+                                        DropdownButtonHideUnderline(
+                                          child: DropdownButton<String>(
+                                            value: controller
+                                                .selectedSchoolId.value,
+                                            hint: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.school_outlined,
+                                                      color: Colors
+                                                          .indigo.shade300),
+                                                  const SizedBox(width: 12),
+                                                  const Text('Pilih Sekolah'),
+                                                ],
+                                              ),
+                                            ),
+                                            isExpanded: true,
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            icon: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 16),
+                                              child: Icon(Icons.arrow_drop_down,
+                                                  color:
+                                                      Colors.indigo.shade400),
+                                            ),
+                                            items: controller.asalSekolah
+                                                .map((String kelas) {
+                                              return DropdownMenuItem<String>(
+                                                value: kelas,
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 16),
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                          Icons.school_outlined,
+                                                          color: Colors
+                                                              .indigo.shade300),
+                                                      const SizedBox(width: 12),
+                                                      Text(kelas),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
+                                            onChanged: (String? newValue) {
+                                              controller.selectedSchoolId
+                                                  .value = newValue;
+                                            },
+                                          ),
+                                        )),
                                   ),
-
                                   const SizedBox(height: 16),
 
-                                  // Class dropdown
+                                  // Class dropdown - Always show in registration
                                   Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(15),
@@ -836,7 +1020,7 @@ class StudentLoginPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
-            'assets/images/google_logo.png',
+            'assets/ic_google.png',
             height: 24,
             width: 24,
             errorBuilder: (context, error, stackTrace) => const Icon(
