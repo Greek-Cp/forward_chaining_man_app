@@ -560,13 +560,11 @@ class QuestionController extends GetxController {
     return 5; // Default weight jika tidak ditemukan
   }
 
-  /// Modified: Return RecommendationResult object instead of a string
-  /// Modified: Return RecommendationResult object with balanced scoring
   RecommendationResult runForwardChaining() {
     final workingMemoryList = <String>[];
     final workingMemory = <String>{};
 
-    // 1️⃣ Menampilkan semua pertanyaan dan jawaban pengguna dengan detail lengkap
+    // 1️⃣ Menampilkan semua pertanyaan dan jawaban pengguna
     print('📌 DAFTAR PERTANYAAN & JAWABAN PENGGUNA:');
     for (var q in allQuestions) {
       String answer = q.userAnswer == true ? "✅ Yes" : "❌ No";
@@ -582,7 +580,6 @@ class QuestionController extends GetxController {
 
     // 2️⃣ Inisialisasi working memory
     print('\n🔹 Initial Working Memory: $workingMemoryList');
-
     for (var q in allQuestions) {
       if (q.userAnswer == true) {
         workingMemory.add('${q.id}=Yes');
@@ -592,10 +589,9 @@ class QuestionController extends GetxController {
         workingMemoryList.add('${q.id}=No');
       }
     }
-
     print('🔹 Final Working Memory: $workingMemoryList\n');
 
-    // 3️⃣ Inisialisasi struktur data untuk menyimpan informasi bobot
+    // 3️⃣ Inisialisasi struktur data untuk bobot
     final minatBobotTotal = <String, int>{};
     final minatBobotBenar = <String, int>{};
     final minatContrib = <String, List<String>>{};
@@ -624,7 +620,7 @@ class QuestionController extends GetxController {
           minatBobotBenar[keyMinat] =
               (minatBobotBenar[keyMinat] ?? 0) + q.bobot;
 
-          // Catat rule fired untuk penjelasan
+          // Catat rule fired
           minatContrib[keyMinat] ??= [];
           minatContrib[keyMinat]!
               .add('✅ IF (${q.id}=Yes) THEN +${q.bobot} skor → $keyMinat\n'
@@ -690,6 +686,7 @@ class QuestionController extends GetxController {
       if (percentageComparison != 0) {
         return percentageComparison;
       }
+      // Jika sama, bandingkan bobot total benar
       return (minatBobotBenar[b.key] ?? 0)
           .compareTo(minatBobotBenar[a.key] ?? 0);
     });
@@ -721,6 +718,19 @@ class QuestionController extends GetxController {
           final majors = minatObj.jurusanTerkait;
           final rules = minatContrib[minatKey] ?? [];
 
+          // ✨ Tambahkan pengambilan recommendedCourses & recommendedUniversities
+          List<String>? recommendedCourses;
+          if (minatObj.rekomendasi_kursus != null &&
+              minatObj.rekomendasi_kursus!.isNotEmpty) {
+            recommendedCourses = minatObj.rekomendasi_kursus;
+          }
+
+          List<String>? recommendedUniversities;
+          if (minatObj.universitas_rekomendasi != null &&
+              minatObj.universitas_rekomendasi!.isNotEmpty) {
+            recommendedUniversities = minatObj.universitas_rekomendasi;
+          }
+
           recommendations.add(
             RecommendationItem(
               title: minatKey,
@@ -729,6 +739,9 @@ class QuestionController extends GetxController {
               majors: majors,
               rules: rules,
               index: i,
+              // ✨ masukkan ke constructor:
+              recommendedCourses: recommendedCourses,
+              recommendedUniversities: recommendedUniversities,
             ),
           );
 
@@ -736,6 +749,8 @@ class QuestionController extends GetxController {
           print('   🔹 Score: $score%');
           print('   📌 Careers: $careers');
           print('   🎓 Majors: $majors');
+          print('   🎯 Recommended Courses: $recommendedCourses');
+          print('   🏛️ Recommended Universities: $recommendedUniversities');
           print('   🔎 Rules Applied: $rules\n');
         }
       }

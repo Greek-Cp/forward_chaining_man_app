@@ -12,6 +12,7 @@ import 'package:forward_chaining_man_app/app/views/page_profile.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/quiz/controller/question_controller.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/quiz/view/page_question.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/quiz/view/page_select_major.dart';
+import 'package:forward_chaining_man_app/app/views/student/feature/quiz/view/widget/wave_clipper.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/recomendation_screen/view/page_recomendation_screen.dart';
 import 'package:forward_chaining_man_app/app/views/student/model/data_student.dart';
 import 'package:get/get.dart';
@@ -159,7 +160,7 @@ class HomePage extends StatelessWidget {
                         return _buildEconomicConditionStep(controller);
                       } else {
                         // STEP 2: Choose Plan based on Economic Condition
-                        return _buildPlanSelectionStep(controller);
+                        return _buildPlanSelectionStep(controller, context);
                       }
                     }),
                   ),
@@ -169,6 +170,40 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+// Fungsi untuk menampilkan dialog konfirmasi
+  void _showConfirmationDialog(BuildContext context, VoidCallback onConfirm) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Konfirmasi',
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Container(); // Tidak digunakan, kita menggunakan transitionBuilder
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutBack,
+        );
+
+        return ScaleTransition(
+          scale: Tween<double>(begin: 0.8, end: 1.0).animate(curvedAnimation),
+          child: FadeTransition(
+            opacity:
+                Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ConfirmationDialogContent(onConfirm: onConfirm),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -243,7 +278,8 @@ class HomePage extends StatelessWidget {
   }
 
   // STEP 2: Widget for Plan Selection based on Economic Condition
-  Widget _buildPlanSelectionStep(HomeController controller) {
+  Widget _buildPlanSelectionStep(
+      HomeController controller, BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -395,21 +431,26 @@ class HomePage extends StatelessWidget {
                   onPressed: controller.selectedKode.value.isEmpty
                       ? null
                       : () {
-                          // Buat instance QuestionController dengan preferensi yang sesuai
-                          final questionController = Get.put(QuestionController(
-                            isKerja: controller.pilihan.value!,
-                            majorType: controller.selectedMajor,
-                          ));
+                          // Munculkan dialog konfirmasi terlebih dahulu
+                          _showConfirmationDialog(context, () {
+                            // Callback ini akan dipanggil ketika user menekan tombol "Ya, Lanjutkan"
+                            // Buat instance QuestionController dengan preferensi yang sesuai
+                            final questionController =
+                                Get.put(QuestionController(
+                              isKerja: controller.pilihan.value!,
+                              majorType: controller.selectedMajor,
+                            ));
 
-                          questionController.clearQuestion();
-                          questionController.loadProgramData(
-                              controller.pilihan.value!,
-                              controller.selectedMajor);
+                            questionController.clearQuestion();
+                            questionController.loadProgramData(
+                                controller.pilihan.value!,
+                                controller.selectedMajor);
 
-                          // Navigasi ke halaman pertanyaan
-                          Get.to(() => QuestionPage(
-                                isKerja: controller.pilihan.value!,
-                              ));
+                            // Navigasi ke halaman pertanyaan
+                            Get.to(() => QuestionPage(
+                                  isKerja: controller.pilihan.value!,
+                                ));
+                          });
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue.shade600,

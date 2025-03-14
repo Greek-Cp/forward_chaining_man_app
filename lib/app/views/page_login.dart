@@ -34,18 +34,18 @@ class StudentLoginController extends GetxController {
   final List<String> asalSekolah = ["MAN 1 NGANJUK"];
 
   final List<String> classOptions = [
-    'X IPA a',
-    'X IPA b',
-    'X IPA c',
-    'X IPA d',
-    'XI IPA a',
-    'XI IPA b',
-    'XI IPA c',
-    'XI IPA d',
-    'XII IPA a',
-    'XII IPA b',
-    'XII IPA c',
-    'XII IPA d',
+    'X IPA A (1)',
+    'X IPA B (2)',
+    'X IPA C (3)',
+    'X IPA D (4)',
+    'XI IPA A (1)',
+    'XI IPA B (2)',
+    'XI IPA C (3)',
+    'XI IPA D (4)',
+    'XII IPA A (1)',
+    'XII IPA B (2)',
+    'XII IPA C (3)',
+    'XII IPA D (4)',
   ];
 
   @override
