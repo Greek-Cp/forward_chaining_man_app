@@ -10,6 +10,8 @@ import 'package:forward_chaining_man_app/app/views/about/page_about.dart';
 import 'package:forward_chaining_man_app/app/views/page_intro.dart';
 import 'package:forward_chaining_man_app/app/views/page_login.dart';
 import 'package:forward_chaining_man_app/app/views/page_profile.dart';
+import 'package:forward_chaining_man_app/app/views/splash_screen/page/page_splash_screen.dart';
+import 'package:forward_chaining_man_app/app/views/student/feature/recomendation_screen/page_cetak_sertifikat.dart';
 import 'package:forward_chaining_man_app/app/views/student/model/data_student.dart';
 import 'package:get/get.dart';
 import 'dart:math' as math;
@@ -56,7 +58,7 @@ class _RecommendationResultsScreenState
   late AnimationController _cardController;
   late AnimationController _confettiController;
   late List<AnimationController> _itemControllers;
-
+  late AnimationController _networkController;
   // Animasi
   late Animation<double> _swipeAnimation;
   late Animation<double> _fadeAnimation;
@@ -86,6 +88,12 @@ class _RecommendationResultsScreenState
   @override
   void initState() {
     super.initState();
+
+    // Separate slow controller for network animations - 15 seconds and repeat
+    _networkController = AnimationController(
+      duration: const Duration(milliseconds: 15000),
+      vsync: this,
+    );
 
     // Inisialisasi controller animasi
     _swipeController = AnimationController(
@@ -252,7 +260,6 @@ class _RecommendationResultsScreenState
         child: SafeArea(
           child: Stack(
             children: [
-              // Indikator halaman
               if (_hasRevealed)
                 Positioned(
                   top: 10,
@@ -262,22 +269,13 @@ class _RecommendationResultsScreenState
                 ),
 
               // Header
-              Positioned(
-                top: 10,
-                left: 10,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ),
 
               // Konten utama (berbeda berdasarkan status revealed)
               _hasRevealed ? _buildRevealedContent() : _buildInitialContent(),
 
               // Partikel confetti (hanya muncul setelah swipe)
               if (_hasConfetti) _buildConfetti(),
+              // Indikator halaman
             ],
           ),
         ),
@@ -823,7 +821,7 @@ class _RecommendationResultsScreenState
                                                                     ),
                                                                   ),
                                                                   Text(
-                                                                    'MATCH',
+                                                                    'COCOK',
                                                                     style:
                                                                         TextStyle(
                                                                       fontSize:
@@ -1264,7 +1262,7 @@ class _RecommendationResultsScreenState
                 ),
               ),
             ),
-// Detailed cards - make them responsive and match medal colors
+            const SizedBox(height: 32),
             ...List.generate(
               math.min(3, topRecommendations.length),
               (index) {
@@ -1276,6 +1274,13 @@ class _RecommendationResultsScreenState
                 // Get medal color
                 final Color medalColor = _getMedalColor(index);
 
+                // Segunda cor para os padrões e destaque
+                final Color accentColor = index == 0
+                    ? Color(0xFFF7D154) // Gold accent
+                    : index == 1
+                        ? Color(0xFFB3B6B7) // Silver accent
+                        : Color(0xFFE59866); // Bronze accent
+
                 return AnimatedBuilder(
                   animation: _itemControllers[index],
                   builder: (context, child) {
@@ -1283,254 +1288,626 @@ class _RecommendationResultsScreenState
                         1.0, math.max(0.0, _itemControllers[index].value));
                     final adjustedProgress =
                         Curves.easeOutCubic.transform(progress);
+                    final scale = 0.95 + (0.05 * adjustedProgress);
 
                     return Transform.translate(
                       offset: Offset(
                         (1.0 - adjustedProgress) * 50,
                         0,
                       ),
-                      child: Opacity(
-                        opacity: adjustedProgress,
-                        child: Container(
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: Card(
-                            elevation: 4,
-                            shadowColor: medalColor.withOpacity(0.3),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: BorderSide(
-                                color: medalColor.withOpacity(0.4),
-                                width: 1,
+                      child: Transform.scale(
+                        scale: scale,
+                        child: Opacity(
+                          opacity: adjustedProgress,
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Card(
+                              elevation: 8,
+                              shadowColor: medalColor.withOpacity(0.6),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                            ),
-                            child: Material(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              child: InkWell(
-                                onTap: () {
-                                  HapticFeedback.lightImpact();
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    backgroundColor: Colors.transparent,
-                                    builder: (context) =>
-                                        _buildDetailBottomSheet(
-                                            recommendation, index),
-                                  );
-                                },
-                                splashColor: medalColor.withOpacity(0.1),
-                                highlightColor: medalColor.withOpacity(0.05),
-                                borderRadius: BorderRadius.circular(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Header with medal banner
-                                    Container(
-                                      width: double.infinity,
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 12, horizontal: 16),
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.centerLeft,
-                                          end: Alignment.centerRight,
-                                          colors: [
-                                            medalColor,
-                                            medalColor.withOpacity(0.8),
-                                          ],
-                                        ),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(16),
-                                          topRight: Radius.circular(16),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  programName,
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.white
-                                                        .withOpacity(0.9),
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                SizedBox(height: 2),
-                                                Text(
-                                                  minatName,
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white,
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 5),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white
-                                                  .withOpacity(0.15),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  _getMedalEmoji(index),
-                                                  style:
-                                                      TextStyle(fontSize: 16),
-                                                ),
-                                                SizedBox(width: 4),
-                                                Text(
-                                                  _getMedalLabel(index),
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 10,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    // Content
-                                    Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // Score
-                                          Container(
-                                            margin: EdgeInsets.only(bottom: 16),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 8),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  medalColor.withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color:
-                                                    medalColor.withOpacity(0.3),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.white,
+                                      Colors.white,
+                                    ],
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: medalColor.withOpacity(0.3),
+                                      spreadRadius: 0,
+                                      blurRadius: 15,
+                                      offset: Offset(0, 8),
+                                    )
+                                  ],
+                                  border: Border.all(
+                                    width: 1.5,
+                                    color: medalColor,
+                                  ),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Stack(
+                                    children: [
+                                      // Animated background patterns
+                                      Positioned.fill(
+                                        child: AnimatedBuilder(
+                                          animation: _itemControllers[index],
+                                          builder: (context, child) {
+                                            return CustomPaint(
+                                              painter:
+                                                  AnimatedBackgroundPainter(
+                                                color: medalColor,
+                                                accentColor: accentColor,
+                                                animationValue:
+                                                    _itemControllers[index]
+                                                        .value,
                                               ),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  Icons.check_circle,
-                                                  color: medalColor,
-                                                  size: 16,
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                  'Kesesuaian: ${recommendation.score}%',
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: medalColor,
-                                                  ),
-                                                ),
-                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ),
+
+                                      // Blurred overlay for better readability
+                                      Positioned.fill(
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: BackdropFilter(
+                                            filter: ImageFilter.blur(
+                                                sigmaX: 10, sigmaY: 10),
+                                            child: Container(
+                                              color:
+                                                  Colors.white.withOpacity(0.8),
                                             ),
                                           ),
+                                        ),
+                                      ),
 
-                                          // Careers and Majors
-                                          Row(
+                                      Material(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: InkWell(
+                                          onTap: () {
+                                            HapticFeedback.lightImpact();
+                                            showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              builder: (context) =>
+                                                  _buildDetailBottomSheet(
+                                                      recommendation, index),
+                                            );
+                                          },
+                                          splashColor:
+                                              medalColor.withOpacity(0.1),
+                                          highlightColor:
+                                              medalColor.withOpacity(0.05),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              // Careers section
-                                              Expanded(
-                                                child:
-                                                    _buildResponsiveInfoSection(
-                                                  icon: Icons.work,
-                                                  title: 'Karir',
-                                                  items: recommendation.careers,
-                                                  color: medalColor,
+                                              // Header with medal banner
+                                              Container(
+                                                width: double.infinity,
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 14,
+                                                    horizontal: 16),
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.centerLeft,
+                                                    end: Alignment.centerRight,
+                                                    colors: [
+                                                      medalColor,
+                                                      accentColor,
+                                                    ],
+                                                  ),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: medalColor
+                                                          .withOpacity(0.3),
+                                                      blurRadius: 8,
+                                                      offset: Offset(0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            programName,
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors
+                                                                  .white
+                                                                  .withOpacity(
+                                                                      0.9),
+                                                              letterSpacing:
+                                                                  0.5,
+                                                            ),
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                          SizedBox(height: 4),
+                                                          ShimmerText(
+                                                            text: minatName,
+                                                            baseColor:
+                                                                Colors.white,
+                                                            highlightColor:
+                                                                Colors.white
+                                                                    .withOpacity(
+                                                                        0.7),
+                                                            style: TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              letterSpacing:
+                                                                  0.5,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 10,
+                                                              vertical: 6),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white
+                                                            .withOpacity(0.15),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black
+                                                                .withOpacity(
+                                                                    0.1),
+                                                            blurRadius: 4,
+                                                            offset:
+                                                                Offset(0, 2),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Text(
+                                                            _getMedalEmoji(
+                                                                index),
+                                                            style: TextStyle(
+                                                                fontSize: 16),
+                                                          ),
+                                                          SizedBox(width: 6),
+                                                          ShimmerText(
+                                                            text:
+                                                                _getMedalLabel(
+                                                                    index),
+                                                            baseColor:
+                                                                Colors.white,
+                                                            highlightColor:
+                                                                accentColor
+                                                                    .withOpacity(
+                                                                        0.8),
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 12,
+                                                              letterSpacing: 1,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                              SizedBox(width: 16),
-                                              // Majors section
-                                              Expanded(
-                                                child:
-                                                    _buildResponsiveInfoSection(
-                                                  icon: Icons.school,
-                                                  title: 'Jurusan',
-                                                  items: recommendation.majors,
-                                                  color: medalColor,
+
+                                              // Content
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(16),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    // Score with circular indicator
+                                                    Row(
+                                                      children: [
+                                                        Container(
+                                                          width: 60,
+                                                          height: 60,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            color: Colors.white,
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: medalColor
+                                                                    .withOpacity(
+                                                                        0.2),
+                                                                blurRadius: 8,
+                                                                spreadRadius: 1,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          child: Stack(
+                                                            children: [
+                                                              // Animated circular progress
+                                                              Positioned.fill(
+                                                                child:
+                                                                    TweenAnimationBuilder<
+                                                                        double>(
+                                                                  tween: Tween<
+                                                                          double>(
+                                                                      begin: 0,
+                                                                      end: recommendation
+                                                                              .score /
+                                                                          100),
+                                                                  duration: Duration(
+                                                                      milliseconds:
+                                                                          1500),
+                                                                  curve: Curves
+                                                                      .easeOutCubic,
+                                                                  builder:
+                                                                      (context,
+                                                                          value,
+                                                                          child) {
+                                                                    return CustomPaint(
+                                                                      painter:
+                                                                          CircularScorePainter(
+                                                                        progress:
+                                                                            value,
+                                                                        color:
+                                                                            medalColor,
+                                                                        strokeWidth:
+                                                                            5,
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              ),
+
+                                                              // Center text
+                                                              Center(
+                                                                child: Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    Text(
+                                                                      '${recommendation.score}%',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            18,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color:
+                                                                            medalColor,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      'MATCH',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            9,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color: Colors
+                                                                            .grey
+                                                                            .shade600,
+                                                                        letterSpacing:
+                                                                            0.5,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 16),
+                                                        Expanded(
+                                                          child: Container(
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        14,
+                                                                    vertical:
+                                                                        10),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              gradient:
+                                                                  LinearGradient(
+                                                                begin: Alignment
+                                                                    .topLeft,
+                                                                end: Alignment
+                                                                    .bottomRight,
+                                                                colors: [
+                                                                  medalColor
+                                                                      .withOpacity(
+                                                                          0.1),
+                                                                  accentColor
+                                                                      .withOpacity(
+                                                                          0.1),
+                                                                ],
+                                                              ),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12),
+                                                              border:
+                                                                  Border.all(
+                                                                color: medalColor
+                                                                    .withOpacity(
+                                                                        0.3),
+                                                              ),
+                                                            ),
+                                                            child: Text(
+                                                              'Kesesuaian tinggi dengan minat dan kemampuan Anda',
+                                                              style: TextStyle(
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: medalColor
+                                                                    .withOpacity(
+                                                                        0.8),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+
+                                                    SizedBox(height: 20),
+
+                                                    // Careers and Majors with enhanced styling
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        // Careers section
+                                                        Expanded(
+                                                          child:
+                                                              _buildEnhancedInfoSection(
+                                                            icon: Icons.work,
+                                                            title: 'Karir',
+                                                            items:
+                                                                recommendation
+                                                                    .careers,
+                                                            color: medalColor,
+                                                            accentColor:
+                                                                accentColor,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 16),
+                                                        // Majors section
+                                                        Expanded(
+                                                          child:
+                                                              _buildEnhancedInfoSection(
+                                                            icon: Icons.school,
+                                                            title: 'Jurusan',
+                                                            items:
+                                                                recommendation
+                                                                    .majors,
+                                                            color: medalColor,
+                                                            accentColor:
+                                                                accentColor,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+
+                                                    // View Details button
+                                                    Center(
+                                                      child: Container(
+                                                        margin: EdgeInsets.only(
+                                                            top: 20),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          gradient:
+                                                              LinearGradient(
+                                                            colors: [
+                                                              medalColor,
+                                                              accentColor
+                                                            ],
+                                                            begin: Alignment
+                                                                .topLeft,
+                                                            end: Alignment
+                                                                .bottomRight,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(20),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: medalColor
+                                                                  .withOpacity(
+                                                                      0.4),
+                                                              blurRadius: 10,
+                                                              offset:
+                                                                  Offset(0, 4),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Material(
+                                                          color: Colors
+                                                              .transparent,
+                                                          child: InkWell(
+                                                            onTap: () {
+                                                              HapticFeedback
+                                                                  .lightImpact();
+                                                              showModalBottomSheet(
+                                                                context:
+                                                                    context,
+                                                                isScrollControlled:
+                                                                    true,
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .transparent,
+                                                                builder: (context) =>
+                                                                    _buildDetailBottomSheet(
+                                                                        recommendation,
+                                                                        index),
+                                                              );
+                                                            },
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                            splashColor: Colors
+                                                                .white
+                                                                .withOpacity(
+                                                                    0.2),
+                                                            highlightColor:
+                                                                Colors.white
+                                                                    .withOpacity(
+                                                                        0.1),
+                                                            child: Padding(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
+                                                                      horizontal:
+                                                                          20,
+                                                                      vertical:
+                                                                          12),
+                                                              child: Row(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                children: [
+                                                                  Icon(
+                                                                    Icons
+                                                                        .info_outline,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    size: 16,
+                                                                  ),
+                                                                  SizedBox(
+                                                                      width: 8),
+                                                                  Text(
+                                                                    'Lihat Detail Lengkap',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      letterSpacing:
+                                                                          0.5,
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(
+                                                                      width: 8),
+                                                                  Icon(
+                                                                    Icons
+                                                                        .arrow_forward,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    size: 14,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
+                                        ),
+                                      ),
 
-                                          // View Details button
-                                          Center(
-                                            child: Container(
-                                              margin: EdgeInsets.only(top: 16),
-                                              child: TextButton.icon(
-                                                onPressed: () {
-                                                  HapticFeedback.lightImpact();
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    isScrollControlled: true,
-                                                    backgroundColor:
-                                                        Colors.transparent,
-                                                    builder: (context) =>
-                                                        _buildDetailBottomSheet(
-                                                            recommendation,
-                                                            index),
-                                                  );
-                                                },
-                                                style: TextButton.styleFrom(
-                                                  backgroundColor: medalColor
-                                                      .withOpacity(0.1),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 16,
-                                                      vertical: 8),
-                                                ),
-                                                icon: Icon(
-                                                  Icons.info_outline,
-                                                  color: medalColor,
-                                                  size: 16,
-                                                ),
-                                                label: Text(
-                                                  'Detail Lengkap',
-                                                  style: TextStyle(
-                                                    color: medalColor,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
+                                      // Glass reflection overlay
+                                      Positioned(
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        height: 60,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                Colors.white.withOpacity(0.3),
+                                                Colors.white.withOpacity(0.1),
+                                                Colors.white.withOpacity(0),
+                                              ],
+                                              stops: [0.0, 0.5, 1.0],
+                                            ),
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(20),
+                                              topRight: Radius.circular(20),
                                             ),
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+
+                                      // Floating sparkles
+                                      if (_itemControllers[index].value > 0.7)
+                                        ...List.generate(
+                                          3,
+                                          (i) => Positioned(
+                                            top: 40 + (i * 40 * (i % 2 + 1)),
+                                            right:
+                                                20 + (i * 20 * ((i + 1) % 2)),
+                                            child: AnimatedBuilder(
+                                              animation:
+                                                  _itemControllers[index],
+                                              builder: (context, child) {
+                                                final sparkleAnim = math.sin(
+                                                    _itemControllers[index]
+                                                            .value *
+                                                        (5 + i) *
+                                                        math.pi);
+                                                return Opacity(
+                                                  opacity: 0.4 +
+                                                      (sparkleAnim.abs() * 0.6),
+                                                  child: Transform.rotate(
+                                                    angle: sparkleAnim * 0.3,
+                                                    child: Icon(
+                                                      Icons.star,
+                                                      color: accentColor,
+                                                      size: 8 + (i * 2),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -1542,7 +1919,6 @@ class _RecommendationResultsScreenState
                 );
               },
             ),
-            const SizedBox(height: 32),
 
             // Swipe indicator yang lebih mencolok
             Center(
@@ -2117,6 +2493,14 @@ class _RecommendationResultsScreenState
     final programName = parts[0];
     final minatName = parts.length > 1 ? parts[1] : '';
 
+    // Medal color and accent color (following design system from the first UI)
+    final Color medalColor = _getMedalColor(index);
+    final Color accentColor = index == 0
+        ? Color(0xFFF7D154) // Gold accent
+        : index == 1
+            ? Color(0xFFB3B6B7) // Silver accent
+            : Color(0xFFE59866); // Bronze accent
+
     return DraggableScrollableSheet(
       initialChildSize: 0.85,
       minChildSize: 0.5,
@@ -2126,8 +2510,8 @@ class _RecommendationResultsScreenState
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
             ),
             boxShadow: [
               BoxShadow(
@@ -2137,444 +2521,824 @@ class _RecommendationResultsScreenState
               ),
             ],
           ),
-          child: Column(
+          child: Stack(
             children: [
-              // Handle bar
-              Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 8),
-                width: 40,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(30),
+              // Background subtle patterns
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                  child: CustomPaint(
+                    painter: AnimatedBackgroundPainter(
+                      color: medalColor,
+                      accentColor: accentColor,
+                      animationValue: 0.5, // Fixed value for subtle animation
+                    ),
+                  ),
                 ),
               ),
 
-              // Medal icon + header
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      _getMedalColor(index).withOpacity(0.2),
-                      Colors.white,
-                    ],
+              // Blurred overlay for better readability
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
                   ),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                    child: Container(
+                      color: Colors.white.withOpacity(0.95),
+                    ),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: _getMedalColor(index).withOpacity(0.2),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: _getMedalColor(index).withOpacity(0.3),
-                            blurRadius: 8,
-                            spreadRadius: 2,
-                          ),
+              ),
+
+              Column(
+                children: [
+                  // Handle bar
+                  Container(
+                    margin: const EdgeInsets.only(top: 12, bottom: 8),
+                    width: 40,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          medalColor.withOpacity(0.5),
+                          accentColor.withOpacity(0.5),
                         ],
                       ),
-                      child: Text(
-                        _getMedalEmoji(index),
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            programName,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          Text(
-                            minatName,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.indigo.shade900,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.blue.shade100,
-                            _getMedalColor(index).withOpacity(0.3),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: medalColor.withOpacity(0.2),
+                          blurRadius: 4,
+                          spreadRadius: 1,
                         ),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: _getMedalColor(index).withOpacity(0.3),
-                            blurRadius: 8,
-                            spreadRadius: 1,
-                          ),
+                      ],
+                    ),
+                  ),
+
+                  // Medal icon + header
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          medalColor.withOpacity(0.15),
+                          Colors.white.withOpacity(0.5),
                         ],
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.star,
-                            color: _getMedalColor(index),
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            "${recommendation.score}%",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.indigo.shade900,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
                       ),
                     ),
-                  ],
-                ),
-              ),
-
-              // Divider
-              Divider(color: Colors.grey.shade200, height: 1),
-
-              // Content
-              Expanded(
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    // Explanation
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.blue.shade200),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                medalColor.withOpacity(0.3),
+                                accentColor.withOpacity(0.3),
+                              ],
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: medalColor.withOpacity(0.3),
+                                blurRadius: 8,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            _getMedalEmoji(index),
+                            style: const TextStyle(fontSize: 24),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                programName,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              ShimmerText(
+                                text: minatName,
+                                baseColor: medalColor,
+                                highlightColor: accentColor,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.indigo.shade900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                medalColor.withOpacity(0.3),
+                                accentColor.withOpacity(0.3),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: medalColor.withOpacity(0.3),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.lightbulb_outline,
-                                color: Colors.blue.shade700,
+                                Icons.star,
+                                color: medalColor,
+                                size: 16,
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 4),
                               Text(
-                                'Tentang ${minatName}',
+                                "${recommendation.score}%",
                                 style: TextStyle(
-                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.blue.shade900,
+                                  color: Colors.indigo.shade900,
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Hasil analisis menunjukkan bahwa kamu memiliki kecocokan yang signifikan dengan bidang minat ini. Skor ${recommendation.score}% menggambarkan tingkat kesesuaian minatmu berdasarkan jawaban kuesioner.',
-                            style: TextStyle(
-                              color: Colors.blue.shade900,
-                            ),
-                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Divider
+                  Container(
+                    height: 1,
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          medalColor.withOpacity(0.3),
+                          accentColor.withOpacity(0.3),
+                          Colors.transparent,
                         ],
+                        stops: [0.0, 0.3, 0.7, 1.0],
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 24),
-
-                    // Career section
-                    _buildInfoSectionWithEmoji(
-                      'Karir dan Profesi',
-                      recommendation.careers,
-                      '👨‍💼',
-                      Colors.orange,
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Majors section
-                    _buildInfoSectionWithEmoji(
-                      'Jurusan yang Disarankan',
-                      recommendation.majors,
-                      '🎓',
-                      Colors.green,
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Additional sections if available
-                    if (recommendation.recommendedCourses != null &&
-                        recommendation.recommendedCourses!.isNotEmpty) ...[
-                      _buildInfoSectionWithEmoji(
-                        'Mata Kuliah Rekomendasi',
-                        recommendation.recommendedCourses!,
-                        '📝',
-                        Colors.purple,
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-
-                    if (recommendation.recommendedUniversities != null &&
-                        recommendation.recommendedUniversities!.isNotEmpty) ...[
-                      _buildInfoSectionWithEmoji(
-                        'Universitas Rekomendasi',
-                        recommendation.recommendedUniversities!,
-                        '🏛️',
-                        Colors.blue,
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-
-                    // Rules section (why this recommendation)
-                    if (recommendation.rules.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: Colors.amber.shade100,
-                                  shape: BoxShape.circle,
-                                  border:
-                                      Border.all(color: Colors.amber.shade300),
-                                ),
-                                child: const Text(
-                                  '💡',
-                                  style: TextStyle(fontSize: 16),
-                                ),
+                  // Content
+                  Expanded(
+                    child: ListView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.all(20),
+                      children: [
+                        // Explanation
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white,
+                                medalColor.withOpacity(0.05),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            border:
+                                Border.all(color: medalColor.withOpacity(0.3)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: medalColor.withOpacity(0.1),
+                                blurRadius: 10,
+                                spreadRadius: 0,
+                                offset: Offset(0, 4),
                               ),
-                              const SizedBox(width: 8),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          medalColor.withOpacity(0.2),
+                                          accentColor.withOpacity(0.2)
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.lightbulb_outline,
+                                      color: medalColor,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Tentang ${minatName}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: medalColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
                               Text(
-                                'Mengapa Ini Direkomendasikan?',
+                                'Hasil analisis menunjukkan bahwa kamu memiliki kecocokan yang signifikan dengan bidang minat ini. Skor ${recommendation.score}% menggambarkan tingkat kesesuaian minatmu berdasarkan jawaban kuesioner.',
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.amber.shade900,
+                                  color: Colors.black87,
+                                  height: 1.5,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 26),
-                            child: Text(
-                              'Berdasarkan jawabanmu, kami menemukan kecocokan dengan minat ini karena:',
-                              style: TextStyle(
-                                color: Colors.grey.shade700,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 26),
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: math.min(
-                                  5,
-                                  recommendation
-                                      .rules.length), // Batasi ke 5 aturan saja
-                              itemBuilder: (context, index) {
-                                final rule = recommendation.rules[index];
-                                // Extract just the question text
-                                final questionTextMatch =
-                                    RegExp(r'\[Pertanyaan: "(.*?)"\]')
-                                        .firstMatch(rule);
-                                final questionText =
-                                    questionTextMatch?.group(1) ?? '';
+                        ),
 
-                                return Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.amber.shade50,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                        color: Colors.amber.shade200),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(6),
-                                        decoration: BoxDecoration(
-                                          color: Colors.green.shade100,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          Icons.check,
-                                          color: Colors.green.shade700,
-                                          size: 14,
-                                        ),
+                        const SizedBox(height: 24),
+
+                        // Career section with improved styling but same content
+                        _buildDetailEnhancedInfoSection(
+                          title: 'Karir dan Profesi',
+                          items: recommendation.careers,
+                          emoji: '👨‍💼',
+                          color: medalColor,
+                          accentColor: accentColor,
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Majors section with improved styling but same content
+                        _buildDetailEnhancedInfoSection(
+                          title: 'Jurusan yang Disarankan',
+                          items: recommendation.majors,
+                          emoji: '🎓',
+                          color: medalColor,
+                          accentColor: accentColor,
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Additional sections if available (maintaining exact same conditional logic)
+                        if (recommendation.recommendedCourses != null &&
+                            recommendation.recommendedCourses!.isNotEmpty) ...[
+                          _buildDetailEnhancedInfoSection(
+                            title: 'Mata Kuliah Rekomendasi',
+                            items: recommendation.recommendedCourses!,
+                            emoji: '📝',
+                            color: medalColor,
+                            accentColor: accentColor,
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+
+                        if (recommendation.recommendedUniversities != null &&
+                            recommendation
+                                .recommendedUniversities!.isNotEmpty) ...[
+                          _buildDetailEnhancedInfoSection(
+                            title: 'Universitas Rekomendasi',
+                            items: recommendation.recommendedUniversities!,
+                            emoji: '🏛️',
+                            color: medalColor,
+                            accentColor: accentColor,
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+
+                        // Rules section (why this recommendation) - preserving structure but enhancing style
+                        if (recommendation.rules.isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          accentColor.withOpacity(0.2),
+                                          medalColor.withOpacity(0.2)
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
                                       ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Text(
-                                          questionText,
-                                          style: const TextStyle(
-                                            fontSize: 14,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          color: accentColor.withOpacity(0.3)),
+                                    ),
+                                    child: const Text(
+                                      '💡',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  ShimmerText(
+                                    text: 'Mengapa Ini Direkomendasikan?',
+                                    baseColor: accentColor,
+                                    highlightColor: medalColor,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 26),
+                                child: Text(
+                                  'Berdasarkan jawabanmu, kami menemukan kecocokan dengan minat ini karena:',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade700,
+                                    fontSize: 14,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 26),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: math.min(
+                                      5,
+                                      recommendation.rules
+                                          .length), // Batasi ke 5 aturan saja
+                                  itemBuilder: (context, index) {
+                                    final rule = recommendation.rules[index];
+                                    // Extract just the question text
+                                    final questionTextMatch =
+                                        RegExp(r'\[Pertanyaan: "(.*?)"\]')
+                                            .firstMatch(rule);
+                                    final questionText =
+                                        questionTextMatch?.group(1) ?? '';
+
+                                    return Container(
+                                      margin: const EdgeInsets.only(bottom: 12),
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Colors.white,
+                                            accentColor.withOpacity(0.05),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                            color:
+                                                accentColor.withOpacity(0.3)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: accentColor.withOpacity(0.1),
+                                            blurRadius: 6,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  medalColor.withOpacity(0.2),
+                                                  accentColor.withOpacity(0.2)
+                                                ],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                              ),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.check,
+                                              color: medalColor,
+                                              size: 14,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              questionText,
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                height: 1.4,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+
+                              // "Show more" button if there are more than 5 rules
+                              if (recommendation.rules.length > 5)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 26, top: 8),
+                                  child: Center(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            accentColor.withOpacity(0.1),
+                                            medalColor.withOpacity(0.1)
+                                          ],
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      child: TextButton.icon(
+                                        onPressed: () {
+                                          // Implementasi untuk menampilkan semua rules
+                                        },
+                                        icon: Icon(
+                                          Icons.add_circle_outline,
+                                          color: accentColor,
+                                          size: 16,
+                                        ),
+                                        label: Text(
+                                          'Lihat ${recommendation.rules.length - 5} alasan lainnya',
+                                          style: TextStyle(
+                                            color: accentColor,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                            ],
                           ),
 
-                          // "Show more" button if there are more than 5 rules
-                          if (recommendation.rules.length > 5)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 26, top: 8),
-                              child: Center(
-                                child: TextButton.icon(
-                                  onPressed: () {
-                                    // Implementasi untuk menampilkan semua rules
-                                  },
-                                  icon: Icon(
-                                    Icons.add_circle_outline,
-                                    color: Colors.amber.shade700,
-                                    size: 16,
-                                  ),
-                                  label: Text(
-                                    'Lihat ${recommendation.rules.length - 5} alasan lainnya',
-                                    style: TextStyle(
-                                      color: Colors.amber.shade700,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                        // RIASEC placeholder with enhanced style but same content
+                        const SizedBox(height: 24),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.deepPurple.withOpacity(0.05),
+                                Colors.purple.withOpacity(0.05),
+                              ],
                             ),
-                        ],
-                      ),
-
-                    // RIASEC placeholder - will be implemented later
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.purple.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.purple.shade200),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                                color: Colors.deepPurple.withOpacity(0.3)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.deepPurple.withOpacity(0.1),
+                                blurRadius: 8,
+                                spreadRadius: 0,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                '🧠',
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              const SizedBox(width: 8),
-                              const Text(
-                                'Profil RIASEC',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const Spacer(),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.purple.shade100,
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: const [
-                                    Icon(
-                                      Icons.new_releases,
-                                      color: Colors.deepPurple,
-                                      size: 12,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      'Coming Soon',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.deepPurple,
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.deepPurple.withOpacity(0.2),
+                                          Colors.purple.withOpacity(0.2)
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
                                       ),
+                                      shape: BoxShape.circle,
                                     ),
-                                  ],
+                                    child: const Text(
+                                      '🧠',
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  ShimmerText(
+                                    text: 'Profil RIASEC',
+                                    baseColor: Colors.deepPurple,
+                                    highlightColor: Colors.purple,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.deepPurple.withOpacity(0.2),
+                                          Colors.purple.withOpacity(0.2),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: const [
+                                        Icon(
+                                          Icons.new_releases,
+                                          color: Colors.deepPurple,
+                                          size: 12,
+                                        ),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          'Coming Soon',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.deepPurple,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Segera hadir: Analisis Tipe Kepribadian RIASEC untuk rekomendasi karir yang lebih akurat.',
+                                style: TextStyle(
+                                  color: Colors.deepPurple,
+                                  fontSize: 14,
+                                  height: 1.5,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Segera hadir: Analisis Tipe Kepribadian RIASEC untuk rekomendasi karir yang lebih akurat.',
-                            style: TextStyle(
-                              color: Colors.deepPurple,
-                              fontSize: 14,
+                        ),
+
+                        const SizedBox(height: 40),
+
+                        // Action button with enhanced styling
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [medalColor, accentColor],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: medalColor.withOpacity(0.4),
+                                blurRadius: 15,
+                                spreadRadius: 0,
+                                offset: Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(30),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                                HapticFeedback.mediumImpact();
+                              },
+                              borderRadius: BorderRadius.circular(30),
+                              splashColor: Colors.white.withOpacity(0.2),
+                              highlightColor: Colors.white.withOpacity(0.1),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                  child: Text(
+                                    'Kembali',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // Action button
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _getMedalColor(index),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
                         ),
-                        elevation: 5,
-                        shadowColor: _getMedalColor(index).withOpacity(0.5),
-                      ),
-                      child: const Text(
-                        'Kembali',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
+                        SizedBox(height: 20),
+                      ],
                     ),
-                  ],
+                  ),
+                ],
+              ),
+
+              // Glass reflection overlay at top
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 60,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withOpacity(0.3),
+                        Colors.white.withOpacity(0.1),
+                        Colors.white.withOpacity(0),
+                      ],
+                      stops: [0.0, 0.5, 1.0],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
         );
       },
+    );
+  }
+
+// Enhanced info section specifically for the detail bottom sheet
+  Widget _buildDetailEnhancedInfoSection({
+    required String title,
+    required List<String> items,
+    required String emoji,
+    required Color color,
+    required Color accentColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white,
+            color.withOpacity(0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 10,
+            spreadRadius: 0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      color.withOpacity(0.2),
+                      accentColor.withOpacity(0.2)
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: color.withOpacity(0.3)),
+                ),
+                child: Text(
+                  emoji,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(width: 8),
+              ShimmerText(
+                text: title,
+                baseColor: color,
+                highlightColor: accentColor,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...items
+              .map((item) => Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.white,
+                          color.withOpacity(0.03),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: color.withOpacity(0.2)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: color.withOpacity(0.05),
+                          blurRadius: 6,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                color.withOpacity(0.2),
+                                accentColor.withOpacity(0.2)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.check,
+                            color: color,
+                            size: 14,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            item,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ))
+              .toList(),
+        ],
+      ),
     );
   }
 
@@ -2644,123 +3408,123 @@ class _RecommendationResultsScreenState
 
             const SizedBox(height: 24),
 
-            // Working Memory
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ExpansionTile(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    '🧠',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                title: const Text(
-                  'Data Jawaban (Working Memory)',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                childrenPadding: const EdgeInsets.all(16),
-                children: [
-                  Text(
-                    'Berikut adalah daftar fakta-fakta yang digunakan dalam proses analisis:',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: widget.result.workingMemory.map((fact) {
-                        final isYes = fact.contains('=Yes');
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: isYes
-                                  ? [
-                                      Colors.green.shade50,
-                                      Colors.green.shade100
-                                    ]
-                                  : [Colors.red.shade50, Colors.red.shade100],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: isYes
-                                  ? Colors.green.shade300
-                                  : Colors.red.shade300,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: isYes
-                                    ? Colors.green.withOpacity(0.1)
-                                    : Colors.red.withOpacity(0.1),
-                                blurRadius: 3,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                isYes ? Icons.check_circle : Icons.cancel,
-                                color: isYes
-                                    ? Colors.green.shade600
-                                    : Colors.red.shade600,
-                                size: 12,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                fact,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: isYes
-                                      ? Colors.green.shade800
-                                      : Colors.red.shade800,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // // Working Memory
+            // Container(
+            //   decoration: BoxDecoration(
+            //     color: Colors.white,
+            //     borderRadius: BorderRadius.circular(16),
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.black.withOpacity(0.1),
+            //         blurRadius: 10,
+            //         offset: const Offset(0, 4),
+            //       ),
+            //     ],
+            //   ),
+            //   child: ExpansionTile(
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(16),
+            //     ),
+            //     leading: Container(
+            //       padding: const EdgeInsets.all(8),
+            //       decoration: BoxDecoration(
+            //         color: Colors.blue.shade50,
+            //         shape: BoxShape.circle,
+            //       ),
+            //       child: Text(
+            //         '🧠',
+            //         style: TextStyle(fontSize: 16),
+            //       ),
+            //     ),
+            //     title: const Text(
+            //       'Data Jawaban (Working Memory)',
+            //       style: TextStyle(
+            //         fontWeight: FontWeight.bold,
+            //       ),
+            //     ),
+            //     childrenPadding: const EdgeInsets.all(16),
+            //     children: [
+            //       Text(
+            //         'Berikut adalah daftar fakta-fakta yang digunakan dalam proses analisis:',
+            //         style: TextStyle(
+            //           fontSize: 14,
+            //           color: Colors.grey.shade700,
+            //         ),
+            //       ),
+            //       const SizedBox(height: 12),
+            //       Container(
+            //         width: double.infinity,
+            //         padding: const EdgeInsets.all(12),
+            //         decoration: BoxDecoration(
+            //           color: Colors.grey.shade100,
+            //           borderRadius: BorderRadius.circular(8),
+            //           border: Border.all(color: Colors.grey.shade300),
+            //         ),
+            //         child: Wrap(
+            //           spacing: 8,
+            //           runSpacing: 8,
+            //           children: widget.result.workingMemory.map((fact) {
+            //             final isYes = fact.contains('=Yes');
+            //             return Container(
+            //               padding: const EdgeInsets.symmetric(
+            //                   horizontal: 8, vertical: 4),
+            //               decoration: BoxDecoration(
+            //                 gradient: LinearGradient(
+            //                   colors: isYes
+            //                       ? [
+            //                           Colors.green.shade50,
+            //                           Colors.green.shade100
+            //                         ]
+            //                       : [Colors.red.shade50, Colors.red.shade100],
+            //                   begin: Alignment.topLeft,
+            //                   end: Alignment.bottomRight,
+            //                 ),
+            //                 borderRadius: BorderRadius.circular(6),
+            //                 border: Border.all(
+            //                   color: isYes
+            //                       ? Colors.green.shade300
+            //                       : Colors.red.shade300,
+            //                 ),
+            //                 boxShadow: [
+            //                   BoxShadow(
+            //                     color: isYes
+            //                         ? Colors.green.withOpacity(0.1)
+            //                         : Colors.red.withOpacity(0.1),
+            //                     blurRadius: 3,
+            //                     offset: const Offset(0, 1),
+            //                   ),
+            //                 ],
+            //               ),
+            //               child: Row(
+            //                 mainAxisSize: MainAxisSize.min,
+            //                 children: [
+            //                   Icon(
+            //                     isYes ? Icons.check_circle : Icons.cancel,
+            //                     color: isYes
+            //                         ? Colors.green.shade600
+            //                         : Colors.red.shade600,
+            //                     size: 12,
+            //                   ),
+            //                   const SizedBox(width: 4),
+            //                   Text(
+            //                     fact,
+            //                     style: TextStyle(
+            //                       fontSize: 12,
+            //                       color: isYes
+            //                           ? Colors.green.shade800
+            //                           : Colors.red.shade800,
+            //                       fontWeight: FontWeight.w500,
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             );
+            //           }).toList(),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
             const SizedBox(height: 24),
 
@@ -3258,7 +4022,19 @@ class _RecommendationResultsScreenState
                     ),
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // Implementasi berbagi hasil
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CertificateGenerator(
+                              recommendation: widget.result.recommendations[0],
+                              index: 0,
+                              userName:
+                                  "Nama Pengguna", // Ambil dari data profil
+                              date:
+                                  "15 Maret 2025", // Gunakan DateTime.now().toString() atau format yang diinginkan
+                            ),
+                          ),
+                        );
                       },
                       icon: const Icon(Icons.share),
                       label: const Text(
@@ -4188,6 +4964,110 @@ class _RecommendationResultsScreenState
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildEnhancedInfoSection({
+    required IconData icon,
+    required String title,
+    required List<String> items,
+    required Color color,
+    required Color accentColor,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 3),
+          ),
+        ],
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      color.withOpacity(0.2),
+                      accentColor.withOpacity(0.2)
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 16,
+                ),
+              ),
+              SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          ...items
+              .take(3)
+              .map((item) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.arrow_right,
+                          size: 16,
+                          color: color.withOpacity(0.7),
+                        ),
+                        SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            item,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ))
+              .toList(),
+          if (items.length > 3)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                '+${items.length - 3} lainnya',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: color,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
