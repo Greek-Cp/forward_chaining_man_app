@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1072369607324:android:ed7767d8870c32e96f4359",
+        "mobilesdk_app_id": "1:1072369607324:android:f76a929d6f6258726f4359",
         "android_client_info": {
-          "package_name": "com.example.forward_chaining_man_app"
+          "package_name": "com.e"
         }
       },
       "oauth_client": [
@@ -29,6 +29,57 @@
             {
               "client_id": "1072369607324-ul5feal98a8o8g9fo23ddp7ob886ermd.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1072369607324-0e0k7pn3nqk6suq97jnegljp3k0161o5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.forwardChainingManApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1072369607324:android:ed7767d8870c32e96f4359",
+        "android_client_info": {
+          "package_name": "com.example.forward_chaining_man_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1072369607324-pbgftae664k56gli4fb0ftrhot88t8qi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.forward_chaining_man_app",
+            "certificate_hash": "3bb526cd960a2c584c325eb17221250f321e34d0"
+          }
+        },
+        {
+          "client_id": "1072369607324-ul5feal98a8o8g9fo23ddp7ob886ermd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIHdD_rH3YSfuZYcNKFd1YCMTXxYb6gdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1072369607324-ul5feal98a8o8g9fo23ddp7ob886ermd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1072369607324-0e0k7pn3nqk6suq97jnegljp3k0161o5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.forwardChainingManApp"
+              }
             }
           ]
         }

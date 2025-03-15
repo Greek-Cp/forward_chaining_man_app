@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBIHdD_rH3YSfuZYcNKFd1YCMTXxYb6gdc',
-    appId: '1:1072369607324:android:ed7767d8870c32e96f4359',
+    appId: '1:1072369607324:android:f76a929d6f6258726f4359',
     messagingSenderId: '1072369607324',
     projectId: 'sirekomendasi-dc7de',
     storageBucket: 'sirekomendasi-dc7de.firebasestorage.app',
@@ -64,7 +64,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1072369607324',
     projectId: 'sirekomendasi-dc7de',
     storageBucket: 'sirekomendasi-dc7de.firebasestorage.app',
-    iosClientId: '1072369607324-0e0k7pn3nqk6suq97jnegljp3k0161o5.apps.googleusercontent.com',
+    androidClientId:
+        '1072369607324-pbgftae664k56gli4fb0ftrhot88t8qi.apps.googleusercontent.com',
+    iosClientId:
+        '1072369607324-0e0k7pn3nqk6suq97jnegljp3k0161o5.apps.googleusercontent.com',
     iosBundleId: 'com.example.forwardChainingManApp',
   );
 
@@ -74,7 +77,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1072369607324',
     projectId: 'sirekomendasi-dc7de',
     storageBucket: 'sirekomendasi-dc7de.firebasestorage.app',
-    iosClientId: '1072369607324-0e0k7pn3nqk6suq97jnegljp3k0161o5.apps.googleusercontent.com',
+    androidClientId:
+        '1072369607324-pbgftae664k56gli4fb0ftrhot88t8qi.apps.googleusercontent.com',
+    iosClientId:
+        '1072369607324-0e0k7pn3nqk6suq97jnegljp3k0161o5.apps.googleusercontent.com',
     iosBundleId: 'com.example.forwardChainingManApp',
   );
 
