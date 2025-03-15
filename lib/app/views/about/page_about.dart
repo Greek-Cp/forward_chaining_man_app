@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' as rootBundle;
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:forward_chaining_man_app/app/views/about/widget/diagram_painter.dart';
 import 'package:forward_chaining_man_app/app/views/page_intro.dart';
 import 'package:forward_chaining_man_app/app/views/page_login.dart';
@@ -289,7 +290,7 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
             parent: _cardAnimationController,
             curve: Interval(
               0.2 + (i * 0.12),
-              0.7 + (i * 0.08),
+              (0.7 + (i * 0.08)).clamp(0.0, 1.0), // ✅ Perbaikan utama!
               curve: Curves.easeOutCubic,
             ),
           ),
@@ -382,33 +383,7 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                   child: Column(
                     children: [
                       // Animated Logo
-                      FadeTransition(
-                        opacity: _fadeInAnimation,
-                        child: ScaleTransition(
-                          scale: _logoScaleAnimation,
-                          child: RotationTransition(
-                            turns: _logoRotationAnimation,
-                            child: Container(
-                              width: 160,
-                              height: 160,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(40),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: Center(
-                                child: _buildAnimatedLogoContent(),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+
                       const SizedBox(height: 24),
 
                       // Title and Tagline
@@ -610,15 +585,11 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                                     ),
                                   ],
                                   image: const DecorationImage(
-                                    image: AssetImage('assets/ic_denis.jpg'),
+                                    image: AssetImage('assets/profile_dev.png'),
                                     fit: BoxFit.cover,
                                     // Use a placeholder if no image is available
                                     onError: null,
                                   ),
-                                ),
-                                child: const Center(
-                                  child: Icon(Icons.person,
-                                      size: 40, color: Colors.grey),
                                 ),
                               ),
                               const SizedBox(width: 20),
@@ -644,34 +615,34 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                                     const SizedBox(height: 8),
                                     Row(
                                       children: [
-                                        _buildSocialButton(
-                                          icon: Icons.email,
+                                        SocialButton(
+                                          icon: FontAwesomeIcons
+                                              .envelope, // Email icon
                                           onTap: () {
-                                            // Launch email
                                             launchUrl(Uri.parse(
                                                 'mailto:yanuartrilaksono23@gmail.com'));
                                           },
                                         ),
                                         const SizedBox(width: 12),
-                                        _buildSocialButton(
-                                          icon: Icons.link,
+                                        SocialButton(
+                                          icon: FontAwesomeIcons
+                                              .linkedin, // Portfolio link icon
                                           onTap: () {
-                                            // Launch website/portfolio
                                             launchUrl(Uri.parse(
-                                                'https://yanuartrilaksono23.com/portfolio'));
+                                                'https://www.linkedin.com/in/yanuar-tri-laksono/'));
                                           },
                                         ),
                                         const SizedBox(width: 12),
-                                        _buildSocialButton(
-                                          icon: Icons.code,
+                                        SocialButton(
+                                          icon: FontAwesomeIcons
+                                              .github, // GitHub icon
                                           onTap: () {
-                                            // Launch GitHub
                                             launchUrl(Uri.parse(
                                                 'https://github.com/Greek-Cp'));
                                           },
                                         ),
                                       ],
-                                    ),
+                                    )
                                   ],
                                 ),
                               ),
@@ -963,6 +934,37 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
+          icon,
+          size: 18,
+          color: Colors.indigo,
+        ),
+      ),
+    );
+  }
+}
+
+class SocialButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const SocialButton({
+    required this.icon,
+    required this.onTap,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: FaIcon(
           icon,
           size: 18,
           color: Colors.indigo,

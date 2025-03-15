@@ -356,37 +356,37 @@ class TeacherLoginPage extends StatelessWidget {
 
                                 const SizedBox(height: 12),
 
-                                // Forgot password
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: () {
-                                      // Handle forgot password
-                                      Get.snackbar(
-                                        'Lupa Password',
-                                        'Silakan hubungi administrator untuk reset password',
-                                        backgroundColor: Colors.blue.shade50,
-                                        colorText: Colors.blue.shade800,
-                                        snackPosition: SnackPosition.BOTTOM,
-                                        margin: const EdgeInsets.all(16),
-                                      );
-                                    },
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: const Size(50, 30),
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    child: Text(
-                                      'Lupa Password?',
-                                      style: TextStyle(
-                                        color: Colors.blue.shade700,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                // // Forgot password
+                                // Align(
+                                //   alignment: Alignment.centerRight,
+                                //   child: TextButton(
+                                //     onPressed: () {
+                                //       // Handle forgot password
+                                //       Get.snackbar(
+                                //         'Lupa Password',
+                                //         'Silakan hubungi administrator untuk reset password',
+                                //         backgroundColor: Colors.blue.shade50,
+                                //         colorText: Colors.blue.shade800,
+                                //         snackPosition: SnackPosition.BOTTOM,
+                                //         margin: const EdgeInsets.all(16),
+                                //       );
+                                //     },
+                                //     style: TextButton.styleFrom(
+                                //       padding: EdgeInsets.zero,
+                                //       minimumSize: const Size(50, 30),
+                                //       tapTargetSize:
+                                //           MaterialTapTargetSize.shrinkWrap,
+                                //     ),
+                                //     child: Text(
+                                //       'Lupa Password?',
+                                //       style: TextStyle(
+                                //         color: Colors.blue.shade700,
+                                //         fontWeight: FontWeight.w500,
+                                //         fontSize: 14,
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
 
                                 const SizedBox(height: 24),
 
@@ -440,18 +440,18 @@ class TeacherLoginPage extends StatelessWidget {
 
                                     const SizedBox(height: 16),
 
-                                    // Register button
-                                    _buildPrimaryButton(
-                                      label: 'Daftar Akun Baru',
-                                      icon: Icons.person_add,
-                                      isLoading: false,
-                                      onPressed: () {
-                                        Get.to(
-                                            () => const TeacherRegisterPage());
-                                      },
-                                      primaryColor: Colors.blue.shade700,
-                                      isOutlined: true,
-                                    ),
+                                    // // Register button
+                                    // _buildPrimaryButton(
+                                    //   label: 'Daftar Akun Baru',
+                                    //   icon: Icons.person_add,
+                                    //   isLoading: false,
+                                    //   onPressed: () {
+                                    //     Get.to(
+                                    //         () => const TeacherRegisterPage());
+                                    //   },
+                                    //   primaryColor: Colors.blue.shade700,
+                                    //   isOutlined: true,
+                                    // ),
                                   ],
                                 ),
                               ],

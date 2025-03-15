@@ -3896,117 +3896,6 @@ class _RecommendationResultsScreenState
             const SizedBox(height: 24),
 
             // RIASEC info card with animated gradient
-            AnimatedBuilder(
-              animation: _cardController,
-              builder: (context, child) {
-                return Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.purple.shade50,
-                        Colors.indigo.shade50,
-                        Colors.blue.shade50,
-                      ],
-                      begin: Alignment(_cardController.value * 2 - 1, -1),
-                      end: Alignment(_cardController.value * 2, 1),
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                    border: Border.all(color: Colors.purple.shade200),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.purple.shade100,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              '🧠',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Tentang RIASEC',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const Spacer(),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.purple.shade100,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.new_releases,
-                                  color: Colors.deepPurple,
-                                  size: 12,
-                                ),
-                                const SizedBox(width: 4),
-                                const Text(
-                                  'Coming Soon',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.deepPurple,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Segera hadir: Analisis kepribadian RIASEC yang akan memberikan wawasan lebih dalam tentang minat dan kecenderungan karirmu:',
-                        style: TextStyle(fontSize: 14),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          _buildAnimatedRiasecItem('R', 'Realistic',
-                              Colors.blue, _cardController.value),
-                          _buildAnimatedRiasecItem('I', 'Investigative',
-                              Colors.green, _cardController.value - 0.1),
-                          _buildAnimatedRiasecItem('A', 'Artistic',
-                              Colors.purple, _cardController.value - 0.2),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          _buildAnimatedRiasecItem('S', 'Social', Colors.orange,
-                              _cardController.value - 0.3),
-                          _buildAnimatedRiasecItem('E', 'Enterprising',
-                              Colors.red, _cardController.value - 0.4),
-                          _buildAnimatedRiasecItem('C', 'Conventional',
-                              Colors.cyan, _cardController.value - 0.5),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
 
             const SizedBox(height: 32),
 
@@ -4025,20 +3914,16 @@ class _RecommendationResultsScreenState
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CertificateGenerator(
-                              recommendation: widget.result.recommendations[0],
-                              index: 0,
-                              userName:
-                                  "Nama Pengguna", // Ambil dari data profil
-                              date:
-                                  "15 Maret 2025", // Gunakan DateTime.now().toString() atau format yang diinginkan
+                            builder: (context) => CertificateReccomendationPage(
+                              result: widget
+                                  .result, // Gunakan DateTime.now().toString() atau format yang diinginkan
                             ),
                           ),
                         );
                       },
                       icon: const Icon(Icons.share),
                       label: const Text(
-                        'Bagikan Hasil',
+                        'Cetak Sertifikat',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,

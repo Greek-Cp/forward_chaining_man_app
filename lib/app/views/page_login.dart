@@ -613,6 +613,7 @@ class StudentLoginPage extends StatelessWidget {
                                   ),
                                 ],
 
+                                const SizedBox(height: 24),
 // Email field - Hide if Google sign-in
                                 Obx(() => controller.isRegisterUsingGoogle.value
                                     ? const SizedBox
@@ -655,7 +656,7 @@ class StudentLoginPage extends StatelessWidget {
                                           .isRegisterUsingGoogle.value
                                       ? const SizedBox
                                           .shrink() // Hide if Google sign-in
-                                      : _buildTextField(
+                                      : CustomTextField(
                                           controller: controller
                                               .confirmPasswordController,
                                           label: 'Konfirmasi Password',
