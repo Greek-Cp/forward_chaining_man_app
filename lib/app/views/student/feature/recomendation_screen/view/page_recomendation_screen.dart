@@ -72,7 +72,7 @@ class _RecommendationResultsScreenState
   final PageController _pageController = PageController();
 
   // Warna untuk peringkat
-  final Color _goldColor = const Color(0xFFFFD700);
+  final Color _goldColor = const Color.fromARGB(255, 29, 255, 120);
   final Color _silverColor = const Color(0xFFC0C0C0);
   final Color _bronzeColor = const Color(0xFFCD7F32);
 
@@ -204,11 +204,11 @@ class _RecommendationResultsScreenState
   Color _getMedalColor(int index) {
     switch (index) {
       case 0:
-        return Color(0xFFFFD700); // Gold
+        return Color.fromARGB(255, 0, 255, 140); // Gold
       case 1:
-        return Color(0xFFC0C0C0); // Silver
+        return Color.fromARGB(255, 238, 213, 73); // Silver
       case 2:
-        return Color(0xFFCD7F32); // Bronze
+        return Color.fromARGB(255, 255, 75, 39); // Bronze
       default:
         return Colors.grey; // Fallback
     }
@@ -257,27 +257,31 @@ class _RecommendationResultsScreenState
             colors: _gradientColors,
           ),
         ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              if (_hasRevealed)
-                Positioned(
-                  top: 10,
-                  left: 0,
-                  right: 0,
-                  child: _buildPageIndicator(),
-                ),
+        child: Stack(
+          children: [
+            if (_hasRevealed)
+              Positioned(
+                top: 10,
+                left: 0,
+                right: 0,
+                child: SafeArea(child: _buildPageIndicator()),
+              ),
 
-              // Header
+            // Header
 
-              // Konten utama (berbeda berdasarkan status revealed)
-              _hasRevealed ? _buildRevealedContent() : _buildInitialContent(),
+            // Konten utama (berbeda berdasarkan status revealed)
+            _hasRevealed
+                ? SafeArea(
+                    child: _buildRevealedContent(),
+                    bottom: false,
+                    left: false,
+                  )
+                : _buildInitialContent(),
 
-              // Partikel confetti (hanya muncul setelah swipe)
-              if (_hasConfetti) _buildConfetti(),
-              // Indikator halaman
-            ],
-          ),
+            // Partikel confetti (hanya muncul setelah swipe)
+            if (_hasConfetti) _buildConfetti(),
+            // Indikator halaman
+          ],
         ),
       ),
     );
@@ -582,9 +586,10 @@ class _RecommendationResultsScreenState
 
                       // Warna aksen untuk variasi
                       final Color accentColor = index == 0
-                          ? Color(0xFFF7D154) // Gold accent
+                          ? Color.fromARGB(255, 108, 247, 84) // Gold accent
                           : index == 1
-                              ? Color(0xFFB3B6B7) // Silver accent
+                              ? Color.fromARGB(
+                                  255, 225, 193, 75) // Silver accent
                               : Color(0xFFE59866); // Bronze accent
 
                       return AnimatedBuilder(
@@ -1276,9 +1281,9 @@ class _RecommendationResultsScreenState
 
                 // Segunda cor para os padrões e destaque
                 final Color accentColor = index == 0
-                    ? Color(0xFFF7D154) // Gold accent
+                    ? Color.fromARGB(255, 11, 185, 124) // Gold accent
                     : index == 1
-                        ? Color(0xFFB3B6B7) // Silver accent
+                        ? Color(0xFFE59866) // Silver accent
                         : Color(0xFFE59866); // Bronze accent
 
                 return AnimatedBuilder(
@@ -1610,7 +1615,7 @@ class _RecommendationResultsScreenState
                                                                       ),
                                                                     ),
                                                                     Text(
-                                                                      'MATCH',
+                                                                      'Cocok',
                                                                       style:
                                                                           TextStyle(
                                                                         fontSize:
@@ -2976,152 +2981,11 @@ class _RecommendationResultsScreenState
                               ),
 
                               // "Show more" button if there are more than 5 rules
-                              if (recommendation.rules.length > 5)
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 26, top: 8),
-                                  child: Center(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            accentColor.withOpacity(0.1),
-                                            medalColor.withOpacity(0.1)
-                                          ],
-                                          begin: Alignment.centerLeft,
-                                          end: Alignment.centerRight,
-                                        ),
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: TextButton.icon(
-                                        onPressed: () {
-                                          // Implementasi untuk menampilkan semua rules
-                                        },
-                                        icon: Icon(
-                                          Icons.add_circle_outline,
-                                          color: accentColor,
-                                          size: 16,
-                                        ),
-                                        label: Text(
-                                          'Lihat ${recommendation.rules.length - 5} alasan lainnya',
-                                          style: TextStyle(
-                                            color: accentColor,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
                             ],
                           ),
 
                         // RIASEC placeholder with enhanced style but same content
                         const SizedBox(height: 24),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.deepPurple.withOpacity(0.05),
-                                Colors.purple.withOpacity(0.05),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                                color: Colors.deepPurple.withOpacity(0.3)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.deepPurple.withOpacity(0.1),
-                                blurRadius: 8,
-                                spreadRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.deepPurple.withOpacity(0.2),
-                                          Colors.purple.withOpacity(0.2)
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Text(
-                                      '🧠',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  ShimmerText(
-                                    text: 'Profil RIASEC',
-                                    baseColor: Colors.deepPurple,
-                                    highlightColor: Colors.purple,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.deepPurple.withOpacity(0.2),
-                                          Colors.purple.withOpacity(0.2),
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: const [
-                                        Icon(
-                                          Icons.new_releases,
-                                          color: Colors.deepPurple,
-                                          size: 12,
-                                        ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          'Coming Soon',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.deepPurple,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Segera hadir: Analisis Tipe Kepribadian RIASEC untuk rekomendasi karir yang lebih akurat.',
-                                style: TextStyle(
-                                  color: Colors.deepPurple,
-                                  fontSize: 14,
-                                  height: 1.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
 
                         const SizedBox(height: 40),
 

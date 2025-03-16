@@ -340,6 +340,7 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
           ),
         ),
         child: SafeArea(
+          bottom: false,
           child: Column(
             children: [
               // App Bar

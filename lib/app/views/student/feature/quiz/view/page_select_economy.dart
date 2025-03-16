@@ -98,11 +98,11 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Custom App Bar
-              Padding(
+        child: Column(
+          children: [
+            // Custom App Bar
+            SafeArea(
+              child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: Row(
                   children: [
@@ -141,33 +141,33 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
 
-              // Main Content Area
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(top: 24),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(30),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
-                    child: Obx(() {
-                      if (controller.currentStep.value == 0) {
-                        // STEP 1: Choose Economic Condition
-                        return _buildEconomicConditionStep(controller);
-                      } else {
-                        // STEP 2: Choose Plan based on Economic Condition
-                        return _buildPlanSelectionStep(controller, context);
-                      }
-                    }),
+            // Main Content Area
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(top: 5),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(30),
                   ),
                 ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+                  child: Obx(() {
+                    if (controller.currentStep.value == 0) {
+                      // STEP 1: Choose Economic Condition
+                      return _buildEconomicConditionStep(controller);
+                    } else {
+                      // STEP 2: Choose Plan based on Economic Condition
+                      return _buildPlanSelectionStep(controller, context);
+                    }
+                  }),
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

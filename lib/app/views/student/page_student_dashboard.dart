@@ -280,6 +280,7 @@ class PageStudentDashboard extends StatelessWidget {
         ),
         // Use a ListView as the main container instead of Column + SingleChildScrollView
         child: SafeArea(
+          bottom: false,
           child: ListView(
             padding:
                 const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),

@@ -321,6 +321,7 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
         child: SafeArea(
+          bottom: false,
           child: Obx(
             () => controller.isLoading.value
                 ? const Center(
