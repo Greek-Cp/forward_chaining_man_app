@@ -64,10 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1072369607324',
     projectId: 'sirekomendasi-dc7de',
     storageBucket: 'sirekomendasi-dc7de.firebasestorage.app',
-    androidClientId:
-        '1072369607324-pbgftae664k56gli4fb0ftrhot88t8qi.apps.googleusercontent.com',
-    iosClientId:
-        '1072369607324-0e0k7pn3nqk6suq97jnegljp3k0161o5.apps.googleusercontent.com',
+    androidClientId: '1072369607324-hp2vujt95ipkft4n348a96ndbiocqrdo.apps.googleusercontent.com',
+    iosClientId: '1072369607324-0e0k7pn3nqk6suq97jnegljp3k0161o5.apps.googleusercontent.com',
     iosBundleId: 'com.example.forwardChainingManApp',
   );
 
@@ -77,10 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1072369607324',
     projectId: 'sirekomendasi-dc7de',
     storageBucket: 'sirekomendasi-dc7de.firebasestorage.app',
-    androidClientId:
-        '1072369607324-pbgftae664k56gli4fb0ftrhot88t8qi.apps.googleusercontent.com',
-    iosClientId:
-        '1072369607324-0e0k7pn3nqk6suq97jnegljp3k0161o5.apps.googleusercontent.com',
+    androidClientId: '1072369607324-hp2vujt95ipkft4n348a96ndbiocqrdo.apps.googleusercontent.com',
+    iosClientId: '1072369607324-0e0k7pn3nqk6suq97jnegljp3k0161o5.apps.googleusercontent.com',
     iosBundleId: 'com.example.forwardChainingManApp',
   );
 
@@ -93,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'sirekomendasi-dc7de.firebasestorage.app',
     measurementId: 'G-4JLGBJVJBM',
   );
+
 }
