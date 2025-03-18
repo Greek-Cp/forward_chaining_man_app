@@ -37,9 +37,4 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/data_ekonomi.json
-    - assets/ipa_sains_kerja.json
-    - assets/ipa_teknik_kerja.json
-    - assets/ipa_sains_kuliah.json
-    - assets/ipa_teknik_kuliah.json
     - assets/

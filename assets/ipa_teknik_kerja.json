@@ -17,38 +17,108 @@
     "minat": {
       "Elektronika": {
         "pertanyaan": [
-          "Apakah Anda tertarik untuk memperbaiki dan merakit perangkat elektronik tanpa kuliah formal? [7]",
-          "Apakah Anda ingin belajar tentang instalasi perangkat elektronik melalui kursus atau tutorial online? [6]",
+          "Apakah Anda ingin belajar tentang instalasi perangkat elektronik melalui kursus atau tutorial online? [4]",
           "Apakah Anda tertarik untuk bekerja di industri yang mengembangkan teknologi elektronik? [6]",
           "Apakah Anda ingin memecahkan masalah teknis dengan alat-alat elektronik? [6]",
-          "Apakah Anda suka membongkar dan mempelajari cara kerja perangkat elektronik? [5]",
-          "Apakah Anda tertarik untuk memodifikasi perangkat elektronik agar memiliki fungsi yang lebih baik? [5]"
+          "Apakah Anda suka membongkar dan mempelajari cara kerja perangkat elektronik? [6]",
+          "Apakah Anda tertarik untuk memodifikasi perangkat elektronik agar memiliki fungsi yang lebih baik? [6]"
         ],
         "riasecType": [
-          {"type": ["R"], "bobot": [7]},
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["R", "E"], "bobot": [4, 2]},
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["R", "I"], "bobot": [3, 2]},
-          {"type": ["R", "I", "A"], "bobot": [3, 1, 1]}
+          {
+            "type": [
+              "R"
+            ],
+            "bobot": [
+              7
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "E"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I",
+              "A"
+            ],
+            "bobot": [
+              3,
+              1,
+              1
+            ]
+          }
         ],
         "karir": [
           "Teknisi Elektronika [20]",
-          "Teknisi Perangkat Elektronik [19]",
-          "Teknisi Service HP/Laptop [18]",
-          "Teknisi Instalasi CCTV [17]",
-          "Assembler Perangkat Elektronik [16]",
-          "Teknisi Peralatan Audio-Visual [17]",
-          "Teknisi Telekomunikasi [18]"
+          "Teknisi Perangkat Elektronik [20]",
+          "Teknisi Service HP/Laptop [20]",
+          "Teknisi Instalasi CCTV [20]",
+          "Assembler Perangkat Elektronik [20]",
+          "Teknisi Peralatan Audio-Visual [20]",
+          "Teknisi Telekomunikasi [20]",
+          "Operator Mesin Produksi [20]",
+          "Teknisi Maintenance Pabrik [20]",
+          "Petugas Lini Produksi [20]"
         ],
-        "karir_riasec": ["R/I", "R/I", "R/C", "R", "R/C", "R/I", "R/I"],
+        "karir_riasec": [
+          "R/I",
+          "R/I",
+          "R/C",
+          "R",
+          "R/C",
+          "R/I",
+          "R/I",
+          "I",
+          "I",
+          "I"
+        ],
         "jurusan_terkait": [
           "D3 Teknik Elektronika",
           "D3 Teknik Telekomunikasi",
           "D3 Teknik Listrik",
           "D3 Teknik Komputer",
           "S1 Teknik Elektro",
-          "D3 Instrumentasi dan Kontrol Industri"
+          "D3 Instrumentasi dan Kontrol Industri",
+          "D3 Mekatronika",
+          "D3 Teknik Otomasi",
+          "S1 Teknik Mesin"
         ],
         "rekomendasi_kursus": [
           "Sertifikasi Teknisi Elektronika Dasar",
@@ -68,19 +138,79 @@
           "Apakah Anda ingin bekerja di industri yang menggunakan robot dan sistem otomatisasi? [6]"
         ],
         "riasecType": [
-          {"type": ["R", "I", "A"], "bobot": [3, 3, 1]},
-          {"type": ["R", "I"], "bobot": [4, 3]},
-          {"type": ["I", "R"], "bobot": [4, 2]},
-          {"type": ["I", "R"], "bobot": [4, 2]},
-          {"type": ["I", "R"], "bobot": [3, 2]},
-          {"type": ["R", "E"], "bobot": [4, 2]}
+          {
+            "type": [
+              "R",
+              "I",
+              "A"
+            ],
+            "bobot": [
+              3,
+              3,
+              1
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              3
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "E"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          }
         ],
         "karir": [
           "Operator Mesin Produksi [18]",
           "Teknisi Maintenance Pabrik [19]",
           "Petugas Lini Produksi [17]"
         ],
-        "karir_riasec": ["R", "R/I", "R/C"],
+        "karir_riasec": [
+          "R",
+          "R/I",
+          "R/C"
+        ],
         "jurusan_terkait": [
           "D3 Mekatronika",
           "D3 Teknik Otomasi",
@@ -107,29 +237,106 @@
           "Apakah Anda tertarik dengan analisis data dan membuat visualisasi data? [5]"
         ],
         "riasecType": [
-          {"type": ["I", "A"], "bobot": [5, 2]},
-          {"type": ["I", "E"], "bobot": [4, 2]},
-          {"type": ["I", "C"], "bobot": [5, 1]},
-          {"type": ["I", "A"], "bobot": [4, 2]},
-          {"type": ["I", "C"], "bobot": [4, 2]},
-          {"type": ["I", "A", "C"], "bobot": [3, 1, 1]}
+          {
+            "type": [
+              "I",
+              "A"
+            ],
+            "bobot": [
+              5,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "E"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "C"
+            ],
+            "bobot": [
+              5,
+              1
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "A"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "C"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "A",
+              "C"
+            ],
+            "bobot": [
+              3,
+              1,
+              1
+            ]
+          }
         ],
         "karir": [
           "Junior Web Developer [20]",
-          "Junior Mobile App Developer [19]",
-          "Front-End Developer [18]",
-          "Technical Support [17]",
-          "Content Creator Digital [17]",
-          "Freelance Programmer [19]"
+          "Junior Mobile App Developer [20]",
+          "Front-End Developer [20]",
+          "Technical Support [20]",
+          "Content Creator Digital [20]",
+          "Freelance Programmer [20]",
+          "Teknisi Jaringan [20]",
+          "IT Support Specialist [20]",
+          "Network Technician [20]",
+          "Helpdesk Support [20]",
+          "Teknisi Instalasi Internet [20]"
         ],
-        "karir_riasec": ["I/A", "I/A", "I/A", "I/S", "I/A", "I/A/E"],
+        "karir_riasec": [
+          "I/A",
+          "I/A",
+          "I/A",
+          "I/S",
+          "I/A",
+          "I/A/E",
+          "I",
+          "I",
+          "I",
+          "I",
+          "I"
+        ],
         "jurusan_terkait": [
           "D3 Teknik Informatika",
           "D3 Manajemen Informatika",
           "S1 Teknik Informatika",
           "S1 Ilmu Komputer",
           "D3 Sistem Informasi",
-          "D3 Rekayasa Perangkat Lunak"
+          "D3 Rekayasa Perangkat Lunak",
+          "D3 Teknik Komputer Jaringan",
+          "S1 Sistem Informasi",
+          "S1 Teknik Komputer",
+          "D3 Keamanan Sistem Informasi"
         ],
         "rekomendasi_kursus": [
           "Bootcamp Pemrograman Web/Mobile",
@@ -150,12 +357,68 @@
           "Apakah Anda tertarik untuk belajar cloud computing dan virtualisasi? [5]"
         ],
         "riasecType": [
-          {"type": ["I", "R"], "bobot": [4, 3]},
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["R", "I", "C"], "bobot": [3, 2, 1]},
-          {"type": ["I", "C"], "bobot": [4, 2]},
-          {"type": ["R", "S"], "bobot": [3, 2]},
-          {"type": ["I", "C"], "bobot": [3, 2]}
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              4,
+              3
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I",
+              "C"
+            ],
+            "bobot": [
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "C"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "S"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "C"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          }
         ],
         "karir": [
           "Teknisi Jaringan [20]",
@@ -164,7 +427,13 @@
           "Helpdesk Support [17]",
           "Teknisi Instalasi Internet [18]"
         ],
-        "karir_riasec": ["R/I", "R/S/I", "R/I", "S/I", "R/I"],
+        "karir_riasec": [
+          "R/I",
+          "R/S/I",
+          "R/I",
+          "S/I",
+          "R/I"
+        ],
         "jurusan_terkait": [
           "D3 Teknik Komputer Jaringan",
           "D3 Teknik Informatika",
@@ -188,26 +457,83 @@
           "Apakah Anda ingin mempelajari proses pembuatan dan perbaikan mesin melalui pelatihan atau kursus? [6]",
           "Apakah Anda ingin bekerja di industri manufaktur dan perakitan mesin? [6]",
           "Apakah Anda tertarik untuk memperbaiki mesin dan alat industri? [6]",
-          "Apakah Anda menyukai pekerjaan yang melibatkan alat-alat berat dan mesin industri? [5]",
+          "Apakah Anda menyukai pekerjaan yang melibatkan alat-alat berat dan mesin industri? [6]",
           "Apakah Anda tertarik untuk mempelajari desain dan pembacaan gambar teknik? [5]"
         ],
         "riasecType": [
-          {"type": ["R"], "bobot": [7]},
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["R", "C"], "bobot": [4, 2]},
-          {"type": ["R"], "bobot": [6]},
-          {"type": ["R"], "bobot": [5]},
-          {"type": ["R", "C", "A"], "bobot": [2, 2, 1]}
+          {
+            "type": [
+              "R"
+            ],
+            "bobot": [
+              7
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "C"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R"
+            ],
+            "bobot": [
+              6
+            ]
+          },
+          {
+            "type": [
+              "R"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "C",
+              "A"
+            ],
+            "bobot": [
+              2,
+              2,
+              1
+            ]
+          }
         ],
         "karir": [
           "Teknisi Mesin [20]",
-          "Operator Mesin CNC [19]",
-          "Teknisi Pemeliharaan Industri [19]",
-          "Teknisi Otomotif [18]",
-          "Operator Alat Berat [18]",
-          "Welder/Tukang Las [17]"
+          "Operator Mesin CNC [20]",
+          "Teknisi Pemeliharaan Industri [20]",
+          "Teknisi Otomotif [20]",
+          "Operator Alat Berat [20]",
+          "Welder/Tukang Las [20]"
         ],
-        "karir_riasec": ["R", "R/C", "R", "R", "R", "R"],
+        "karir_riasec": [
+          "R",
+          "R/C",
+          "R",
+          "R",
+          "R",
+          "R"
+        ],
         "jurusan_terkait": [
           "D3 Teknik Mesin",
           "D3 Teknik Manufaktur",
@@ -228,28 +554,90 @@
       "Teknik Sipil": {
         "pertanyaan": [
           "Apakah Anda tertarik untuk bekerja dalam perencanaan dan pengawasan proyek konstruksi tanpa kuliah? [7]",
-          "Apakah Anda ingin mempelajari dasar-dasar desain bangunan dan jalan melalui pelatihan? [6]",
+          "Apakah Anda ingin mempelajari dasar-dasar desain bangunan dan jalan melalui pelatihan? [7]",
           "Apakah Anda ingin bekerja di lapangan untuk proyek konstruksi dan infrastruktur? [6]",
           "Apakah Anda tertarik dengan analisis material dan struktur bangunan? [5]",
           "Apakah Anda memiliki ketelitian dan kemampuan membaca gambar teknik? [5]",
           "Apakah Anda tertarik dengan pekerjaan yang melibatkan pengukuran dan pemetaan lahan? [6]"
         ],
         "riasecType": [
-          {"type": ["R", "E"], "bobot": [4, 3]},
-          {"type": ["R", "I", "A"], "bobot": [3, 2, 1]},
-          {"type": ["R", "E"], "bobot": [4, 2]},
-          {"type": ["I", "R"], "bobot": [3, 2]},
-          {"type": ["C", "R"], "bobot": [3, 2]},
-          {"type": ["R", "I"], "bobot": [4, 2]}
+          {
+            "type": [
+              "R",
+              "E"
+            ],
+            "bobot": [
+              4,
+              3
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I",
+              "A"
+            ],
+            "bobot": [
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "E"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "C",
+              "R"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          }
         ],
         "karir": [
-          "Pelaksana Lapangan Konstruksi [19]",
-          "Surveyor Lapangan [18]",
-          "Juru Gambar/Drafter [17]",
-          "Mandor Bangunan [18]",
-          "Tenaga Administrasi Proyek [16]"
+          "Pelaksana Lapangan Konstruksi [20]",
+          "Surveyor Lapangan [20]",
+          "Juru Gambar/Drafter [20]",
+          "Mandor Bangunan [20]",
+          "Tenaga Administrasi Proyek [20]"
         ],
-        "karir_riasec": ["R/E", "R/I", "R/A/C", "R/E", "C/R"],
+        "karir_riasec": [
+          "R/E",
+          "R/I",
+          "R/A/C",
+          "R/E",
+          "C/R"
+        ],
         "jurusan_terkait": [
           "D3 Teknik Sipil",
           "D3 Konstruksi Gedung",
@@ -270,28 +658,88 @@
       "Teknik Kimia": {
         "pertanyaan": [
           "Apakah Anda tertarik untuk bekerja di industri kimia tanpa gelar kuliah? [7]",
-          "Apakah Anda ingin memahami proses kimia industri melalui kursus atau pelatihan? [6]",
+          "Apakah Anda ingin memahami proses kimia industri melalui kursus atau pelatihan? [3]",
           "Apakah Anda tertarik untuk bekerja dengan bahan kimia dan proses pembuatan produk kimia? [6]",
-          "Apakah Anda ingin berkarir di pengolahan limbah dan pemurnian air? [5]",
-          "Apakah Anda memiliki ketelitian dan disiplin dalam mengikuti prosedur operasi standar? [5]",
-          "Apakah Anda tertarik untuk mempelajari kontrol kualitas produk kimia? [5]"
+          "Apakah Anda ingin berkarir di pengolahan limbah dan pemurnian air? [6]",
+          "Apakah Anda memiliki ketelitian dan disiplin dalam mengikuti prosedur operasi standar? [6]",
+          "Apakah Anda tertarik untuk mempelajari kontrol kualitas produk kimia? [6]"
         ],
         "riasecType": [
-          {"type": ["R", "I"], "bobot": [4, 3]},
-          {"type": ["I", "R"], "bobot": [4, 2]},
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["R", "S"], "bobot": [3, 2]},
-          {"type": ["C", "R"], "bobot": [3, 2]},
-          {"type": ["I", "C"], "bobot": [3, 2]}
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              3
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "S"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "C",
+              "R"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "C"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          }
         ],
         "karir": [
-          "Operator Proses Kimia [19]",
-          "Petugas Pengecekan Produk [18]",
-          "Petugas Instalasi Pengolahan Limbah [18]",
-          "Operator Instalasi Pengolahan Air [17]",
-          "Petugas K3 Pabrik [16]"
+          "Operator Proses Kimia [20]",
+          "Petugas Pengecekan Produk [20]",
+          "Petugas Instalasi Pengolahan Limbah [20]",
+          "Operator Instalasi Pengolahan Air [20]",
+          "Petugas K3 Pabrik [20]"
         ],
-        "karir_riasec": ["R/C", "C/I", "R/I", "R", "C/S"],
+        "karir_riasec": [
+          "R/C",
+          "C/I",
+          "R/I",
+          "R",
+          "C/S"
+        ],
         "jurusan_terkait": [
           "D3 Teknik Kimia",
           "D3 Analis Kimia",
@@ -311,29 +759,87 @@
       },
       "Teknisi Energi": {
         "pertanyaan": [
-          "Apakah Anda tertarik untuk bekerja di bidang pembangkit listrik dan distribusi energi? [6]",
-          "Apakah Anda ingin mempelajari instalasi dan pemeliharaan sistem energi terbarukan? [6]",
+          "Apakah Anda tertarik untuk bekerja di bidang pembangkit listrik dan distribusi energi? [7]",
+          "Apakah Anda ingin mempelajari instalasi dan pemeliharaan sistem energi terbarukan? [7]",
           "Apakah Anda tertarik dengan sistem listrik dan elektronika daya? [6]",
-          "Apakah Anda ingin bekerja di lapangan untuk instalasi atau perbaikan sistem energi? [5]",
+          "Apakah Anda ingin bekerja di lapangan untuk instalasi atau perbaikan sistem energi? [6]",
           "Apakah Anda tertarik untuk mempelajari efisiensi energi dan konservasi? [5]",
-          "Apakah Anda memiliki ketelitian dan kesadaran keselamatan yang tinggi? [5]"
+          "Apakah Anda memiliki ketelitian dan kesadaran keselamatan yang tinggi? [6]"
         ],
         "riasecType": [
-          {"type": ["R", "E"], "bobot": [4, 2]},
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["R"], "bobot": [5]},
-          {"type": ["I", "S"], "bobot": [3, 2]},
-          {"type": ["C", "S"], "bobot": [3, 2]}
+          {
+            "type": [
+              "R",
+              "E"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "S"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "C",
+              "S"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          }
         ],
         "karir": [
           "Teknisi Listrik [20]",
-          "Teknisi Panel Surya [19]",
-          "Operator Pembangkit Listrik [18]",
-          "Teknisi Instalasi Listrik [18]",
-          "Teknisi Pemeliharaan Sistem Energi [19]"
+          "Teknisi Panel Surya [20]",
+          "Operator Pembangkit Listrik [20]",
+          "Teknisi Instalasi Listrik [20]",
+          "Teknisi Pemeliharaan Sistem Energi [20]"
         ],
-        "karir_riasec": ["R", "R/I", "R/C", "R", "R/C"],
+        "karir_riasec": [
+          "R",
+          "R/I",
+          "R/C",
+          "R",
+          "R/C"
+        ],
         "jurusan_terkait": [
           "D3 Teknik Listrik",
           "D3 Teknik Elektro",
@@ -356,27 +862,84 @@
           "Apakah Anda tertarik untuk memperbaiki dan merawat kendaraan bermotor? [7]",
           "Apakah Anda ingin mempelajari sistem mekanik dan elektronik pada kendaraan modern? [6]",
           "Apakah Anda tertarik dengan diagnosis dan troubleshooting kerusakan kendaraan? [6]",
-          "Apakah Anda suka bekerja dengan tangan dan alat-alat mekanik? [5]",
+          "Apakah Anda suka bekerja dengan tangan dan alat-alat mekanik? [7]",
           "Apakah Anda tertarik untuk mempelajari sistem kendaraan listrik dan hybrid? [5]",
           "Apakah Anda ingin bekerja di bengkel atau industri otomotif? [6]"
         ],
         "riasecType": [
-          {"type": ["R"], "bobot": [7]},
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["R", "I"], "bobot": [3, 3]},
-          {"type": ["R"], "bobot": [5]},
-          {"type": ["I", "R"], "bobot": [3, 2]},
-          {"type": ["R", "E"], "bobot": [4, 2]}
+          {
+            "type": [
+              "R"
+            ],
+            "bobot": [
+              7
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              3,
+              3
+            ]
+          },
+          {
+            "type": [
+              "R"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "E"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          }
         ],
         "karir": [
           "Mekanik Otomotif [20]",
-          "Mekanik Sepeda Motor [19]",
-          "Teknisi Kelistrikan Otomotif [18]",
-          "Teknisi AC Mobil [17]",
-          "Service Advisor [16]",
-          "Petugas Bengkel Umum [17]"
+          "Mekanik Sepeda Motor [20]",
+          "Teknisi Kelistrikan Otomotif [20]",
+          "Teknisi AC Mobil [20]",
+          "Service Advisor [20]",
+          "Petugas Bengkel Umum [20]"
         ],
-        "karir_riasec": ["R", "R", "R/I", "R", "S/E/R", "R"],
+        "karir_riasec": [
+          "R",
+          "R",
+          "R/I",
+          "R",
+          "S/E/R",
+          "R"
+        ],
         "jurusan_terkait": [
           "D3 Teknik Otomotif",
           "D3 Teknik Mesin",
