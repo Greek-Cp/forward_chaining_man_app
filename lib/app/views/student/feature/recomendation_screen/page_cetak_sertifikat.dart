@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -139,7 +140,7 @@ class _MagicRevealAnimationState extends State<MagicRevealAnimation>
           opacity: opacity,
           child: SparkleWidget(
             size: size,
-            color: const Color(0xFF1A5F7A),
+            color: const Color(0xFFd9dbe6),
           ),
         ),
       );
@@ -269,294 +270,139 @@ class CertificateFront extends StatefulWidget {
   State<CertificateFront> createState() => _CertificateFrontState();
 }
 
-class _CertificateFrontState extends State<CertificateFront>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize date formatting for Indonesian locale
-    initializeDateFormatting('id_ID', null);
-
-    // Setup animations
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-
-    _fadeAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeIn,
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.1),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
-
-    // Start animations
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  String _getFormattedDate() {
-    try {
-      final now = DateTime.now();
-      final formatter = DateFormat('d MMMM yyyy', 'id_ID');
-      return formatter.format(now);
-    } catch (e) {
-      // Fallback if locale formatting fails
-      final now = DateTime.now();
-      return "${now.day}/${now.month}/${now.year}";
-    }
-  }
-
-  // Helper function to find a student in all schools
-  Future<DocumentSnapshot?> _findStudentInAllSchools(String? studentId) async {
-    if (studentId == null) return null;
-
-    try {
-      // Get all schools
-      final schoolsCollection =
-          await FirebaseFirestore.instance.collection('schools').get();
-
-      // For each school, check if this student exists
-      for (var school in schoolsCollection.docs) {
-        final studentDoc = await FirebaseFirestore.instance
-            .collection('schools')
-            .doc(school.id)
-            .collection('students')
-            .doc(studentId)
-            .get();
-
-        if (studentDoc.exists) {
-          return studentDoc;
-        }
-      }
-
-      return null;
-    } catch (e) {
-      debugPrint('Error finding student: $e');
-      return null;
-    }
-  }
-
+class _CertificateFrontState extends State<CertificateFront> {
   @override
   Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
+    final DateFormat dateFormatter = DateFormat('dd MMMM yyyy');
+    final String currentDate = dateFormatter.format(DateTime.now());
     final User? currentUser = FirebaseAuth.instance.currentUser;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 15,
-            spreadRadius: 3,
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          // Fancy background
-          Positioned.fill(
-            child: CustomPaint(
-              painter: EnhancedCertificateBackgroundPainter(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double certificateWidth = constraints.maxWidth;
+        // Menyesuaikan rasio aspek untuk mengurangi tinggi keseluruhan
+        final double certificateHeight =
+            certificateWidth * 0.6; // Rasio 10:6 lebih pendek dari 10:7
+
+        return Container(
+          width: certificateWidth,
+          height: certificateHeight,
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment(0.0, -0.4),
+              radius: 1.5,
+              colors: [
+                Colors.blue.shade700,
+                Colors.blue.shade800,
+                Colors.indigo.shade900,
+              ],
+              stops: [0.0, 0.4, 0.9],
             ),
-          ),
-
-          // Animated shine effect
-          _buildShineEffect(),
-
-          // Decorative edges
-          Positioned.fill(
-            child: CustomPaint(
-              painter: DecorativeEdgesPainter(),
-            ),
-          ),
-
-          // Elegant border
-          Positioned.fill(
-            child: Container(
-              margin: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 5,
-                  color: const Color(0xFF1A5F7A),
-                ),
-                borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 10,
+                offset: Offset(0, 4),
               ),
-              child: Container(
-                margin: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1.5,
-                    color: const Color(0xFF57C5B6),
-                  ),
-                  borderRadius: BorderRadius.circular(2),
+            ],
+          ),
+          child: Stack(
+            children: [
+              // Background pattern elements
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: CertificateBackgroundPainter(),
                 ),
               ),
-            ),
-          ),
 
-          // Certificate ID
-          Positioned(
-            top: 35,
-            right: 40,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1A5F7A).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    color: const Color(0xFF1A5F7A).withOpacity(0.3),
-                  ),
-                ),
-                child: Text(
-                  'ID: ${widget.certificateId}',
-                  style: GoogleFonts.sourceCodePro(
-                    fontSize: 12,
-                    color: const Color(0xFF1A5F7A),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Header
-          Positioned(
-            top: 60,
-            left: 0,
-            right: 0,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
+              // Certificate content
+              Padding(
+                padding: EdgeInsets.all(certificateWidth * 0.03),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo/Header Image
-                    Container(
-                      height: 90,
-                      width: 90,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 8,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/images/logo.png', // Replace with your logo
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(
-                              Icons.school,
-                              size: 60,
-                              color: const Color(0xFF1A5F7A),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'SERTIFIKAT',
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1A5F7A),
-                        letterSpacing: 6,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withOpacity(0.2),
-                            offset: const Offset(1, 1),
-                            blurRadius: 2,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'HASIL ANALISIS MINAT DAN BAKAT',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF159895),
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: 200,
-                      child: Stack(
-                        children: [
-                          Divider(
-                            color: const Color(0xFF57C5B6),
-                            thickness: 2,
-                          ),
-                          Center(
-                            child: Container(
-                              width: 10,
-                              height: 10,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF1A5F7A),
-                                shape: BoxShape.circle,
+                    // Logo and Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 5,
+                                spreadRadius: 1,
                               ),
+                            ],
+                          ),
+                          child: Text(
+                            "EG",
+                            style: TextStyle(
+                              fontSize: certificateWidth * 0.035,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.indigo.shade900,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "EduGuide",
+                          style: TextStyle(
+                            fontSize: certificateWidth * 0.045,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 1.2,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withOpacity(0.3),
+                                offset: Offset(1, 1),
+                                blurRadius: 3,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ),
-          ),
 
-          // Content
-          Positioned(
-            top: 290,
-            left: 60,
-            right: 60,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: Column(
-                  children: [
+                    SizedBox(height: certificateHeight * 0.01),
+
+                    // Certificate title
                     Text(
-                      'Diberikan Kepada:',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.crimsonText(
-                        fontSize: 18,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.black87,
+                      "SERTIFIKAT TES MINAT BAKAT",
+                      style: TextStyle(
+                        fontSize: certificateWidth * 0.033,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 1.5,
                       ),
                     ),
-                    const SizedBox(height: 16),
+
+                    Divider(
+                      color: Colors.white.withOpacity(0.5),
+                      thickness: 1,
+                      indent: certificateWidth * 0.2,
+                      endIndent: certificateWidth * 0.2,
+                      height: certificateHeight * 0.04,
+                    ),
+
+                    // Student name placeholder
+                    Text(
+                      "Dengan ini menyatakan bahwa",
+                      style: TextStyle(
+                        fontSize: certificateWidth * 0.03,
+                        color: Colors.white.withOpacity(0.8),
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+
+                    SizedBox(height: certificateHeight * 0.02),
+
+                    // Student name will be added dynamically
 
                     // Student name - Firebase integration
                     FutureBuilder<String>(
@@ -632,11 +478,10 @@ class _CertificateFrontState extends State<CertificateFront>
                                     ),
                                     Text(
                                       userName,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.playfairDisplay(
-                                        fontSize: 32,
+                                      style: TextStyle(
+                                        fontSize: certificateWidth * 0.05,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ],
@@ -646,9 +491,10 @@ class _CertificateFrontState extends State<CertificateFront>
                                     padding: const EdgeInsets.only(top: 8.0),
                                     child: Text(
                                       userClass,
-                                      style: GoogleFonts.montserrat(
-                                        fontSize: 16,
-                                        color: const Color(0xFF1A5F7A),
+                                      style: TextStyle(
+                                        fontSize: certificateWidth * 0.03,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),
@@ -659,209 +505,402 @@ class _CertificateFrontState extends State<CertificateFront>
                       },
                     ),
 
-                    const SizedBox(height: 40),
+                    SizedBox(height: certificateHeight * 0.02),
+
+                    // Award information
                     Text(
-                      'telah menyelesaikan analisis minat dan bakat\ndengan hasil bidang minat terbaik:',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        height: 1.5,
-                        color: Colors.black87,
+                      "telah berhasil menyelesaikan Tes Minat Bakat",
+                      style: TextStyle(
+                        fontSize: certificateWidth * 0.03,
+                        color: Colors.white.withOpacity(0.8),
                       ),
                     ),
-                    const SizedBox(height: 30),
+
+                    SizedBox(height: certificateHeight * 0.02),
+
+                    // Recommendation title with accent
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 24,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: certificateWidth * 0.03,
+                        vertical: certificateHeight * 0.005,
                       ),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF159895),
-                            Color(0xFF1A5F7A),
-                          ],
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                          width: 0.5,
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.15),
-                            blurRadius: 10,
-                            spreadRadius: 1,
-                            offset: const Offset(2, 4),
-                          ),
-                        ],
                       ),
                       child: Text(
                         widget.recommendation.title,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.playfairDisplay(
-                          fontSize: 26,
+                        style: TextStyle(
+                          fontSize: certificateWidth * 0.03,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
-                          letterSpacing: 1.2,
-                          height: 1.3,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.4),
-                              offset: const Offset(1, 1),
-                              blurRadius: 2,
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: certificateHeight * 0.01),
+
+                    // Recommended majors section - Lebih compact
+
+                    SizedBox(height: certificateHeight * 0.02),
+
+                    // Date and signature row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Date
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              currentDate,
+                              style: TextStyle(
+                                fontSize: certificateWidth * 0.02,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Container(
+                              width: certificateWidth * 0.15,
+                              height: 1,
+                              color: Colors.white.withOpacity(0.5),
+                              margin: EdgeInsets.only(top: 3),
+                            ),
+                            Text(
+                              "Tanggal",
+                              style: TextStyle(
+                                fontSize: certificateWidth * 0.018,
+                                color: Colors.white.withOpacity(0.7),
+                              ),
                             ),
                           ],
                         ),
-                      ),
+
+                        // Certificate ID
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "ID: ${widget.certificateId}",
+                              style: TextStyle(
+                                fontSize: certificateWidth * 0.018,
+                                color: Colors.white.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Signature
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "EduGuide Team",
+                              style: TextStyle(
+                                fontSize: certificateWidth * 0.02,
+                                fontFamily: 'Signature',
+                                color: Colors.white,
+                              ),
+                            ),
+                            Container(
+                              width: certificateWidth * 0.15,
+                              height: 1,
+                              color: Colors.white.withOpacity(0.5),
+                              margin: EdgeInsets.only(top: 3),
+                            ),
+                            Text(
+                              "Tanda Tangan",
+                              style: TextStyle(
+                                fontSize: certificateWidth * 0.018,
+                                color: Colors.white.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-            ),
-          ),
 
-          // Footer with date
-          Positioned(
-            bottom: 60,
-            left: 0,
-            right: 0,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1A5F7A).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: const Color(0xFF1A5F7A).withOpacity(0.2),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Diterbitkan Pada',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF1A5F7A),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _getFormattedDate(),
-                          style: GoogleFonts.montserrat(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          width: 150,
-                          height: 2,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFF1A5F7A),
-                                Color(0xFF57C5B6),
-                                Color(0xFF1A5F7A),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(1),
-                          ),
-                        ),
-                      ],
+              // Border decoration
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.3),
+                      width: 2,
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
-
-          // Decorative corner elements
-          Positioned(
-            top: 24,
-            left: 24,
-            child: _buildCornerElement(),
-          ),
-          Positioned(
-            top: 24,
-            right: 24,
-            child: Transform.rotate(
-              angle: 1.57,
-              child: _buildCornerElement(),
-            ),
-          ),
-          Positioned(
-            bottom: 24,
-            right: 24,
-            child: Transform.rotate(
-              angle: 3.14,
-              child: _buildCornerElement(),
-            ),
-          ),
-          Positioned(
-            bottom: 24,
-            left: 24,
-            child: Transform.rotate(
-              angle: 4.71,
-              child: _buildCornerElement(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildShineEffect() {
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: -1.0, end: 2.0),
-      duration: const Duration(seconds: 3),
-      curve: Curves.easeInOut,
-      onEnd: () {
-        // Rebuild the widget to restart animation
-        if (mounted) setState(() {});
-      },
-      builder: (context, value, child) {
-        return Positioned.fill(
-          child: ShaderMask(
-            shaderCallback: (bounds) {
-              return LinearGradient(
-                begin: Alignment(value - 0.2, value - 0.2),
-                end: Alignment(value, value),
-                colors: [
-                  Colors.white.withOpacity(0.0),
-                  Colors.white.withOpacity(0.4),
-                  Colors.white.withOpacity(0.0),
-                ],
-                stops: const [0.35, 0.50, 0.65],
-              ).createShader(bounds);
-            },
-            child: Container(
-              color: Colors.transparent,
-            ),
-            blendMode: BlendMode.srcATop,
+            ],
           ),
         );
       },
     );
   }
 
-  Widget _buildCornerElement() {
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: CustomPaint(
-        painter: CornerElementPainter(),
-      ),
-    );
+  Future<DocumentSnapshot?> _findStudentInAllSchools(String? studentId) async {
+    if (studentId == null) return null;
+
+    try {
+      // Get all schools
+      final schoolsCollection =
+          await FirebaseFirestore.instance.collection('schools').get();
+
+      // For each school, check if this student exists
+      for (var school in schoolsCollection.docs) {
+        final studentDoc = await FirebaseFirestore.instance
+            .collection('schools')
+            .doc(school.id)
+            .collection('students')
+            .doc(studentId)
+            .get();
+
+        if (studentDoc.exists) {
+          return studentDoc;
+        }
+      }
+
+      return null;
+    } catch (e) {
+      debugPrint('Error finding student: $e');
+      return null;
+    }
+  }
+}
+
+// CustomPainter untuk membuat background pattern yang estetik
+class CertificateBackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Background gradient overlay
+    final Rect fullRect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final Paint gradientPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.white.withOpacity(0.05),
+          Colors.white.withOpacity(0.0),
+          Colors.white.withOpacity(0.07),
+        ],
+        stops: [0.0, 0.5, 1.0],
+      ).createShader(fullRect);
+
+    canvas.drawRect(fullRect, gradientPaint);
+
+    // Wavy pattern in the middle
+    final Path wavyPath = Path();
+    final double amplitude = size.height * 0.02;
+    final double frequency = 0.1;
+    final double startY = size.height * 0.5;
+
+    wavyPath.moveTo(0, startY);
+    for (double x = 0; x <= size.width; x += 1) {
+      double y = startY + amplitude * math.sin(frequency * x);
+      wavyPath.lineTo(x, y);
+    }
+
+    canvas.drawPath(
+        wavyPath,
+        Paint()
+          ..color = Colors.white.withOpacity(0.1)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5);
+
+    // Pattern 1: Abstract geometric shapes
+    // Diamond pattern
+    final double diamondSize = size.width * 0.04;
+    final double spacing = size.width * 0.15;
+
+    for (double x = spacing; x < size.width; x += spacing) {
+      for (double y = spacing; y < size.height; y += spacing) {
+        // Only draw diamonds in certain areas to create a pattern
+        if ((x / spacing).round() % 3 == (y / spacing).round() % 3) {
+          final Path diamondPath = Path();
+          diamondPath.moveTo(x, y - diamondSize);
+          diamondPath.lineTo(x + diamondSize, y);
+          diamondPath.lineTo(x, y + diamondSize);
+          diamondPath.lineTo(x - diamondSize, y);
+          diamondPath.close();
+
+          canvas.drawPath(
+              diamondPath,
+              Paint()
+                ..color = Colors.white.withOpacity(0.04)
+                ..style = PaintingStyle.fill);
+
+          canvas.drawPath(
+              diamondPath,
+              Paint()
+                ..color = Colors.white.withOpacity(0.08)
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 0.5);
+        }
+      }
+    }
+
+    // Pattern 2: Light rays emanating from center
+    final Paint rayPaint = Paint()
+      ..color = Colors.white.withOpacity(0.07)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
+
+    final double centerX = size.width / 2;
+    final double centerY = size.height / 2;
+
+    for (int i = 0; i < 24; i++) {
+      final double angle = (i * math.pi / 12);
+      final double length = math.max(size.width, size.height) * 0.6;
+
+      canvas.drawLine(
+          Offset(centerX, centerY),
+          Offset(centerX + math.cos(angle) * length,
+              centerY + math.sin(angle) * length),
+          rayPaint);
+    }
+
+    // Pattern 3: Subtle circle patterns
+    for (int i = 0; i < 30; i++) {
+      double radius =
+          math.Random().nextDouble() * size.width * 0.025 + size.width * 0.005;
+      double x = math.Random().nextDouble() * size.width;
+      double y = math.Random().nextDouble() * size.height;
+
+      // Create glowing effect with multiple circles
+      for (int j = 0; j < 3; j++) {
+        double glowRadius = radius * (1 + j * 0.5);
+        double opacity = 0.02 / (j + 1);
+
+        canvas.drawCircle(
+            Offset(x, y),
+            glowRadius,
+            Paint()
+              ..color = Colors.white.withOpacity(opacity)
+              ..style = PaintingStyle.fill);
+      }
+
+      canvas.drawCircle(
+          Offset(x, y),
+          radius,
+          Paint()
+            ..color = Colors.white.withOpacity(0.05)
+            ..style = PaintingStyle.fill);
+    }
+
+    // Decorative border with ornate corners
+    final double cornerSize = size.width * 0.12;
+    final double borderWidth = 2.0;
+
+    // Create a fancy corner design
+    void drawOrnateCorner(double startX, double startY, double endX,
+        double endY, double controlX, double controlY) {
+      final Path cornerPath = Path();
+      cornerPath.moveTo(startX, startY);
+      cornerPath.quadraticBezierTo(controlX, controlY, endX, endY);
+
+      canvas.drawPath(
+          cornerPath,
+          Paint()
+            ..color = Colors.white.withOpacity(0.25)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = borderWidth);
+
+      // Add small circle decoration at corner point
+      canvas.drawCircle(
+          Offset(controlX, controlY),
+          borderWidth * 1.5,
+          Paint()
+            ..color = Colors.white.withOpacity(0.3)
+            ..style = PaintingStyle.fill);
+    }
+
+    // Top left corner
+    drawOrnateCorner(
+        0, cornerSize, cornerSize, 0, cornerSize * 0.3, cornerSize * 0.3);
+
+    // Top right corner
+    drawOrnateCorner(size.width - cornerSize, 0, size.width, cornerSize,
+        size.width - cornerSize * 0.3, cornerSize * 0.3);
+
+    // Bottom right corner
+    drawOrnateCorner(
+        size.width,
+        size.height - cornerSize,
+        size.width - cornerSize,
+        size.height,
+        size.width - cornerSize * 0.3,
+        size.height - cornerSize * 0.3);
+
+    // Bottom left corner
+    drawOrnateCorner(cornerSize, size.height, 0, size.height - cornerSize,
+        cornerSize * 0.3, size.height - cornerSize * 0.3);
+
+    // Add decorative elements at each corner
+    void drawCornerDecoration(
+        double x, double y, double size, double rotation) {
+      canvas.save();
+      canvas.translate(x, y);
+      canvas.rotate(rotation);
+
+      final Path decorPath = Path();
+      decorPath.moveTo(0, -size);
+      decorPath.lineTo(size * 0.5, 0);
+      decorPath.lineTo(0, size);
+      decorPath.lineTo(-size * 0.5, 0);
+      decorPath.close();
+
+      canvas.drawPath(
+          decorPath,
+          Paint()
+            ..color = Colors.white.withOpacity(0.2)
+            ..style = PaintingStyle.fill);
+
+      canvas.drawPath(
+          decorPath,
+          Paint()
+            ..color = Colors.white.withOpacity(0.3)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 0.8);
+
+      canvas.restore();
+    }
+
+    final double decorSize = cornerSize * 0.3;
+
+    // Corner decorations
+    drawCornerDecoration(cornerSize * 0.5, cornerSize * 0.5, decorSize, 0);
+    drawCornerDecoration(size.width - cornerSize * 0.5, cornerSize * 0.5,
+        decorSize, math.pi * 0.5);
+    drawCornerDecoration(size.width - cornerSize * 0.5,
+        size.height - cornerSize * 0.5, decorSize, math.pi);
+    drawCornerDecoration(cornerSize * 0.5, size.height - cornerSize * 0.5,
+        decorSize, math.pi * 1.5);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }
 
 // Enhanced background painter for front certificate
 class EnhancedCertificateBackgroundPainter extends CustomPainter {
+  final Color primaryColor;
+  final Color secondaryColor;
+
+  EnhancedCertificateBackgroundPainter({
+    required this.primaryColor,
+    required this.secondaryColor,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     // Base background color
@@ -871,14 +910,15 @@ class EnhancedCertificateBackgroundPainter extends CustomPainter {
     // Create a soft gradient background
     final Rect rect = Rect.fromLTRB(0, 0, size.width, size.height);
     final Gradient gradient = LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
       colors: [
-        const Color(0xFFF8FDFF),
-        const Color(0xFFE6F7F5),
-        const Color(0xFFF0F8FF),
+        Colors.white,
+        Colors.blue.shade50,
+        Colors.indigo.shade50,
+        Colors.white,
       ],
-      stops: const [0.0, 0.5, 1.0],
+      stops: const [0.0, 0.3, 0.7, 1.0],
     );
 
     final Paint gradientPaint = Paint()
@@ -887,77 +927,163 @@ class EnhancedCertificateBackgroundPainter extends CustomPainter {
 
     canvas.drawRect(rect, gradientPaint);
 
-    // Draw elegant pattern
+    // Draw elegant dot pattern
     final dotPaint = Paint()
-      ..color = const Color(0xFF57C5B6).withOpacity(0.15)
+      ..color = primaryColor.withOpacity(0.1)
       ..style = PaintingStyle.fill;
 
-    // Small dots pattern
-    for (int i = 0; i < size.width; i += 40) {
-      for (int j = 0; j < size.height; j += 40) {
+    // Small dots pattern - create a grid of dots
+    for (int i = 0; i < size.width; i += 20) {
+      for (int j = 0; j < size.height; j += 20) {
         // Draw tiny circles
         canvas.drawCircle(
           Offset(i.toDouble(), j.toDouble()),
-          1.5,
+          0.8,
           dotPaint,
         );
       }
     }
 
+    // Add decorative ribbons at the top
+    final ribbonPaint = Paint()
+      ..color = primaryColor.withOpacity(0.08)
+      ..style = PaintingStyle.fill;
+
+    final topRibbonPath = Path();
+    topRibbonPath.moveTo(0, 0);
+    topRibbonPath.lineTo(size.width, 0);
+    topRibbonPath.lineTo(size.width, 60);
+    topRibbonPath.quadraticBezierTo(
+        size.width * 0.75, 50, size.width * 0.5, 60);
+    topRibbonPath.quadraticBezierTo(size.width * 0.25, 70, 0, 60);
+    topRibbonPath.close();
+    canvas.drawPath(topRibbonPath, ribbonPaint);
+
+    // Add decorative ribbons at the bottom
+    final bottomRibbonPath = Path();
+    bottomRibbonPath.moveTo(0, size.height);
+    bottomRibbonPath.lineTo(size.width, size.height);
+    bottomRibbonPath.lineTo(size.width, size.height - 60);
+    bottomRibbonPath.quadraticBezierTo(size.width * 0.75, size.height - 50,
+        size.width * 0.5, size.height - 60);
+    bottomRibbonPath.quadraticBezierTo(
+        size.width * 0.25, size.height - 70, 0, size.height - 60);
+    bottomRibbonPath.close();
+    canvas.drawPath(bottomRibbonPath, ribbonPaint);
+
     // Draw decorative wave patterns
     final wavePaint = Paint()
-      ..color = const Color(0xFF159895).withOpacity(0.07)
+      ..color = secondaryColor.withOpacity(0.08)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
+      ..strokeWidth = 1.5;
 
-    // Top wave
-    final topWavePath = Path();
-    topWavePath.moveTo(0, 120);
+    // Multiple wave lines for richer effect
+    // Top waves
+    for (int offset = 0; offset < 3; offset++) {
+      final topWavePath = Path();
+      topWavePath.moveTo(0, 100 + (offset * 15));
 
-    for (int i = 0; i < size.width / 40; i++) {
-      topWavePath.quadraticBezierTo(
-        (i * 40) + 20,
-        100,
-        (i * 40) + 40,
-        120,
-      );
+      for (int i = 0; i < size.width / 40; i++) {
+        topWavePath.quadraticBezierTo(
+          (i * 40) + 20,
+          90 + (offset * 15) + (i % 2 == 0 ? 5 : 0),
+          (i * 40) + 40,
+          100 + (offset * 15),
+        );
+      }
+      canvas.drawPath(topWavePath, wavePaint);
     }
 
-    // Bottom wave
-    final bottomWavePath = Path();
-    bottomWavePath.moveTo(0, size.height - 120);
+    // Bottom waves
+    for (int offset = 0; offset < 3; offset++) {
+      final bottomWavePath = Path();
+      bottomWavePath.moveTo(0, size.height - 100 - (offset * 15));
 
-    for (int i = 0; i < size.width / 40; i++) {
-      bottomWavePath.quadraticBezierTo(
-        (i * 40) + 20,
-        size.height - 100,
-        (i * 40) + 40,
-        size.height - 120,
-      );
+      for (int i = 0; i < size.width / 40; i++) {
+        bottomWavePath.quadraticBezierTo(
+          (i * 40) + 20,
+          size.height - 90 - (offset * 15) - (i % 2 == 0 ? 5 : 0),
+          (i * 40) + 40,
+          size.height - 100 - (offset * 15),
+        );
+      }
+      canvas.drawPath(bottomWavePath, wavePaint);
     }
 
-    canvas.drawPath(topWavePath, wavePaint);
-    canvas.drawPath(bottomWavePath, wavePaint);
+    // Add decorative accent lines
+    final accentPaint = Paint()
+      ..color = primaryColor.withOpacity(0.2)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
 
-    // Create radial gradient in corners for added depth
+    // Add diagonal accent lines in corners
+    // Top left
+    canvas.drawLine(
+      Offset(0, 0),
+      Offset(size.width * 0.2, size.height * 0.2),
+      accentPaint,
+    );
+
+    // Top right
+    canvas.drawLine(
+      Offset(size.width, 0),
+      Offset(size.width * 0.8, size.height * 0.2),
+      accentPaint,
+    );
+
+    // Bottom left
+    canvas.drawLine(
+      Offset(0, size.height),
+      Offset(size.width * 0.2, size.height * 0.8),
+      accentPaint,
+    );
+
+    // Bottom right
+    canvas.drawLine(
+      Offset(size.width, size.height),
+      Offset(size.width * 0.8, size.height * 0.8),
+      accentPaint,
+    );
+
+    // Add decorative circular elements
+    final circlePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = primaryColor.withOpacity(0.15)
+      ..strokeWidth = 1.5;
+
+    // Draw circles in the corners
+    canvas.drawCircle(Offset(0, 0), 100, circlePaint);
+    canvas.drawCircle(Offset(size.width, 0), 100, circlePaint);
+    canvas.drawCircle(Offset(0, size.height), 100, circlePaint);
+    canvas.drawCircle(Offset(size.width, size.height), 100, circlePaint);
+
+    // Create radial gradient effect in corners for added depth
     final cornerGradient = RadialGradient(
       colors: [
-        const Color(0xFF57C5B6).withOpacity(0.1),
+        primaryColor.withOpacity(0.1),
         Colors.white.withOpacity(0.0),
       ],
     );
 
-    final cornerPaint = Paint()
+    final cornerPaint1 = Paint()
       ..shader = cornerGradient
           .createShader(Rect.fromCircle(center: Offset(0, 0), radius: 200));
-
-    canvas.drawCircle(Offset(0, 0), 200, cornerPaint);
+    canvas.drawCircle(Offset(0, 0), 200, cornerPaint1);
 
     final cornerPaint2 = Paint()
+      ..shader = cornerGradient.createShader(
+          Rect.fromCircle(center: Offset(size.width, 0), radius: 200));
+    canvas.drawCircle(Offset(size.width, 0), 200, cornerPaint2);
+
+    final cornerPaint3 = Paint()
+      ..shader = cornerGradient.createShader(
+          Rect.fromCircle(center: Offset(0, size.height), radius: 200));
+    canvas.drawCircle(Offset(0, size.height), 200, cornerPaint3);
+
+    final cornerPaint4 = Paint()
       ..shader = cornerGradient.createShader(Rect.fromCircle(
           center: Offset(size.width, size.height), radius: 200));
-
-    canvas.drawCircle(Offset(size.width, size.height), 200, cornerPaint2);
+    canvas.drawCircle(Offset(size.width, size.height), 200, cornerPaint4);
   }
 
   @override
@@ -966,85 +1092,278 @@ class EnhancedCertificateBackgroundPainter extends CustomPainter {
   }
 }
 
-// Decorative edge painter for certificate edges
-class DecorativeEdgesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF57C5B6).withOpacity(0.3)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-
-    // Edge decorations - top and bottom
-    const edgeSpacing = 15.0;
-    for (double i = edgeSpacing * 2;
-        i < size.width - (edgeSpacing * 2);
-        i += edgeSpacing) {
-      // Top edge decorations
-      final topPath = Path();
-      topPath.moveTo(i, 12);
-      topPath.lineTo(i, 20);
-
-      // Bottom edge decorations
-      final bottomPath = Path();
-      bottomPath.moveTo(i, size.height - 12);
-      bottomPath.lineTo(i, size.height - 20);
-
-      canvas.drawPath(topPath, paint);
-      canvas.drawPath(bottomPath, paint);
-    }
-
-    // Edge decorations - left and right
-    for (double i = edgeSpacing * 2;
-        i < size.height - (edgeSpacing * 2);
-        i += edgeSpacing) {
-      // Left edge decorations
-      final leftPath = Path();
-      leftPath.moveTo(12, i);
-      leftPath.lineTo(20, i);
-
-      // Right edge decorations
-      final rightPath = Path();
-      rightPath.moveTo(size.width - 12, i);
-      rightPath.lineTo(size.width - 20, i);
-
-      canvas.drawPath(leftPath, paint);
-      canvas.drawPath(rightPath, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
-}
-
-// Corner element painter
+// Corner Element Painter
 class CornerElementPainter extends CustomPainter {
+  final Color primaryColor;
+  final Color secondaryColor;
+
+  CornerElementPainter({
+    required this.primaryColor,
+    this.secondaryColor = Colors.transparent,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF1A5F7A)
+    // Main outline
+    final outlinePaint = Paint()
+      ..color = primaryColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5;
+      ..strokeWidth = 1.8;
 
+    // Draw decorative corner element with more details
     final path = Path();
-    path.moveTo(0, 15);
+    path.moveTo(0, size.height * 0.8);
     path.lineTo(0, 0);
-    path.lineTo(15, 0);
+    path.lineTo(size.width * 0.8, 0);
 
-    final lightPaint = Paint()
-      ..color = const Color(0xFF57C5B6)
+    // Add fancy corner flourish
+    path.moveTo(0, size.height * 0.4);
+    path.quadraticBezierTo(
+      size.width * 0.05,
+      size.height * 0.35,
+      size.width * 0.2,
+      size.height * 0.2,
+    );
+    path.quadraticBezierTo(
+      size.width * 0.25,
+      size.height * 0.15,
+      size.width * 0.4,
+      0,
+    );
+
+    // Add another decorative curve
+    path.moveTo(size.width * 0.2, 0);
+    path.quadraticBezierTo(
+      size.width * 0.15,
+      size.height * 0.15,
+      0,
+      size.height * 0.3,
+    );
+
+    canvas.drawPath(path, outlinePaint);
+
+    // Add decorative circles
+    final fillPaint = Paint()
+      ..color = primaryColor
+      ..style = PaintingStyle.fill;
+
+    // Add main decorative circle
+    canvas.drawCircle(
+      Offset(size.width * 0.5, size.height * 0.5),
+      size.width * 0.05,
+      fillPaint,
+    );
+
+    // Add smaller decorative circles
+    canvas.drawCircle(
+      Offset(size.width * 0.3, size.height * 0.3),
+      size.width * 0.02,
+      fillPaint,
+    );
+
+    canvas.drawCircle(
+      Offset(size.width * 0.7, size.height * 0.3),
+      size.width * 0.02,
+      fillPaint,
+    );
+
+    canvas.drawCircle(
+      Offset(size.width * 0.3, size.height * 0.7),
+      size.width * 0.02,
+      fillPaint,
+    );
+
+    canvas.drawCircle(
+      Offset(size.width * 0.7, size.height * 0.7),
+      size.width * 0.02,
+      fillPaint,
+    );
+
+    // Add thin line flourishes
+    final thinPaint = Paint()
+      ..color = primaryColor.withOpacity(0.5)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
+      ..strokeWidth = 0.8;
 
-    final lightPath = Path();
-    lightPath.moveTo(3, 22);
-    lightPath.lineTo(3, 3);
-    lightPath.lineTo(22, 3);
+    // Diagonal line
+    canvas.drawLine(
+      Offset(0, 0),
+      Offset(size.width, size.height),
+      thinPaint,
+    );
 
-    canvas.drawPath(path, paint);
-    canvas.drawPath(lightPath, lightPaint);
+    // Cross lines
+    canvas.drawLine(
+      Offset(size.width * 0.3, size.height * 0.5),
+      Offset(size.width * 0.7, size.height * 0.5),
+      thinPaint,
+    );
+
+    canvas.drawLine(
+      Offset(size.width * 0.5, size.height * 0.3),
+      Offset(size.width * 0.5, size.height * 0.7),
+      thinPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+class DecorativeBorderPainter extends CustomPainter {
+  final Color primaryColor;
+  final Color secondaryColor;
+  final double borderWidth;
+
+  DecorativeBorderPainter({
+    required this.primaryColor,
+    required this.secondaryColor,
+    this.borderWidth = 3.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final mainBorderPaint = Paint()
+      ..color = primaryColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = borderWidth;
+
+    // Outer border with fancy corners
+    final outerPath = Path();
+
+    // Top-left corner
+    outerPath.moveTo(size.width * 0.05, 0);
+    outerPath.lineTo(size.width * 0.95, 0);
+
+    // Top-right corner with flourish
+    outerPath.quadraticBezierTo(size.width, 0, size.width, size.height * 0.05);
+    outerPath.lineTo(size.width, size.height * 0.95);
+
+    // Bottom-right corner with flourish
+    outerPath.quadraticBezierTo(
+        size.width, size.height, size.width * 0.95, size.height);
+    outerPath.lineTo(size.width * 0.05, size.height);
+
+    // Bottom-left corner with flourish
+    outerPath.quadraticBezierTo(0, size.height, 0, size.height * 0.95);
+    outerPath.lineTo(0, size.height * 0.05);
+
+    // Back to top-left with flourish
+    outerPath.quadraticBezierTo(0, 0, size.width * 0.05, 0);
+
+    canvas.drawPath(outerPath, mainBorderPaint);
+
+    // Inner border
+    final innerBorderPaint = Paint()
+      ..color = secondaryColor.withOpacity(0.7)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = borderWidth * 0.5;
+
+    final padding = borderWidth * 4;
+    final innerRect = Rect.fromLTRB(
+        padding, padding, size.width - padding, size.height - padding);
+
+    // Draw rounded rect for inner border
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(innerRect, Radius.circular(padding * 0.5)),
+        innerBorderPaint);
+
+    // Add decorative corners
+    final cornerSize = padding * 1.5;
+
+    // Draw corner accents
+    _drawCornerAccent(
+        canvas, Offset(padding, padding), cornerSize, primaryColor);
+    _drawCornerAccent(
+        canvas, Offset(size.width - padding, padding), cornerSize, primaryColor,
+        angle: 1.57);
+    _drawCornerAccent(
+        canvas,
+        Offset(size.width - padding, size.height - padding),
+        cornerSize,
+        primaryColor,
+        angle: 3.14);
+    _drawCornerAccent(canvas, Offset(padding, size.height - padding),
+        cornerSize, primaryColor,
+        angle: 4.71);
+
+    // Add subtle gradient overlay to the borders
+    final gradientPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          primaryColor.withOpacity(0.1),
+          secondaryColor.withOpacity(0.1),
+          primaryColor.withOpacity(0.1),
+        ],
+        stops: const [0.0, 0.5, 1.0],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = borderWidth * 2;
+
+    // Draw gradient overlay along borders
+    canvas.drawPath(outerPath, gradientPaint);
+  }
+
+  void _drawCornerAccent(
+      Canvas canvas, Offset position, double size, Color color,
+      {double angle = 0}) {
+    canvas.save();
+    canvas.translate(position.dx, position.dy);
+
+    if (angle != 0) {
+      canvas.rotate(angle);
+    }
+
+    final accentPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = borderWidth * 0.3;
+
+    final accentPath = Path();
+    accentPath.moveTo(0, size * 0.5);
+    accentPath.lineTo(0, 0);
+    accentPath.lineTo(size * 0.5, 0);
+
+    // Add flourish
+    accentPath.moveTo(size * 0.2, 0);
+    accentPath.quadraticBezierTo(size * 0.1, size * 0.1, 0, size * 0.2);
+
+    canvas.drawPath(accentPath, accentPaint);
+
+    // Add small dot decoration
+    final dotPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(
+        Offset(size * 0.3, size * 0.3), borderWidth * 0.4, dotPaint);
+
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+// Decorative Edges Painter - not using this anymore to avoid visual clutter
+class DecorativeEdgesPainter extends CustomPainter {
+  final Color primaryColor;
+  final Color secondaryColor;
+
+  DecorativeEdgesPainter({
+    required this.primaryColor,
+    required this.secondaryColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Not implementing to reduce visual elements
   }
 
   @override
@@ -1099,7 +1418,15 @@ class _CertificateBackState extends State<CertificateBack>
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: RadialGradient(
+          center: Alignment(0.0, -0.4),
+          radius: 1.5,
+          colors: [
+            Colors.blue.shade700,
+            Colors.blue.shade800,
+            Colors.indigo.shade900,
+          ],
+        ),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -1114,10 +1441,9 @@ class _CertificateBackState extends State<CertificateBack>
           // Background with lighter pattern
           Positioned.fill(
             child: CustomPaint(
-              painter: DetailBackgroundPainter(),
+              painter: CertificateBackgroundPainter(),
             ),
           ),
-
           // Border
           Positioned.fill(
             child: Container(
@@ -1125,7 +1451,7 @@ class _CertificateBackState extends State<CertificateBack>
               decoration: BoxDecoration(
                 border: Border.all(
                   width: 3,
-                  color: const Color(0xFF1A5F7A),
+                  color: const Color(0xFFd9dbe6),
                 ),
                 borderRadius: BorderRadius.circular(4),
               ),
@@ -1146,7 +1472,7 @@ class _CertificateBackState extends State<CertificateBack>
                       style: GoogleFonts.montserrat(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1A5F7A),
+                        color: const Color(0xFFd9dbe6),
                         letterSpacing: 2,
                       ),
                     ),
@@ -1158,7 +1484,7 @@ class _CertificateBackState extends State<CertificateBack>
                       height: 3,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF1A5F7A), Color(0xFF57C5B6)],
+                          colors: [Color(0xFFd9dbe6), Color(0xFF57C5B6)],
                         ),
                         borderRadius: BorderRadius.circular(1.5),
                       ),
@@ -1173,8 +1499,12 @@ class _CertificateBackState extends State<CertificateBack>
                       vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1A5F7A),
-                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 0.5,
+                      ),
                     ),
                     child: Text(
                       widget.recommendation.title,
@@ -1205,7 +1535,7 @@ class _CertificateBackState extends State<CertificateBack>
                                   'Karir yang Cocok:',
                                   widget.recommendation.careers,
                                   const Icon(Icons.work,
-                                      color: Color(0xFF1A5F7A)),
+                                      color: Color(0xFFd9dbe6)),
                                 ),
                               ),
                               const SizedBox(width: 30),
@@ -1215,7 +1545,7 @@ class _CertificateBackState extends State<CertificateBack>
                                   'Jurusan yang Cocok:',
                                   widget.recommendation.majors,
                                   const Icon(Icons.school,
-                                      color: Color(0xFF1A5F7A)),
+                                      color: Color(0xFFd9dbe6)),
                                 ),
                               ),
                             ],
@@ -1238,7 +1568,7 @@ class _CertificateBackState extends State<CertificateBack>
                                       'Mata Kuliah yang Cocok:',
                                       widget.recommendation.recommendedCourses!,
                                       const Icon(Icons.menu_book,
-                                          color: Color(0xFF1A5F7A)),
+                                          color: Color(0xFFd9dbe6)),
                                     ),
                                   ),
                                 if (widget.recommendation.recommendedCourses !=
@@ -1256,7 +1586,7 @@ class _CertificateBackState extends State<CertificateBack>
                                       widget.recommendation
                                           .recommendedUniversities!,
                                       const Icon(Icons.account_balance,
-                                          color: Color(0xFF1A5F7A)),
+                                          color: Color(0xFFd9dbe6)),
                                     ),
                                   ),
                               ],
@@ -1269,11 +1599,11 @@ class _CertificateBackState extends State<CertificateBack>
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1A5F7A).withOpacity(0.1),
+                                color: const Color(0xFFd9dbe6).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                   color:
-                                      const Color(0xFF1A5F7A).withOpacity(0.3),
+                                      const Color(0xFFd9dbe6).withOpacity(0.3),
                                 ),
                               ),
                               child: Text(
@@ -1283,7 +1613,7 @@ class _CertificateBackState extends State<CertificateBack>
                                 style: GoogleFonts.montserrat(
                                   fontSize: 12,
                                   fontStyle: FontStyle.italic,
-                                  color: Colors.black87,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
@@ -1373,7 +1703,7 @@ class _CertificateBackState extends State<CertificateBack>
                 style: GoogleFonts.montserrat(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1A5F7A),
+                  color: const Color(0xFFd9dbe6),
                 ),
               ),
             ),
@@ -1390,7 +1720,7 @@ class _CertificateBackState extends State<CertificateBack>
                         '• ',
                         style: GoogleFonts.montserrat(
                           fontSize: 14,
-                          color: const Color(0xFF57C5B6),
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -1400,7 +1730,7 @@ class _CertificateBackState extends State<CertificateBack>
                           overflow: TextOverflow.visible,
                           style: GoogleFonts.montserrat(
                             fontSize: 13,
-                            color: Colors.black87,
+                            color: Colors.white,
                             height: 1.4,
                           ),
                         ),
@@ -1419,8 +1749,8 @@ class _CertificateBackState extends State<CertificateBack>
       height: 24,
       decoration: BoxDecoration(
         border: Border(
-          left: BorderSide(width: 3, color: const Color(0xFF1A5F7A)),
-          top: BorderSide(width: 3, color: const Color(0xFF1A5F7A)),
+          left: BorderSide(width: 3, color: const Color(0xFFd9dbe6)),
+          top: BorderSide(width: 3, color: const Color(0xFFd9dbe6)),
         ),
       ),
     );
@@ -1776,56 +2106,83 @@ class _CertificateReccomendationPageState
                 ? 'Sertifikat Hasil Analisis'
                 : 'Detail Rekomendasi',
             key: ValueKey<int>(_currentPage),
-          ),
-        ),
-        elevation: 0,
-      ),
-      body: Stack(
-        children: [
-          // Background
-          Positioned.fill(
-            child: AnimatedBuilder(
-              animation: _floatingParticlesController,
-              builder: (context, child) {
-                return CustomPaint(
-                  painter: FloatingParticlesPainter(
-                    particles: _particles,
-                    animation: _floatingParticlesController.value,
-                  ),
-                  size: MediaQuery.of(context).size,
-                );
-              },
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
             ),
           ),
-
-          // Content
-          Column(
-            children: [
-              // Page indicator
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildPageIndicator(0),
-                    const SizedBox(width: 8),
-                    _buildPageIndicator(1),
-                  ],
-                ),
-              ),
-
-              // Main content
-              Expanded(
-                child: !_isRevealed
-                    ? _buildRevealContainer()
-                    : _buildPageView(recommendation),
-              ),
-
-              // Action buttons
-              _buildActionButtons(),
+        ),
+        backgroundColor: Colors.indigo.shade800,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.blue.shade700,
+              Colors.indigo.shade800,
+              Colors.blue.shade700,
             ],
+            stops: [0.0, 0.5, 1.0],
           ),
-        ],
+        ),
+        child: Stack(
+          children: [
+            // Background decorative elements
+            Positioned.fill(
+              child: CustomPaint(
+                painter: EnhancedBackgroundPainter(),
+              ),
+            ),
+
+            // Floating particles animation
+            Positioned.fill(
+              child: AnimatedBuilder(
+                animation: _floatingParticlesController,
+                builder: (context, child) {
+                  return CustomPaint(
+                    painter: FloatingParticlesPainter(
+                      particles: _particles,
+                      animation: _floatingParticlesController.value,
+                    ),
+                    size: MediaQuery.of(context).size,
+                  );
+                },
+              ),
+            ),
+
+            // Content
+            Column(
+              children: [
+                // Page indicator
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildPageIndicator(0),
+                      const SizedBox(width: 8),
+                      _buildPageIndicator(1),
+                    ],
+                  ),
+                ),
+
+                // Main content
+                Expanded(
+                  child: !_isRevealed
+                      ? _buildRevealContainer()
+                      : _buildPageView(recommendation),
+                ),
+
+                // Action buttons
+                _buildActionButtons(),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1841,12 +2198,25 @@ class _CertificateReccomendationPageState
             height: 220,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.blue.shade100,
+                  Colors.white,
+                ],
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF1A5F7A).withOpacity(0.2),
+                  color: Colors.blue.shade200.withOpacity(0.3),
                   blurRadius: 15,
                   spreadRadius: 5,
+                ),
+                BoxShadow(
+                  color: Colors.indigo.shade200.withOpacity(0.2),
+                  blurRadius: 20,
+                  spreadRadius: 0,
+                  offset: Offset(10, 10),
                 ),
               ],
             ),
@@ -1860,14 +2230,80 @@ class _CertificateReccomendationPageState
                     scale: 0.5 + (value * 0.5),
                     child: Opacity(
                       opacity: value,
-                      child: Icon(
-                        Icons.workspace_premium,
-                        size: 120,
-                        color: Color.lerp(
-                          const Color(0xFF57C5B6),
-                          const Color(0xFF1A5F7A),
-                          value,
-                        ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Glow effect behind the certificate
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.blue.shade400
+                                      .withOpacity(0.2 * value),
+                                  blurRadius: 30 * value,
+                                  spreadRadius: 10 * value,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Medal icon with gradient
+                          ShaderMask(
+                            shaderCallback: (bounds) => LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.blue.shade700,
+                                Colors.indigo.shade800,
+                                Colors.blue.shade700,
+                              ],
+                            ).createShader(bounds),
+                            child: Icon(
+                              Icons.workspace_premium,
+                              size: 105,
+                              color: Colors.white,
+                            ),
+                          ),
+
+                          // Shine effect
+                          AnimatedBuilder(
+                            animation: _floatingParticlesController,
+                            builder: (context, child) {
+                              return Positioned(
+                                top: 25 +
+                                    (10 *
+                                        math.sin(
+                                            _floatingParticlesController.value *
+                                                math.pi *
+                                                2)),
+                                right: 25 +
+                                    (5 *
+                                        math.cos(
+                                            _floatingParticlesController.value *
+                                                math.pi *
+                                                2)),
+                                child: Container(
+                                  width: 15,
+                                  height: 15,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white.withOpacity(0.9),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.white.withOpacity(0.5),
+                                        blurRadius: 5,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -1883,20 +2319,32 @@ class _CertificateReccomendationPageState
               });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1A5F7A),
+              backgroundColor: Colors.indigo.shade900,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
-              elevation: 4,
+              elevation: 8,
+              shadowColor: Colors.indigo.withOpacity(0.5),
             ),
-            child: const Text(
-              'Tampilkan Sertifikat',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.visibility,
+                  size: 22,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'Tampilkan Sertifikat',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -1968,9 +2416,18 @@ class _CertificateReccomendationPageState
       height: 8.0,
       decoration: BoxDecoration(
         color: isActive
-            ? const Color(0xFF1A5F7A)
-            : const Color(0xFF57C5B6).withOpacity(0.3),
+            ? Colors.blue.shade800
+            : Colors.indigo.shade900.withOpacity(0.3),
         borderRadius: BorderRadius.circular(4.0),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: Colors.blue.shade800.withOpacity(0.3),
+                  blurRadius: 4,
+                  spreadRadius: 1,
+                ),
+              ]
+            : null,
       ),
     );
   }
@@ -2000,12 +2457,14 @@ class _CertificateReccomendationPageState
                       icon: const Icon(Icons.save),
                       label: Text(_isGenerating ? 'Menyimpan...' : 'Simpan'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF159895),
+                        backgroundColor: Colors.blue.shade800,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        elevation: 4,
+                        shadowColor: Colors.blue.shade300,
                       ),
                     ),
                   ),
@@ -2016,12 +2475,14 @@ class _CertificateReccomendationPageState
                       icon: const Icon(Icons.share),
                       label: Text(_isGenerating ? 'Membagikan...' : 'Bagikan'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1A5F7A),
+                        backgroundColor: Colors.indigo.shade800,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        elevation: 4,
+                        shadowColor: Colors.indigo.shade300,
                       ),
                     ),
                   ),
@@ -2030,6 +2491,95 @@ class _CertificateReccomendationPageState
       ),
     );
   }
+}
+
+class EnhancedBackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Background subtle elements
+
+    // Soft curves
+    final Path curvePath1 = Path();
+    curvePath1.moveTo(0, size.height * 0.1);
+    curvePath1.quadraticBezierTo(size.width * 0.2, size.height * 0.05,
+        size.width * 0.4, size.height * 0.1);
+
+    canvas.drawPath(
+        curvePath1,
+        Paint()
+          ..color = Colors.blue.shade100.withOpacity(0.3)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 15);
+
+    final Path curvePath2 = Path();
+    curvePath2.moveTo(size.width, size.height * 0.5);
+    curvePath2.quadraticBezierTo(size.width * 0.7, size.height * 0.6,
+        size.width * 0.5, size.height * 0.5);
+
+    canvas.drawPath(
+        curvePath2,
+        Paint()
+          ..color = Colors.indigo.shade100.withOpacity(0.3)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 15);
+
+    // Subtle circles
+    final random = math.Random(123); // Fixed seed for consistency
+    for (int i = 0; i < 20; i++) {
+      final double x = random.nextDouble() * size.width;
+      final double y = random.nextDouble() * size.height;
+      final double radius = random.nextDouble() * 30 + 5;
+
+      canvas.drawCircle(
+          Offset(x, y),
+          radius,
+          Paint()
+            ..color = (i % 2 == 0 ? Colors.blue : Colors.indigo)
+                .withOpacity(0.03 + (random.nextDouble() * 0.02))
+            ..style = PaintingStyle.fill);
+    }
+
+    // Abstract geometric elements in the corners
+    final double cornerSize = 100;
+
+    // Top right
+    final Path diamondPath = Path();
+    final double diamondX = size.width - cornerSize * 0.5;
+    final double diamondY = cornerSize * 0.5;
+    final double diamondSize = 30;
+
+    diamondPath.moveTo(diamondX, diamondY - diamondSize);
+    diamondPath.lineTo(diamondX + diamondSize, diamondY);
+    diamondPath.lineTo(diamondX, diamondY + diamondSize);
+    diamondPath.lineTo(diamondX - diamondSize, diamondY);
+    diamondPath.close();
+
+    canvas.drawPath(
+        diamondPath,
+        Paint()
+          ..color = Colors.blue.shade300.withOpacity(0.1)
+          ..style = PaintingStyle.fill);
+
+    // Bottom left
+    final double triangleX = cornerSize * 0.5;
+    final double triangleY = size.height - cornerSize * 0.5;
+    final double triangleSize = 40;
+
+    final Path trianglePath = Path();
+    trianglePath.moveTo(triangleX, triangleY - triangleSize);
+    trianglePath.lineTo(triangleX + triangleSize, triangleY + triangleSize);
+    trianglePath.lineTo(triangleX - triangleSize, triangleY + triangleSize);
+    trianglePath.close();
+
+    canvas.drawPath(
+        trianglePath,
+        Paint()
+          ..color = Colors.indigo.shade300.withOpacity(0.1)
+          ..style = PaintingStyle.fill);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // Custom page physics for better swipe experience
@@ -2093,7 +2643,7 @@ class DetailBackgroundPainter extends CustomPainter {
 
     // Draw subtle dot pattern
     final dotPaint = Paint()
-      ..color = const Color(0xFF1A5F7A).withOpacity(0.05)
+      ..color = const Color(0xFFd9dbe6).withOpacity(0.05)
       ..style = PaintingStyle.fill;
 
     // Dot pattern
