@@ -18,29 +18,82 @@
       "Kedokteran": {
         "pertanyaan": [
           "Apakah Anda tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal? [6]",
-          "Apakah Anda ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh? [6]",
+          "Apakah Anda ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh? [7]",
           "Apakah Anda tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan? [6]",
           "Apakah Anda ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter? [5]",
-          "Apakah Anda tertarik dengan pekerjaan administrasi di lingkungan rumah sakit atau klinik? [4]",
-          "Apakah Anda memiliki empati tinggi dan ingin membantu pasien secara langsung? [6]"
+          "Apakah Anda tertarik dengan pekerjaan administrasi di lingkungan rumah sakit atau klinik? [5]",
+          "Apakah Anda memiliki empati tinggi dan ingin membantu pasien secara langsung? [5]"
         ],
         "riasecType": [
-          {"type": ["I", "S"], "bobot": [3, 3]},
-          {"type": ["S"], "bobot": [6]},
-          {"type": ["I"], "bobot": [6]},
-          {"type": ["S", "I"], "bobot": [3, 2]},
-          {"type": ["C"], "bobot": [4]},
-          {"type": ["S"], "bobot": [6]}
+          {
+            "type": [
+              "I",
+              "S"
+            ],
+            "bobot": [
+              3,
+              3
+            ]
+          },
+          {
+            "type": [
+              "S"
+            ],
+            "bobot": [
+              6
+            ]
+          },
+          {
+            "type": [
+              "I"
+            ],
+            "bobot": [
+              6
+            ]
+          },
+          {
+            "type": [
+              "S",
+              "I"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "C"
+            ],
+            "bobot": [
+              4
+            ]
+          },
+          {
+            "type": [
+              "S"
+            ],
+            "bobot": [
+              6
+            ]
+          }
         ],
         "karir": [
-          "Asisten Medis [21]",
-          "Tenaga Kesehatan [19]",
-          "Staf Klinik [18]",
-          "Administrasi Rumah Sakit [17]",
-          "Teknisi Alat Kesehatan [18]",
-          "Customer Service Asuransi Kesehatan [16]"
+          "Asisten Medis [20]",
+          "Tenaga Kesehatan [20]",
+          "Staf Klinik [20]",
+          "Administrasi Rumah Sakit [20]",
+          "Teknisi Alat Kesehatan [20]",
+          "Customer Service Asuransi Kesehatan [20]"
         ],
-        "karir_riasec": ["S/I", "S/I", "S/C", "C", "R/I", "S/C"],
+        "karir_riasec": [
+          "S/I",
+          "S/I",
+          "S/C",
+          "C",
+          "R/I",
+          "S/C"
+        ],
         "jurusan_terkait": [
           "D3 Keperawatan",
           "D3 Teknologi Laboratorium Medik",
@@ -66,20 +119,66 @@
           "Apakah Anda tertarik dalam pengolahan dan analisis data penelitian? [5]"
         ],
         "riasecType": [
-          {"type": ["I"], "bobot": [7]},
-          {"type": ["I"], "bobot": [6]},
-          {"type": ["I"], "bobot": [6]},
-          {"type": ["I", "S"], "bobot": [4, 2]},
-          {"type": ["C"], "bobot": [5]},
-          {"type": ["I", "C"], "bobot": [3, 2]}
+          {
+            "type": [
+              "I"
+            ],
+            "bobot": [
+              7
+            ]
+          },
+          {
+            "type": [
+              "I"
+            ],
+            "bobot": [
+              6
+            ]
+          },
+          {
+            "type": [
+              "I"
+            ],
+            "bobot": [
+              6
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "S"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "C"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "C"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          }
         ],
         "karir": [
           "Teknisi Laboratorium [20]",
-          "Teknisi Peralatan Sains [18]",
-          "Staf R&D [18]",
-          "Pengumpul Data Lapangan [17]",
-          "Operator Peralatan Penelitian [18]",
-          "Staf Pengujian Kualitas [19]"
+          "Teknisi Peralatan Sains [20]",
+          "Staf R&D [20]",
+          "Pengumpul Data Lapangan [20]",
+          "Operator Peralatan Penelitian [20]",
+          "Staf Pengujian Kualitas [20]"
         ],
         "karir_riasec": [
           "I/R",
@@ -109,27 +208,77 @@
         "pertanyaan": [
           "Apakah Anda tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal? [6]",
           "Apakah Anda ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat? [6]",
-          "Apakah Anda tertarik dengan pengujian obat dan kualitas farmasi di industri? [5]",
+          "Apakah Anda tertarik dengan pengujian obat dan kualitas farmasi di industri? [6]",
           "Apakah Anda ingin menjadi bagian dari tim yang mengembangkan produk obat? [6]",
-          "Apakah Anda teliti dalam mengukur dan mencatat informasi penting? [5]",
-          "Apakah Anda tertarik dalam penyimpanan dan pendistribusian obat-obatan? [5]"
+          "Apakah Anda teliti dalam mengukur dan mencatat informasi penting? [6]",
+          "Apakah Anda tertarik dalam penyimpanan dan pendistribusian obat-obatan? [6]"
         ],
         "riasecType": [
-          {"type": ["R", "C"], "bobot": [3, 3]},
-          {"type": ["I"], "bobot": [6]},
-          {"type": ["I", "R"], "bobot": [3, 2]},
-          {"type": ["I", "S"], "bobot": [4, 2]},
-          {"type": ["C"], "bobot": [5]},
-          {"type": ["C", "R"], "bobot": [3, 2]}
+          {
+            "type": [
+              "R",
+              "C"
+            ],
+            "bobot": [
+              3,
+              3
+            ]
+          },
+          {
+            "type": [
+              "I"
+            ],
+            "bobot": [
+              6
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "S"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "C"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "C",
+              "R"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          }
         ],
         "karir": [
           "Asisten Apoteker [20]",
-          "Teknisi Farmasi [19]",
-          "Staf Produksi Obat [18]",
-          "Pengujian Kualitas Obat [17]",
-          "Staf Logistik Farmasi [16]",
-          "Sales Representative Produk Farmasi [17]",
-          "Staf Administrasi Apotek [16]"
+          "Teknisi Farmasi [20]",
+          "Staf Produksi Obat [20]",
+          "Pengujian Kualitas Obat [20]",
+          "Staf Logistik Farmasi [20]",
+          "Sales Representative Produk Farmasi [20]",
+          "Staf Administrasi Apotek [20]"
         ],
         "karir_riasec": [
           "I/C",
@@ -159,25 +308,71 @@
         "pertanyaan": [
           "Apakah Anda tertarik bekerja dengan peralatan dan instrumen laboratorium? [6]",
           "Apakah Anda menyukai pekerjaan yang membutuhkan ketelitian dan konsistensi tinggi? [6]",
-          "Apakah Anda ingin bekerja di laboratorium klinik, industri, atau penelitian? [5]",
+          "Apakah Anda ingin bekerja di laboratorium klinik, industri, atau penelitian? [6]",
           "Apakah Anda tertarik untuk mempelajari teknik-teknik analisis laboratorium? [6]",
-          "Apakah Anda mampu mengikuti protokol dan prosedur standar dengan tepat? [5]",
-          "Apakah Anda tertarik dalam persiapan sampel dan pengujian bahan? [5]"
+          "Apakah Anda mampu mengikuti protokol dan prosedur standar dengan tepat? [6]",
+          "Apakah Anda tertarik dalam persiapan sampel dan pengujian bahan? [6]"
         ],
         "riasecType": [
-          {"type": ["R", "I"], "bobot": [3, 3]},
-          {"type": ["C"], "bobot": [6]},
-          {"type": ["I"], "bobot": [5]},
-          {"type": ["I"], "bobot": [6]},
-          {"type": ["C"], "bobot": [5]},
-          {"type": ["I", "R"], "bobot": [3, 2]}
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              3,
+              3
+            ]
+          },
+          {
+            "type": [
+              "C"
+            ],
+            "bobot": [
+              6
+            ]
+          },
+          {
+            "type": [
+              "I"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "I"
+            ],
+            "bobot": [
+              6
+            ]
+          },
+          {
+            "type": [
+              "C"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          }
         ],
         "karir": [
           "Teknisi Laboratorium Klinik [20]",
-          "Teknisi Laboratorium Industri [19]",
-          "Staf Pengujian Kualitas [19]",
-          "Teknisi Instrumentasi [17]",
-          "Staf Pengambilan Sampel [16]"
+          "Teknisi Laboratorium Industri [20]",
+          "Staf Pengujian Kualitas [20]",
+          "Teknisi Instrumentasi [20]",
+          "Staf Pengambilan Sampel [20]"
         ],
         "karir_riasec": [
           "I/R",
@@ -205,27 +400,79 @@
       "Lingkungan": {
         "pertanyaan": [
           "Apakah Anda tertarik untuk bekerja dalam pemantauan dan pengelolaan lingkungan? [6]",
-          "Apakah Anda peduli terhadap isu-isu lingkungan dan pelestarian alam? [5]",
-          "Apakah Anda suka bekerja di lapangan dan mengumpulkan data lingkungan? [6]",
-          "Apakah Anda tertarik untuk mempelajari cara mengukur polusi dan kualitas lingkungan? [5]",
-          "Apakah Anda ingin bekerja dalam proyek konservasi atau pengelolaan limbah? [5]",
-          "Apakah Anda tertarik dalam pendidikan lingkungan dan kampanye kesadaran? [4]"
+          "Apakah Anda peduli terhadap isu-isu lingkungan dan pelestarian alam? [7]",
+          "Apakah Anda suka bekerja di lapangan dan mengumpulkan data lingkungan? [7]",
+          "Apakah Anda tertarik untuk mempelajari cara mengukur polusi dan kualitas lingkungan? [6]",
+          "Apakah Anda ingin bekerja dalam proyek konservasi atau pengelolaan limbah? [6]",
+          "Apakah Anda tertarik dalam pendidikan lingkungan dan kampanye kesadaran? [7]"
         ],
         "riasecType": [
-          {"type": ["I", "R"], "bobot": [3, 3]},
-          {"type": ["S", "A"], "bobot": [3, 2]},
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["I"], "bobot": [5]},
-          {"type": ["R", "S"], "bobot": [3, 2]},
-          {"type": ["S", "A"], "bobot": [2, 2]}
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              3,
+              3
+            ]
+          },
+          {
+            "type": [
+              "S",
+              "A"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "S"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "S",
+              "A"
+            ],
+            "bobot": [
+              2,
+              2
+            ]
+          }
         ],
         "karir": [
-          "Teknisi Pemantauan Lingkungan [19]",
-          "Staf Pengelolaan Limbah [18]",
-          "Asisten Pengambil Sampel Lingkungan [17]",
-          "Operator Pengolahan Air [18]",
-          "Staf Lapangan Konservasi [17]",
-          "Teknisi Pengendalian Polusi [18]"
+          "Teknisi Pemantauan Lingkungan [20]",
+          "Staf Pengelolaan Limbah [20]",
+          "Asisten Pengambil Sampel Lingkungan [20]",
+          "Operator Pengolahan Air [20]",
+          "Staf Lapangan Konservasi [20]",
+          "Teknisi Pengendalian Polusi [20]"
         ],
         "karir_riasec": [
           "I/R",
@@ -253,27 +500,75 @@
       "Pangan dan Nutrisi": {
         "pertanyaan": [
           "Apakah Anda tertarik bekerja dalam pengujian dan pengembangan produk pangan? [6]",
-          "Apakah Anda ingin mempelajari cara menganalisis kualitas dan keamanan makanan? [5]",
+          "Apakah Anda ingin mempelajari cara menganalisis kualitas dan keamanan makanan? [7]",
           "Apakah Anda tertarik untuk bekerja di industri pengolahan pangan? [5]",
           "Apakah Anda peduli tentang nutrisi dan dampaknya terhadap kesehatan? [5]",
           "Apakah Anda tertarik dalam produksi dan pengawasan makanan? [5]",
           "Apakah Anda ingin membantu orang dengan masalah nutrisi dan diet? [4]"
         ],
         "riasecType": [
-          {"type": ["I", "R"], "bobot": [4, 2]},
-          {"type": ["I"], "bobot": [5]},
-          {"type": ["R"], "bobot": [5]},
-          {"type": ["I", "S"], "bobot": [3, 2]},
-          {"type": ["R", "C"], "bobot": [3, 2]},
-          {"type": ["S"], "bobot": [4]}
+          {
+            "type": [
+              "I",
+              "R"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "I"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "R"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "I",
+              "S"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "C"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "S"
+            ],
+            "bobot": [
+              4
+            ]
+          }
         ],
         "karir": [
-          "Teknisi Pengujian Pangan [19]",
-          "Asisten Quality Control Makanan [18]",
-          "Staf Produksi Industri Pangan [17]",
-          "Teknisi Pengolahan Makanan [18]",
-          "Staf Pengembangan Produk Pangan [18]",
-          "Asisten Food Safety [17]"
+          "Teknisi Pengujian Pangan [20]",
+          "Asisten Quality Control Makanan [20]",
+          "Staf Produksi Industri Pangan [20]",
+          "Teknisi Pengolahan Makanan [20]",
+          "Staf Pengembangan Produk Pangan [20]",
+          "Asisten Food Safety [20]"
         ],
         "karir_riasec": [
           "I/R",
@@ -301,26 +596,76 @@
       "Peralatan Medis": {
         "pertanyaan": [
           "Apakah Anda tertarik bekerja dengan peralatan dan teknologi medis? [6]",
-          "Apakah Anda ingin mempelajari cara mengoperasikan dan memelihara alat medis? [5]",
+          "Apakah Anda ingin mempelajari cara mengoperasikan dan memelihara alat medis? [7]",
           "Apakah Anda tertarik untuk bekerja di rumah sakit atau perusahaan peralatan medis? [5]",
           "Apakah Anda memiliki keterampilan teknis dan ingin menerapkannya di bidang kesehatan? [6]",
           "Apakah Anda tertarik dalam pengenalan dan pelatihan penggunaan peralatan medis? [5]",
-          "Apakah Anda suka memperbaiki dan memecahkan masalah pada perangkat elektronik? [5]"
+          "Apakah Anda suka memperbaiki dan memecahkan masalah pada perangkat elektronik? [6]"
         ],
         "riasecType": [
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["R"], "bobot": [5]},
-          {"type": ["S", "E"], "bobot": [3, 2]},
-          {"type": ["R", "I"], "bobot": [4, 2]},
-          {"type": ["S", "E"], "bobot": [3, 2]},
-          {"type": ["R"], "bobot": [5]}
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R"
+            ],
+            "bobot": [
+              5
+            ]
+          },
+          {
+            "type": [
+              "S",
+              "E"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R",
+              "I"
+            ],
+            "bobot": [
+              4,
+              2
+            ]
+          },
+          {
+            "type": [
+              "S",
+              "E"
+            ],
+            "bobot": [
+              3,
+              2
+            ]
+          },
+          {
+            "type": [
+              "R"
+            ],
+            "bobot": [
+              5
+            ]
+          }
         ],
         "karir": [
           "Teknisi Peralatan Medis [20]",
-          "Teknisi Laboratorium Medis [18]",
-          "Staf Penjualan Alat Kesehatan [17]",
-          "Teknisi Pemeliharaan Alat Medis [19]",
-          "Staf Logistik Peralatan Medis [16]"
+          "Teknisi Laboratorium Medis [20]",
+          "Staf Penjualan Alat Kesehatan [20]",
+          "Teknisi Pemeliharaan Alat Medis [20]",
+          "Staf Logistik Peralatan Medis [20]"
         ],
         "karir_riasec": [
           "R/I",

@@ -1,5 +1,5 @@
 {
-  "J01B-Kerja": {
+"J01B-Kerja": {
     "name": "IPA (Teknik) - Kerja",
     "description": "Fokus: Matematika, Fisika, IT (arah teknik/teknologi) untuk pekerjaan langsung, bisa belajar mandiri melalui kursus, pelatihan, atau sertifikasi industri tanpa kuliah formal.",
     "categories": [
@@ -17,6 +17,7 @@
     "minat": {
       "Elektronika": {
         "pertanyaan": [
+          "Apakah Anda tertarik untuk memperbaiki dan merakit perangkat elektronik tanpa kuliah formal? [2]",
           "Apakah Anda ingin belajar tentang instalasi perangkat elektronik melalui kursus atau tutorial online? [4]",
           "Apakah Anda tertarik untuk bekerja di industri yang mengembangkan teknologi elektronik? [6]",
           "Apakah Anda ingin memecahkan masalah teknis dengan alat-alat elektronik? [6]",
