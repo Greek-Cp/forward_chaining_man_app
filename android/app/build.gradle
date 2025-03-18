@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.forward_chaining_man_app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
