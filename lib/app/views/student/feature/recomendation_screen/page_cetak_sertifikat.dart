@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
@@ -6,7 +7,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:forward_chaining_man_app/app/controllers/home_controller.dart';
 import 'package:forward_chaining_man_app/app/views/student/model/data_student.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -15,6 +19,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
+
+import 'package:url_launcher/url_launcher.dart';
 
 class MagicRevealAnimation extends StatefulWidget {
   final Widget child;
@@ -2313,11 +2319,14 @@ class _CertificateReccomendationPageState
           ),
           const SizedBox(height: 40),
           ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _isRevealed = true;
-              });
-            },
+            onPressed: _isFormOpened
+                ? null
+                : () {
+                    setState(() {
+                      _isRevealed = true;
+                    });
+                    _launchFormURL();
+                  },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.indigo.shade900,
               foregroundColor: Colors.white,
@@ -2327,17 +2336,20 @@ class _CertificateReccomendationPageState
               ),
               elevation: 8,
               shadowColor: Colors.indigo.withOpacity(0.5),
+              // Apply a disabled style when the form has been opened
+              disabledBackgroundColor: Colors.grey.shade400,
+              disabledForegroundColor: Colors.grey.shade700,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  Icons.visibility,
+                  _isRevealed ? Icons.check_circle : Icons.visibility,
                   size: 22,
                 ),
                 SizedBox(width: 8),
                 Text(
-                  'Tampilkan Sertifikat',
+                  _isFormOpened ? 'Form Telah Dibuka' : 'Tampilkan Sertifikat',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -2346,10 +2358,18 @@ class _CertificateReccomendationPageState
                 ),
               ],
             ),
-          ),
+          )
         ],
       ),
     );
+  }
+
+  bool _isFormOpened = false;
+
+  Future<void> _launchFormURL() async {
+    setState(() {
+      _isFormOpened = true;
+    });
   }
 
   Widget _buildPageView(RecommendationItem recommendation) {
@@ -2436,6 +2456,221 @@ class _CertificateReccomendationPageState
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(
+        color: Colors.transparent,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, -3),
+          ),
+        ],
+      ),
+      child: SafeArea(
+          child: !_isRevealed
+              ? const SizedBox.shrink() // Hide buttons before reveal
+              : CertificateActions(
+                  onSave: () {
+                    _saveCertificate();
+                  },
+                  onShare: () {
+                    _shareCertificate();
+                  },
+                )),
+    );
+  }
+}
+
+class CertificateActions extends StatefulWidget {
+  final Function() onSave;
+  final Function() onShare;
+
+  const CertificateActions({
+    Key? key,
+    required this.onSave,
+    required this.onShare,
+  }) : super(key: key);
+
+  @override
+  State<CertificateActions> createState() => _CertificateActionsState();
+}
+
+class _CertificateActionsState extends State<CertificateActions> {
+  bool _isRevealed =
+      true; // Assuming certificate is already revealed in your case
+  bool _isGenerating = false;
+  bool _hasCompletedUAT = false;
+
+  // UAT form URL
+  final Uri uatFormUrl = Uri.parse(
+      'https://docs.google.com/forms/d/e/1FAIpQLScx4Fm2nVhxaANFe0ndEKk6Hx8NNJdK_IAE3gkUTPU4YgBerA/viewform?usp=header');
+
+  // Function to launch the UAT form with countdown
+  Future<void> _showUATDialog() async {
+    int countdown = 5;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            // Start the countdown timer
+            Timer.periodic(const Duration(seconds: 1), (timer) {
+              if (countdown > 0) {
+                setState(() {
+                  countdown--;
+                });
+              } else {
+                timer.cancel();
+                _launchUATForm();
+              }
+            });
+
+            return AlertDialog(
+              title: const Text(
+                "Kuisioner UAT",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.indigo,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Apakah Anda sudah mengisi kuisioner UAT (User Acceptance Test)? Kuisioner ini penting untuk membantu menilai apakah aplikasi dapat berjalan dengan baik.",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 20),
+                  LinearProgressIndicator(
+                    value: (3 - countdown) / 3,
+                    backgroundColor: Colors.grey.shade200,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.indigo),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Membuka form dalam $countdown detik...",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Tutup"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _launchUATForm();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                  ),
+                  child: const Text("Buka Sekarang"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // Function to launch the UAT form
+  Future<void> _launchUATForm() async {
+    if (!await launchUrl(uatFormUrl, mode: LaunchMode.externalApplication)) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Tidak dapat membuka form kuisioner')),
+        );
+      }
+    } else {
+      // Mark as completed so user can save after returning to app
+      setState(() {
+        _hasCompletedUAT = true;
+      });
+    }
+  }
+
+  // Modified save function that checks for UAT completion
+  void _saveCertificate() {
+    if (!_hasCompletedUAT) {
+      _showUATDialog();
+      return;
+    }
+    // Proceed with original save functionality
+    setState(() {
+      _isGenerating = true;
+    });
+
+    // Call the actual save function passed from parent
+    widget.onSave();
+
+    // Reset generating state after a delay to simulate processing
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+        });
+        // Improved Snackbar with better styling
+        Get.snackbar(
+          "Berhasil",
+          "Sertifikat berhasil disimpan",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green.shade600,
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(16),
+          borderRadius: 8,
+          duration: const Duration(seconds: 3),
+          icon: const Icon(
+            Icons.check_circle,
+            color: Colors.white,
+          ),
+          boxShadows: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          dismissDirection: DismissDirection.horizontal,
+        );
+      }
+    });
+  }
+
+  // Original share function
+  void _shareCertificate() {
+    setState(() {
+      _isGenerating = true;
+    });
+
+    // Call the actual share function passed from parent
+    widget.onShare();
+
+    // Reset generating state after a delay to simulate processing
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
@@ -2454,17 +2689,25 @@ class _CertificateReccomendationPageState
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: _isGenerating ? null : _saveCertificate,
-                      icon: const Icon(Icons.save),
-                      label: Text(_isGenerating ? 'Menyimpan...' : 'Simpan'),
+                      icon: _hasCompletedUAT
+                          ? const Icon(Icons.save)
+                          : const Icon(Icons.assignment_outlined),
+                      label: Text(_isGenerating
+                          ? 'Menyimpan...'
+                          : (_hasCompletedUAT ? 'Simpan' : 'Isi UAT & Simpan')),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade800,
+                        backgroundColor: _hasCompletedUAT
+                            ? Colors.blue.shade800
+                            : Colors.orange.shade700,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                         elevation: 4,
-                        shadowColor: Colors.blue.shade300,
+                        shadowColor: _hasCompletedUAT
+                            ? Colors.blue.shade300
+                            : Colors.orange.shade300,
                       ),
                     ),
                   ),
