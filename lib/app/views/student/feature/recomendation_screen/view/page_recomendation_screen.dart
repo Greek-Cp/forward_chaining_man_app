@@ -1924,6 +1924,16 @@ class _RecommendationResultsScreenState
                 );
               },
             ),
+            Container(
+              height: 800,
+              child: ScholarshipWidget(
+                assetPath: 'assets/data_beasiswa.json',
+                primaryColor: Color(0xFF1565C0), // Dark blue
+                accentColor: Color(0xFF42A5F5), // Medium blue
+                backgroundColor: Colors.white,
+                textColor: Colors.black87,
+              ),
+            ),
 
             // Swipe indicator yang lebih mencolok
             Center(
@@ -5149,5 +5159,406 @@ class StarPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return false;
+  }
+}
+
+class Scholarship {
+  final String nama;
+  final String penyelenggara;
+  final List<String> jenjang;
+  final List<String> bidangStudi;
+  final String deskripsi;
+  final List<String> persyaratan;
+  final String deadline;
+  final String link;
+
+  Scholarship({
+    required this.nama,
+    required this.penyelenggara,
+    required this.jenjang,
+    required this.bidangStudi,
+    required this.deskripsi,
+    required this.persyaratan,
+    required this.deadline,
+    required this.link,
+  });
+
+  factory Scholarship.fromJson(Map<String, dynamic> json) {
+    return Scholarship(
+      nama: json['nama'],
+      penyelenggara: json['penyelenggara'],
+      jenjang: List<String>.from(json['jenjang']),
+      bidangStudi: List<String>.from(json['bidang_studi']),
+      deskripsi: json['deskripsi'],
+      persyaratan: List<String>.from(json['persyaratan']),
+      deadline: json['deadline'],
+      link: json['link'],
+    );
+  }
+}
+
+class ScholarshipWidget extends StatefulWidget {
+  final String assetPath;
+  final Color primaryColor;
+  final Color accentColor;
+  final Color backgroundColor;
+  final Color textColor;
+
+  const ScholarshipWidget({
+    Key? key,
+    required this.assetPath,
+    this.primaryColor = const Color(0xFF2196F3), // Default blue
+    this.accentColor = const Color(0xFF64B5F6), // Lighter blue
+    this.backgroundColor = Colors.white,
+    this.textColor = Colors.black87,
+  }) : super(key: key);
+
+  @override
+  _ScholarshipWidgetState createState() => _ScholarshipWidgetState();
+}
+
+class _ScholarshipWidgetState extends State<ScholarshipWidget> {
+  List<Scholarship> scholarships = [];
+  bool isLoading = true;
+  String? searchQuery;
+  String? selectedFilter;
+  final List<String> filterOptions = ["Semua", "S1", "S2", "S3"];
+
+  @override
+  void initState() {
+    super.initState();
+    loadScholarships();
+  }
+
+  Future<void> loadScholarships() async {
+    try {
+      // Use package:flutter/services.dart to directly load the asset
+      final String jsonString =
+          await rootBundle.rootBundle.loadString(widget.assetPath);
+      final dynamic jsonData = jsonDecode(jsonString);
+
+      setState(() {
+        scholarships = (jsonData['beasiswa'] as List)
+            .map((item) => Scholarship.fromJson(item))
+            .toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error loading scholarships: $e');
+    }
+  }
+
+  List<Scholarship> getFilteredScholarships() {
+    if (searchQuery == null && selectedFilter == null ||
+        selectedFilter == "Semua") {
+      return scholarships;
+    }
+
+    return scholarships.where((scholarship) {
+      bool matchesSearch = searchQuery == null ||
+          scholarship.nama.toLowerCase().contains(searchQuery!.toLowerCase()) ||
+          scholarship.penyelenggara
+              .toLowerCase()
+              .contains(searchQuery!.toLowerCase()) ||
+          scholarship.deskripsi
+              .toLowerCase()
+              .contains(searchQuery!.toLowerCase());
+
+      bool matchesFilter = selectedFilter == null ||
+          selectedFilter == "Semua" ||
+          scholarship.jenjang.contains(selectedFilter);
+
+      return matchesSearch && matchesFilter;
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Text(
+            'Beasiswa Tersedia',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        _buildSearchAndFilter(),
+        SizedBox(height: 8),
+        if (isLoading)
+          Center(
+            child: CircularProgressIndicator(
+              color: widget.primaryColor,
+            ),
+          )
+        else
+          _buildScholarshipList(),
+      ],
+    );
+  }
+
+  Widget _buildSearchAndFilter() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          Container(
+            color: Colors.white,
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value.isEmpty ? null : value;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Cari beasiswa...',
+                prefixIcon: Icon(Icons.search, color: widget.primaryColor),
+                filled: true,
+                fillColor: widget.accentColor.withOpacity(0.1),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: widget.primaryColor),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 8),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: filterOptions.map((filter) {
+                bool isSelected = selectedFilter == filter ||
+                    (selectedFilter == null && filter == "Semua");
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: FilterChip(
+                    label: Text(
+                      filter,
+                      style: TextStyle(
+                        color: isSelected ? Colors.blue : widget.textColor,
+                      ),
+                    ),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        selectedFilter = selected ? filter : null;
+                      });
+                    },
+                    backgroundColor: widget.backgroundColor,
+                    selectedColor: widget.primaryColor,
+                    checkmarkColor: Colors.blue,
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScholarshipList() {
+    final filteredList = getFilteredScholarships();
+
+    if (filteredList.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            children: [
+              Icon(Icons.search_off, size: 64, color: widget.accentColor),
+              SizedBox(height: 16),
+              Text(
+                'Tidak ada beasiswa yang sesuai dengan pencarian Anda',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: widget.textColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Expanded(
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        itemCount: filteredList.length,
+        itemBuilder: (context, index) {
+          final scholarship = filteredList[index];
+          return Card(
+            margin: EdgeInsets.only(bottom: 16),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ExpansionTile(
+              tilePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              childrenPadding: EdgeInsets.all(16),
+              title: Text(
+                scholarship.nama,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: widget.primaryColor,
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 4),
+                  Text(scholarship.penyelenggara),
+                  SizedBox(height: 4),
+                  Row(
+                    children: [
+                      ...scholarship.jenjang.map((level) => Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: Chip(
+                              label: Text(
+                                level,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              backgroundColor: widget.primaryColor,
+                              padding: EdgeInsets.all(0),
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          )),
+                    ],
+                  ),
+                ],
+              ),
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      scholarship.deskripsi,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: widget.textColor,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Bidang Studi:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: widget.primaryColor,
+                      ),
+                    ),
+                    Wrap(
+                      spacing: 4,
+                      children: scholarship.bidangStudi
+                          .map((field) => Chip(
+                                label: Text(
+                                  field,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: widget.textColor,
+                                  ),
+                                ),
+                                backgroundColor:
+                                    widget.accentColor.withOpacity(0.2),
+                              ))
+                          .toList(),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Persyaratan:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: widget.primaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    ...scholarship.persyaratan.map((requirement) => Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                size: 16,
+                                color: widget.accentColor,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  requirement,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: widget.textColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )),
+                    SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today,
+                          size: 16,
+                          color: widget.accentColor,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Deadline: ${scholarship.deadline}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: widget.textColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Here you would open the link, using url_launcher package
+                          print('Opening link: ${scholarship.link}');
+                        },
+                        child: Text('Lihat Detail'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: widget.primaryColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 }
