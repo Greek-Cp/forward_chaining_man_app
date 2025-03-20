@@ -4,7 +4,7 @@
 <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="forward_chaining_man_app"
+        android:label="Edu Guide"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
