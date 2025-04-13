@@ -17,12 +17,12 @@
     "minat": {
       "Kedokteran": {
         "pertanyaan": [
-          "Apakah Anda tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal? [6]",
-          "Apakah Anda ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh? [7]",
-          "Apakah Anda tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan? [6]",
-          "Apakah Anda ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter? [5]",
-          "Apakah Anda tertarik dengan pekerjaan administrasi di lingkungan rumah sakit atau klinik? [5]",
-          "Apakah Anda memiliki empati tinggi dan ingin membantu pasien secara langsung? [5]"
+          "KER01: Apakah Anda tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal? [6]",
+          "KER02: Apakah Anda ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh? [7]",
+          "KER03: Apakah Anda tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan? [6]",
+          "KER04: Apakah Anda ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter? [5]",
+          "KER05: Apakah Anda tertarik dengan pekerjaan administrasi di lingkungan rumah sakit atau klinik? [5]",
+          "KER06: Apakah Anda memiliki empati tinggi dan ingin membantu pasien secara langsung? [5]"
         ],
         "riasecType": [
           {
@@ -111,12 +111,12 @@
       },
       "Sains": {
         "pertanyaan": [
-          "Apakah Anda ingin menjadi peneliti atau bekerja di laboratorium? [7]",
-          "Apakah Anda senang melakukan eksperimen ilmiah dan mempelajari data percobaan? [6]",
-          "Apakah Anda tertarik untuk bekerja di bidang riset atau pengembangan produk tanpa kuliah formal? [6]",
-          "Apakah Anda ingin bekerja dengan tim sains di industri atau lembaga penelitian? [6]",
-          "Apakah Anda teliti dan mampu mengikuti protokol dengan tepat? [5]",
-          "Apakah Anda tertarik dalam pengolahan dan analisis data penelitian? [5]"
+          "KER07: Apakah Anda ingin menjadi peneliti atau bekerja di laboratorium? [7]",
+          "KER08: Apakah Anda senang melakukan eksperimen ilmiah dan mempelajari data percobaan? [6]",
+          "KER09: Apakah Anda tertarik untuk bekerja di bidang riset atau pengembangan produk tanpa kuliah formal? [6]",
+          "KER10: Apakah Anda ingin bekerja dengan tim sains di industri atau lembaga penelitian? [6]",
+          "KER11: Apakah Anda teliti dan mampu mengikuti protokol dengan tepat? [5]",
+          "KER12: Apakah Anda tertarik dalam pengolahan dan analisis data penelitian? [5]"
         ],
         "riasecType": [
           {
@@ -206,12 +206,12 @@
       },
       "Farmasi": {
         "pertanyaan": [
-          "Apakah Anda tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal? [6]",
-          "Apakah Anda ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat? [6]",
-          "Apakah Anda tertarik dengan pengujian obat dan kualitas farmasi di industri? [6]",
-          "Apakah Anda ingin menjadi bagian dari tim yang mengembangkan produk obat? [6]",
-          "Apakah Anda teliti dalam mengukur dan mencatat informasi penting? [6]",
-          "Apakah Anda tertarik dalam penyimpanan dan pendistribusian obat-obatan? [6]"
+          "KER13: Apakah Anda tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal? [6]",
+          "KER14: Apakah Anda ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat? [6]",
+          "KER15: Apakah Anda tertarik dengan pengujian obat dan kualitas farmasi di industri? [6]",
+          "KER16: Apakah Anda ingin menjadi bagian dari tim yang mengembangkan produk obat? [6]",
+          "KER17: Apakah Anda teliti dalam mengukur dan mencatat informasi penting? [6]",
+          "KER18: Apakah Anda tertarik dalam penyimpanan dan pendistribusian obat-obatan? [6]"
         ],
         "riasecType": [
           {
@@ -306,12 +306,12 @@
       },
       "Laboratorium": {
         "pertanyaan": [
-          "Apakah Anda tertarik bekerja dengan peralatan dan instrumen laboratorium? [6]",
-          "Apakah Anda menyukai pekerjaan yang membutuhkan ketelitian dan konsistensi tinggi? [6]",
-          "Apakah Anda ingin bekerja di laboratorium klinik, industri, atau penelitian? [6]",
-          "Apakah Anda tertarik untuk mempelajari teknik-teknik analisis laboratorium? [6]",
-          "Apakah Anda mampu mengikuti protokol dan prosedur standar dengan tepat? [6]",
-          "Apakah Anda tertarik dalam persiapan sampel dan pengujian bahan? [6]"
+          "KER19: Apakah Anda tertarik bekerja dengan peralatan dan instrumen laboratorium? [6]",
+          "KER20: Apakah Anda menyukai pekerjaan yang membutuhkan ketelitian dan konsistensi tinggi? [6]",
+          "KER21: Apakah Anda ingin bekerja di laboratorium klinik, industri, atau penelitian? [6]",
+          "KER22: Apakah Anda tertarik untuk mempelajari teknik-teknik analisis laboratorium? [6]",
+          "KER23: Apakah Anda mampu mengikuti protokol dan prosedur standar dengan tepat? [6]",
+          "KER24: Apakah Anda tertarik dalam persiapan sampel dan pengujian bahan? [6]"
         ],
         "riasecType": [
           {
@@ -399,12 +399,12 @@
       },
       "Lingkungan": {
         "pertanyaan": [
-          "Apakah Anda tertarik untuk bekerja dalam pemantauan dan pengelolaan lingkungan? [6]",
-          "Apakah Anda peduli terhadap isu-isu lingkungan dan pelestarian alam? [7]",
-          "Apakah Anda suka bekerja di lapangan dan mengumpulkan data lingkungan? [7]",
-          "Apakah Anda tertarik untuk mempelajari cara mengukur polusi dan kualitas lingkungan? [6]",
-          "Apakah Anda ingin bekerja dalam proyek konservasi atau pengelolaan limbah? [6]",
-          "Apakah Anda tertarik dalam pendidikan lingkungan dan kampanye kesadaran? [7]"
+          "KER25: Apakah Anda tertarik untuk bekerja dalam pemantauan dan pengelolaan lingkungan? [6]",
+          "KER26: Apakah Anda peduli terhadap isu-isu lingkungan dan pelestarian alam? [7]",
+          "KER27: Apakah Anda suka bekerja di lapangan dan mengumpulkan data lingkungan? [7]",
+          "KER28: Apakah Anda tertarik untuk mempelajari cara mengukur polusi dan kualitas lingkungan? [6]",
+          "KER29: Apakah Anda ingin bekerja dalam proyek konservasi atau pengelolaan limbah? [6]",
+          "KER30: Apakah Anda tertarik dalam pendidikan lingkungan dan kampanye kesadaran? [7]"
         ],
         "riasecType": [
           {
@@ -499,12 +499,12 @@
       },
       "Pangan dan Nutrisi": {
         "pertanyaan": [
-          "Apakah Anda tertarik bekerja dalam pengujian dan pengembangan produk pangan? [6]",
-          "Apakah Anda ingin mempelajari cara menganalisis kualitas dan keamanan makanan? [7]",
-          "Apakah Anda tertarik untuk bekerja di industri pengolahan pangan? [5]",
-          "Apakah Anda peduli tentang nutrisi dan dampaknya terhadap kesehatan? [5]",
-          "Apakah Anda tertarik dalam produksi dan pengawasan makanan? [5]",
-          "Apakah Anda ingin membantu orang dengan masalah nutrisi dan diet? [4]"
+          "KER31: Apakah Anda tertarik bekerja dalam pengujian dan pengembangan produk pangan? [6]",
+          "KER32: Apakah Anda ingin mempelajari cara menganalisis kualitas dan keamanan makanan? [7]",
+          "KER33: Apakah Anda tertarik untuk bekerja di industri pengolahan pangan? [5]",
+          "KER34: Apakah Anda peduli tentang nutrisi dan dampaknya terhadap kesehatan? [5]",
+          "KER35: Apakah Anda tertarik dalam produksi dan pengawasan makanan? [5]",
+          "KER36: Apakah Anda ingin membantu orang dengan masalah nutrisi dan diet? [4]"
         ],
         "riasecType": [
           {
@@ -595,12 +595,12 @@
       },
       "Peralatan Medis": {
         "pertanyaan": [
-          "Apakah Anda tertarik bekerja dengan peralatan dan teknologi medis? [6]",
-          "Apakah Anda ingin mempelajari cara mengoperasikan dan memelihara alat medis? [7]",
-          "Apakah Anda tertarik untuk bekerja di rumah sakit atau perusahaan peralatan medis? [5]",
-          "Apakah Anda memiliki keterampilan teknis dan ingin menerapkannya di bidang kesehatan? [6]",
-          "Apakah Anda tertarik dalam pengenalan dan pelatihan penggunaan peralatan medis? [5]",
-          "Apakah Anda suka memperbaiki dan memecahkan masalah pada perangkat elektronik? [6]"
+          "KER37: Apakah Anda tertarik bekerja dengan peralatan dan teknologi medis? [6]",
+          "KER38: Apakah Anda ingin mempelajari cara mengoperasikan dan memelihara alat medis? [7]",
+          "KER39: Apakah Anda tertarik untuk bekerja di rumah sakit atau perusahaan peralatan medis? [5]",
+          "KER40: Apakah Anda memiliki keterampilan teknis dan ingin menerapkannya di bidang kesehatan? [6]",
+          "KER41: Apakah Anda tertarik dalam pengenalan dan pelatihan penggunaan peralatan medis? [5]",
+          "KER42: Apakah Anda suka memperbaiki dan memecahkan masalah pada perangkat elektronik? [6]"
         ],
         "riasecType": [
           {
@@ -689,6 +689,176 @@
           "Kursus Penjualan Alat Kesehatan"
         ]
       }
-    }
+    },
+    "semua_pertanyaan": [
+      {
+        "kode_pertanyaan": "KER01",
+        "isi_pertanyaan": "Apakah Anda tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal?"
+      },
+      {
+        "kode_pertanyaan": "KER02",
+        "isi_pertanyaan": "Apakah Anda ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh?"
+      },
+      {
+        "kode_pertanyaan": "KER03",
+        "isi_pertanyaan": "Apakah Anda tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan?"
+      },
+      {
+        "kode_pertanyaan": "KER04",
+        "isi_pertanyaan": "Apakah Anda ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter?"
+      },
+      {
+        "kode_pertanyaan": "KER05",
+        "isi_pertanyaan": "Apakah Anda tertarik dengan pekerjaan administrasi di lingkungan rumah sakit atau klinik?"
+      },
+      {
+        "kode_pertanyaan": "KER06",
+        "isi_pertanyaan": "Apakah Anda memiliki empati tinggi dan ingin membantu pasien secara langsung?"
+      },
+      {
+        "kode_pertanyaan": "KER07",
+        "isi_pertanyaan": "Apakah Anda ingin menjadi peneliti atau bekerja di laboratorium?"
+      },
+      {
+        "kode_pertanyaan": "KER08",
+        "isi_pertanyaan": "Apakah Anda senang melakukan eksperimen ilmiah dan mempelajari data percobaan?"
+      },
+      {
+        "kode_pertanyaan": "KER09",
+        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di bidang riset atau pengembangan produk tanpa kuliah formal?"
+      },
+      {
+        "kode_pertanyaan": "KER10",
+        "isi_pertanyaan": "Apakah Anda ingin bekerja dengan tim sains di industri atau lembaga penelitian?"
+      },
+      {
+        "kode_pertanyaan": "KER11",
+        "isi_pertanyaan": "Apakah Anda teliti dan mampu mengikuti protokol dengan tepat?"
+      },
+      {
+        "kode_pertanyaan": "KER12",
+        "isi_pertanyaan": "Apakah Anda tertarik dalam pengolahan dan analisis data penelitian?"
+      },
+      {
+        "kode_pertanyaan": "KER13",
+        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal?"
+      },
+      {
+        "kode_pertanyaan": "KER14",
+        "isi_pertanyaan": "Apakah Anda ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat?"
+      },
+      {
+        "kode_pertanyaan": "KER15",
+        "isi_pertanyaan": "Apakah Anda tertarik dengan pengujian obat dan kualitas farmasi di industri?"
+      },
+      {
+        "kode_pertanyaan": "KER16",
+        "isi_pertanyaan": "Apakah Anda ingin menjadi bagian dari tim yang mengembangkan produk obat?"
+      },
+      {
+        "kode_pertanyaan": "KER17",
+        "isi_pertanyaan": "Apakah Anda teliti dalam mengukur dan mencatat informasi penting?"
+      },
+      {
+        "kode_pertanyaan": "KER18",
+        "isi_pertanyaan": "Apakah Anda tertarik dalam penyimpanan dan pendistribusian obat-obatan?"
+      },
+      {
+        "kode_pertanyaan": "KER19",
+        "isi_pertanyaan": "Apakah Anda tertarik bekerja dengan peralatan dan instrumen laboratorium?"
+      },
+      {
+        "kode_pertanyaan": "KER20",
+        "isi_pertanyaan": "Apakah Anda menyukai pekerjaan yang membutuhkan ketelitian dan konsistensi tinggi?"
+      },
+      {
+        "kode_pertanyaan": "KER21",
+        "isi_pertanyaan": "Apakah Anda ingin bekerja di laboratorium klinik, industri, atau penelitian?"
+      },
+      {
+        "kode_pertanyaan": "KER22",
+        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari teknik-teknik analisis laboratorium?"
+      },
+      {
+        "kode_pertanyaan": "KER23",
+        "isi_pertanyaan": "Apakah Anda mampu mengikuti protokol dan prosedur standar dengan tepat?"
+      },
+      {
+        "kode_pertanyaan": "KER24",
+        "isi_pertanyaan": "Apakah Anda tertarik dalam persiapan sampel dan pengujian bahan?"
+      },
+      {
+        "kode_pertanyaan": "KER25",
+        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja dalam pemantauan dan pengelolaan lingkungan?"
+      },
+      {
+        "kode_pertanyaan": "KER26",
+        "isi_pertanyaan": "Apakah Anda peduli terhadap isu-isu lingkungan dan pelestarian alam?"
+      },
+      {
+        "kode_pertanyaan": "KER27",
+        "isi_pertanyaan": "Apakah Anda suka bekerja di lapangan dan mengumpulkan data lingkungan?"
+      },
+      {
+        "kode_pertanyaan": "KER28",
+        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari cara mengukur polusi dan kualitas lingkungan?"
+      },
+      {
+        "kode_pertanyaan": "KER29",
+        "isi_pertanyaan": "Apakah Anda ingin bekerja dalam proyek konservasi atau pengelolaan limbah?"
+      },
+      {
+        "kode_pertanyaan": "KER30",
+        "isi_pertanyaan": "Apakah Anda tertarik dalam pendidikan lingkungan dan kampanye kesadaran?"
+      },
+      {
+        "kode_pertanyaan": "KER31",
+        "isi_pertanyaan": "Apakah Anda tertarik bekerja dalam pengujian dan pengembangan produk pangan?"
+      },
+      {
+        "kode_pertanyaan": "KER32",
+        "isi_pertanyaan": "Apakah Anda ingin mempelajari cara menganalisis kualitas dan keamanan makanan?"
+      },
+      {
+        "kode_pertanyaan": "KER33",
+        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di industri pengolahan pangan?"
+      },
+      {
+        "kode_pertanyaan": "KER34",
+        "isi_pertanyaan": "Apakah Anda peduli tentang nutrisi dan dampaknya terhadap kesehatan?"
+      },
+      {
+        "kode_pertanyaan": "KER35",
+        "isi_pertanyaan": "Apakah Anda tertarik dalam produksi dan pengawasan makanan?"
+      },
+      {
+        "kode_pertanyaan": "KER36",
+        "isi_pertanyaan": "Apakah Anda ingin membantu orang dengan masalah nutrisi dan diet?"
+      },
+      {
+        "kode_pertanyaan": "KER37",
+        "isi_pertanyaan": "Apakah Anda tertarik bekerja dengan peralatan dan teknologi medis?"
+      },
+      {
+        "kode_pertanyaan": "KER38",
+        "isi_pertanyaan": "Apakah Anda ingin mempelajari cara mengoperasikan dan memelihara alat medis?"
+      },
+      {
+        "kode_pertanyaan": "KER39",
+        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di rumah sakit atau perusahaan peralatan medis?"
+      },
+      {
+        "kode_pertanyaan": "KER40",
+        "isi_pertanyaan": "Apakah Anda memiliki keterampilan teknis dan ingin menerapkannya di bidang kesehatan?"
+      },
+      {
+        "kode_pertanyaan": "KER41",
+        "isi_pertanyaan": "Apakah Anda tertarik dalam pengenalan dan pelatihan penggunaan peralatan medis?"
+      },
+      {
+        "kode_pertanyaan": "KER42",
+        "isi_pertanyaan": "Apakah Anda suka memperbaiki dan memecahkan masalah pada perangkat elektronik?"
+      }
+    ]
   }
 }

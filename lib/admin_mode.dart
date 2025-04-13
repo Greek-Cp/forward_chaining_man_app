@@ -66,19 +66,61 @@ class Minat {
 
 /// Model flattened satu pertanyaan
 class QuestionItem {
-  final String id; // unique ID, misal "Program|Minat|Pertanyaan"
+  final String id; // unique ID, misal "Q1", "Q2"
   final String programName; // ex: "IPA (Sains Murni) - Kerja"
-  final String minatName; // ex: "Kedokteran"
-  final String pertanyaan; // ex: "Apakah Anda ... ?"
+  final String minatKey; // ex: "Kedokteran"
+  final String questionText; // Cleaned question text
+  final String rawQuestionText; // Original question text with code
   final int bobot; // ex: 5
+  bool? userAnswer; // Jawaban user: true, false, atau null
+
+  // Add this field to store the question code
+  final String questionCode; // ex: "KUL04"
+
+  // Add any other existing fields...
 
   QuestionItem({
     required this.id,
     required this.programName,
-    required this.minatName,
-    required this.pertanyaan,
+    required this.minatKey,
+    required this.questionText,
+    required this.rawQuestionText,
     required this.bobot,
+    this.userAnswer,
+    required this.questionCode, // Add to constructor
+    // Add any other existing parameters...
   });
+
+  // If needed, you can keep a factory method to extract code from raw text
+  factory QuestionItem.fromRawQuestion({
+    required String id,
+    required String programName,
+    required String minatKey,
+    required String questionText,
+    required String rawQuestionText,
+    required int bobot,
+    bool? userAnswer,
+    // Any other existing parameters...
+  }) {
+    // Extract question code
+    final regex = RegExp(r'([A-Z]+\d+):');
+    final match = regex.firstMatch(rawQuestionText);
+    final questionCode = match != null && match.groupCount >= 1
+        ? match.group(1)!
+        : id; // Fallback to ID if no code found
+
+    return QuestionItem(
+      id: id,
+      programName: programName,
+      minatKey: minatKey,
+      questionText: questionText,
+      rawQuestionText: rawQuestionText,
+      bobot: bobot,
+      userAnswer: userAnswer,
+      questionCode: questionCode,
+      // Pass any other existing parameters...
+    );
+  }
 }
 
 /// Fungsi untuk mengambil bobot [n] dari string pertanyaan

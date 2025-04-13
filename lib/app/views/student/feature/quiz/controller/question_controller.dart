@@ -579,18 +579,28 @@ class QuestionController extends GetxController {
     }
 
     // 2️⃣ Inisialisasi working memory
+    // 2️⃣ Inisialisasi working memory
     print('\n🔹 Initial Working Memory: $workingMemoryList');
     for (var q in allQuestions) {
+      // Extract the question code (e.g., "KUL04") from the raw question text
+      String? questionCode;
+      final regex = RegExp(r'([A-Z]+\d+):');
+      final match = regex.firstMatch(q.rawQuestionText);
+      if (match != null && match.groupCount >= 1) {
+        questionCode = match.group(1);
+      } else {
+        questionCode = q.id; // Fallback to Q-style ID if code not found
+      }
+
       if (q.userAnswer == true) {
-        workingMemory.add('${q.id}=Yes');
-        workingMemoryList.add('${q.id}=Yes');
+        workingMemory.add('$questionCode=Yes');
+        workingMemoryList.add('$questionCode=Yes');
       } else if (q.userAnswer == false) {
-        workingMemory.add('${q.id}=No');
-        workingMemoryList.add('${q.id}=No');
+        workingMemory.add('$questionCode=No');
+        workingMemoryList.add('$questionCode=No');
       }
     }
     print('🔹 Final Working Memory: $workingMemoryList\n');
-
     // 3️⃣ Inisialisasi struktur data untuk bobot
     final minatBobotTotal = <String, int>{};
     final minatBobotBenar = <String, int>{};
@@ -611,8 +621,18 @@ class QuestionController extends GetxController {
     // 5️⃣ Generate rules untuk forward chaining
     final rules = <Rule>[];
     for (var q in allQuestions) {
+      // Extract the question code
+      String? questionCode;
+      final regex = RegExp(r'([A-Z]+\d+):');
+      final match = regex.firstMatch(q.rawQuestionText);
+      if (match != null && match.groupCount >= 1) {
+        questionCode = match.group(1);
+      } else {
+        questionCode = q.id; // Fallback to Q-style ID if code not found
+      }
+
       final rule = Rule(
-        ifFacts: ['${q.id}=Yes'],
+        ifFacts: ['$questionCode=Yes'],
         thenAction: (wm) {
           final keyMinat = '${q.programName}|${q.minatKey}';
 
@@ -622,9 +642,9 @@ class QuestionController extends GetxController {
 
           // Catat rule fired
           minatContrib[keyMinat] ??= [];
-          minatContrib[keyMinat]!
-              .add('✅ IF (${q.id}=Yes) THEN +${q.bobot} skor → $keyMinat\n'
-                  '   [Pertanyaan: "${q.questionText}"]');
+          minatContrib[keyMinat]!.add(
+              '✅ IF ($questionCode=Yes) THEN +${q.bobot} skor → $keyMinat\n'
+              '   [Pertanyaan: "${q.questionText}"]');
         },
       );
       rules.add(rule);
