@@ -14,12 +14,12 @@
     "minat": {
       "Kedokteran": {
         "pertanyaan": [
-          "KUL01: Apakah Anda tertarik untuk mempelajari bagaimana tubuh manusia bekerja? [5]",
-          "KUL02: Apakah Anda ingin membantu orang lain untuk sembuh dari penyakit? [6]",
-          "KUL03: Apakah Anda tertarik mempelajari cara-cara medis untuk mendiagnosis dan mengobati penyakit? [7]",
-          "KUL04: Apakah Anda suka belajar tentang sistem organ tubuh dan bagaimana mereka berfungsi? [6]",
-          "KUL05: Apakah Anda tertarik untuk mengikuti perkembangan teknologi dalam dunia kedokteran? [6]",
-          "KUL06: Apakah Anda memiliki ketelitian tinggi dan mampu bekerja di bawah tekanan? [5]"
+          "AKUL01: Saya tertarik tertarik untuk mempelajari bagaimana tubuh manusia bekerja? [5]",
+          "AKUL02: Saya tertarik ingin membantu orang lain untuk sembuh dari penyakit? [6]",
+          "AKUL03: Saya tertarik tertarik mempelajari cara-cara medis untuk mendiagnosis dan mengobati penyakit? [7]",
+          "AKUL04: Saya tertarik suka belajar tentang sistem organ tubuh dan bagaimana mereka berfungsi? [6]",
+          "AKUL05: Saya tertarik tertarik untuk mengikuti perkembangan teknologi dalam dunia kedokteran? [6]",
+          "AKUL06: Saya tertarik memiliki ketelitian tinggi dan mampu bekerja di bawah tekanan? [5]"
         ],
         "riasecType": [
           {
@@ -117,12 +117,12 @@
       },
       "Sains": {
         "pertanyaan": [
-          "KUL07: Apakah Anda tertarik untuk melakukan eksperimen ilmiah dan menemukan sesuatu yang baru? [6]",
-          "KUL08: Apakah Anda senang menganalisis data dan hasil percobaan? [7]",
-          "KUL09: Apakah Anda suka belajar tentang alam dan bagaimana semua itu bekerja? [6]",
-          "KUL10: Apakah Anda ingin memahami lebih dalam tentang dunia di sekitar Anda, seperti hewan, tumbuhan, atau planet? [7]",
-          "KUL11: Apakah Anda menikmati kegiatan praktikum di laboratorium? [7]",
-          "KUL12: Apakah Anda tertarik untuk memecahkan masalah lingkungan menggunakan pendekatan ilmiah? [7]"
+          "AKUL07: Saya tertarik tertarik untuk melakukan eksperimen ilmiah dan menemukan sesuatu yang baru? [6]",
+          "AKUL08: Saya tertarik senang menganalisis data dan hasil percobaan? [7]",
+          "AKUL09: Saya tertarik suka belajar tentang alam dan bagaimana semua itu bekerja? [6]",
+          "AKUL10: Saya tertarik ingin memahami lebih dalam tentang dunia di sekitar Anda, seperti hewan, tumbuhan, atau planet? [7]",
+          "AKUL11: Saya tertarik menikmati kegiatan praktikum di laboratorium? [7]",
+          "AKUL12: Saya tertarik tertarik untuk memecahkan masalah lingkungan menggunakan pendekatan ilmiah? [7]"
         ],
         "riasecType": [
           {
@@ -225,12 +225,12 @@
       },
       "Farmasi": {
         "pertanyaan": [
-          "KUL13: Apakah Anda tertarik untuk mempelajari bagaimana obat bekerja dalam tubuh manusia? [6]",
-          "KUL14: Apakah Anda ingin membantu menciptakan obat-obatan yang dapat menyembuhkan penyakit? [6]",
-          "KUL15: Apakah Anda suka belajar tentang bahan kimia dan bagaimana mereka digunakan untuk tujuan medis? [7]",
-          "KUL16: Apakah Anda ingin tahu lebih banyak tentang bagaimana obat dikembangkan dan diuji? [6]",
-          "KUL17: Apakah Anda tertarik pada pembuatan dan pengembangan kosmetik dan produk perawatan tubuh? [6]",
-          "KUL18: Apakah Anda memiliki ketelitian tinggi dalam mengukur dan mencampur bahan-bahan kimia? [6]"
+          "AKUL13: Saya tertarik tertarik untuk mempelajari bagaimana obat bekerja dalam tubuh manusia? [6]",
+          "AKUL14: Saya tertarik ingin membantu menciptakan obat-obatan yang dapat menyembuhkan penyakit? [6]",
+          "AKUL15: Saya tertarik suka belajar tentang bahan kimia dan bagaimana mereka digunakan untuk tujuan medis? [7]",
+          "AKUL16: Saya tertarik ingin tahu lebih banyak tentang bagaimana obat dikembangkan dan diuji? [6]",
+          "AKUL17: Saya tertarik tertarik pada pembuatan dan pengembangan kosmetik dan produk perawatan tubuh? [6]",
+          "AKUL18: Saya tertarik memiliki ketelitian tinggi dalam mengukur dan mencampur bahan-bahan kimia? [6]"
         ],
         "riasecType": [
           {
@@ -326,12 +326,12 @@
       },
       "Bioteknologi": {
         "pertanyaan": [
-          "KUL19: Apakah Anda tertarik untuk menggabungkan teknologi dengan ilmu biologi? [7]",
-          "KUL20: Apakah Anda ingin mengembangkan produk atau teknologi baru berdasarkan proses biologis? [6]",
-          "KUL21: Apakah Anda tertarik pada rekayasa genetika dan aplikasinya? [2]",
-          "KUL22: Apakah Anda ingin bekerja di laboratorium dengan peralatan canggih? [7]",
-          "KUL23: Apakah Anda tertarik untuk meneliti cara meningkatkan kualitas pangan melalui bioteknologi? [6]",
-          "KUL24: Apakah Anda ingin berkontribusi dalam pengembangan terapi gen atau obat-obatan baru? [6]"
+          "AKUL19: Saya tertarik tertarik untuk menggabungkan teknologi dengan ilmu biologi? [7]",
+          "AKUL20: Saya tertarik ingin mengembangkan produk atau teknologi baru berdasarkan proses biologis? [6]",
+          "AKUL21: Saya tertarik tertarik pada rekayasa genetika dan aplikasinya? [2]",
+          "AKUL22: Saya tertarik ingin bekerja di laboratorium dengan peralatan canggih? [7]",
+          "AKUL23: Saya tertarik tertarik untuk meneliti cara meningkatkan kualitas pangan melalui bioteknologi? [6]",
+          "AKUL24: Saya tertarik ingin berkontribusi dalam pengembangan terapi gen atau obat-obatan baru? [6]"
         ],
         "riasecType": [
           {
@@ -429,12 +429,12 @@
       },
       "Lingkungan dan Konservasi": {
         "pertanyaan": [
-          "KUL25: Apakah Anda peduli terhadap masalah lingkungan dan pelestarian alam? [7]",
-          "KUL26: Apakah Anda tertarik untuk mempelajari ekosistem dan keanekaragaman hayati Indonesia? [6]",
-          "KUL27: Apakah Anda ingin mengembangkan solusi untuk mengatasi polusi dan perubahan iklim? [7]",
-          "KUL28: Apakah Anda senang melakukan penelitian di lapangan/alam terbuka? [6]",
-          "KUL29: Apakah Anda tertarik untuk melindungi spesies terancam punah dan habitat alaminya? [7]",
-          "KUL30: Apakah Anda ingin mengedukasi masyarakat tentang pentingnya pelestarian lingkungan? [7]"
+          "AKUL25: Saya tertarik peduli terhadap masalah lingkungan dan pelestarian alam? [7]",
+          "AKUL26: Saya tertarik tertarik untuk mempelajari ekosistem dan keanekaragaman hayati Indonesia? [6]",
+          "AKUL27: Saya tertarik ingin mengembangkan solusi untuk mengatasi polusi dan perubahan iklim? [7]",
+          "AKUL28: Saya tertarik senang melakukan penelitian di lapangan/alam terbuka? [6]",
+          "AKUL29: Saya tertarik tertarik untuk melindungi spesies terancam punah dan habitat alaminya? [7]",
+          "AKUL30: Saya tertarik ingin mengedukasi masyarakat tentang pentingnya pelestarian lingkungan? [7]"
         ],
         "riasecType": [
           {
@@ -536,12 +536,12 @@
       },
       "Geosains": {
         "pertanyaan": [
-          "KUL31: Apakah Anda tertarik mempelajari struktur dan proses yang terjadi di bumi? [7]",
-          "KUL32: Apakah Anda ingin memahami tentang gempa bumi, gunung berapi, dan bencana alam lainnya? [6]",
-          "KUL33: Apakah Anda suka mempelajari tentang batuan, mineral, dan sumber daya alam? [7]",
-          "KUL34: Apakah Anda tertarik pada eksplorasi sumber daya tambang dan energi? [7]",
-          "KUL35: Apakah Anda ingin bekerja di lapangan untuk menganalisis formasi geologis? [7]",
-          "KUL36: Apakah Anda tertarik pada pemetaan dan pemodelan fenomena geologi? [7]"
+          "AKUL31: Saya tertarik tertarik mempelajari struktur dan proses yang terjadi di bumi? [7]",
+          "AKUL32: Saya tertarik ingin memahami tentang gempa bumi, gunung berapi, dan bencana alam lainnya? [6]",
+          "AKUL33: Saya tertarik suka mempelajari tentang batuan, mineral, dan sumber daya alam? [7]",
+          "AKUL34: Saya tertarik tertarik pada eksplorasi sumber daya tambang dan energi? [7]",
+          "AKUL35: Saya tertarik ingin bekerja di lapangan untuk menganalisis formasi geologis? [7]",
+          "AKUL36: Saya tertarik tertarik pada pemetaan dan pemodelan fenomena geologi? [7]"
         ],
         "riasecType": [
           {
@@ -641,12 +641,12 @@
       },
       "Neurosains": {
         "pertanyaan": [
-          "KUL37: Apakah Anda tertarik mempelajari bagaimana otak manusia bekerja? [7]",
-          "KUL38: Apakah Anda ingin memahami hubungan antara otak dan perilaku manusia? [6]",
-          "KUL39: Apakah Anda tertarik pada penelitian penyakit neurologis dan cara mengobatinya? [7]",
-          "KUL40: Apakah Anda suka mempelajari sistem saraf dan transmisi sinyal di otak? [6]",
-          "KUL41: Apakah Anda tertarik pada kecerdasan buatan dan bagaimana meniru fungsi otak? [7]",
-          "KUL42: Apakah Anda ingin membantu orang dengan gangguan neurologis atau psikiatri? [6]"
+          "AKUL37: Saya tertarik tertarik mempelajari bagaimana otak manusia bekerja? [7]",
+          "AKUL38: Saya tertarik ingin memahami hubungan antara otak dan perilaku manusia? [6]",
+          "AKUL39: Saya tertarik tertarik pada penelitian penyakit neurologis dan cara mengobatinya? [7]",
+          "AKUL40: Saya tertarik suka mempelajari sistem saraf dan transmisi sinyal di otak? [6]",
+          "AKUL41: Saya tertarik tertarik pada kecerdasan buatan dan bagaimana meniru fungsi otak? [7]",
+          "AKUL42: Saya tertarik ingin membantu orang dengan gangguan neurologis atau psikiatri? [6]"
         ],
         "riasecType": [
           {
@@ -742,12 +742,12 @@
       },
       "Teknik Biomedis": {
         "pertanyaan": [
-          "KUL43: Apakah Anda tertarik menggabungkan ilmu teknik dengan medis? [6]",
-          "KUL44: Apakah Anda ingin merancang alat dan teknologi untuk diagnosis dan pengobatan? [6]",
-          "KUL45: Apakah Anda tertarik pada pengembangan organ buatan dan implan? [6]",
-          "KUL46: Apakah Anda suka mempelajari cara kerja peralatan medis canggih? [6]",
-          "KUL47: Apakah Anda tertarik pada pengolahan citra medis dan analisis data kesehatan? [6]",
-          "KUL48: Apakah Anda ingin berkontribusi dalam inovasi teknologi kesehatan? [6]"
+          "AKUL43: Saya tertarik tertarik menggabungkan ilmu teknik dengan medis? [6]",
+          "AKUL44: Saya tertarik ingin merancang alat dan teknologi untuk diagnosis dan pengobatan? [6]",
+          "AKUL45: Saya tertarik tertarik pada pengembangan organ buatan dan implan? [6]",
+          "AKUL46: Saya tertarik suka mempelajari cara kerja peralatan medis canggih? [6]",
+          "AKUL47: Saya tertarik tertarik pada pengolahan citra medis dan analisis data kesehatan? [6]",
+          "AKUL48: Saya tertarik ingin berkontribusi dalam inovasi teknologi kesehatan? [6]"
         ],
         "riasecType": [
           {
@@ -850,196 +850,196 @@
     },
     "semua_pertanyaan": [
       {
-        "kode_pertanyaan": "KUL01",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari bagaimana tubuh manusia bekerja?"
+        "kode_pertanyaan": "AKUL01",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari bagaimana tubuh manusia bekerja?"
       },
       {
-        "kode_pertanyaan": "KUL02",
-        "isi_pertanyaan": "Apakah Anda ingin membantu orang lain untuk sembuh dari penyakit?"
+        "kode_pertanyaan": "AKUL02",
+        "isi_pertanyaan": "Saya tertarik ingin membantu orang lain untuk sembuh dari penyakit?"
       },
       {
-        "kode_pertanyaan": "KUL03",
-        "isi_pertanyaan": "Apakah Anda tertarik mempelajari cara-cara medis untuk mendiagnosis dan mengobati penyakit?"
+        "kode_pertanyaan": "AKUL03",
+        "isi_pertanyaan": "Saya tertarik tertarik mempelajari cara-cara medis untuk mendiagnosis dan mengobati penyakit?"
       },
       {
-        "kode_pertanyaan": "KUL04",
-        "isi_pertanyaan": "Apakah Anda suka belajar tentang sistem organ tubuh dan bagaimana mereka berfungsi?"
+        "kode_pertanyaan": "AKUL04",
+        "isi_pertanyaan": "Saya tertarik suka belajar tentang sistem organ tubuh dan bagaimana mereka berfungsi?"
       },
       {
-        "kode_pertanyaan": "KUL05",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mengikuti perkembangan teknologi dalam dunia kedokteran?"
+        "kode_pertanyaan": "AKUL05",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mengikuti perkembangan teknologi dalam dunia kedokteran?"
       },
       {
-        "kode_pertanyaan": "KUL06",
-        "isi_pertanyaan": "Apakah Anda memiliki ketelitian tinggi dan mampu bekerja di bawah tekanan?"
+        "kode_pertanyaan": "AKUL06",
+        "isi_pertanyaan": "Saya tertarik memiliki ketelitian tinggi dan mampu bekerja di bawah tekanan?"
       },
       {
-        "kode_pertanyaan": "KUL07",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk melakukan eksperimen ilmiah dan menemukan sesuatu yang baru?"
+        "kode_pertanyaan": "AKUL07",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk melakukan eksperimen ilmiah dan menemukan sesuatu yang baru?"
       },
       {
-        "kode_pertanyaan": "KUL08",
-        "isi_pertanyaan": "Apakah Anda senang menganalisis data dan hasil percobaan?"
+        "kode_pertanyaan": "AKUL08",
+        "isi_pertanyaan": "Saya tertarik senang menganalisis data dan hasil percobaan?"
       },
       {
-        "kode_pertanyaan": "KUL09",
-        "isi_pertanyaan": "Apakah Anda suka belajar tentang alam dan bagaimana semua itu bekerja?"
+        "kode_pertanyaan": "AKUL09",
+        "isi_pertanyaan": "Saya tertarik suka belajar tentang alam dan bagaimana semua itu bekerja?"
       },
       {
-        "kode_pertanyaan": "KUL10",
-        "isi_pertanyaan": "Apakah Anda ingin memahami lebih dalam tentang dunia di sekitar Anda, seperti hewan, tumbuhan, atau planet?"
+        "kode_pertanyaan": "AKUL10",
+        "isi_pertanyaan": "Saya tertarik ingin memahami lebih dalam tentang dunia di sekitar Anda, seperti hewan, tumbuhan, atau planet?"
       },
       {
-        "kode_pertanyaan": "KUL11",
-        "isi_pertanyaan": "Apakah Anda menikmati kegiatan praktikum di laboratorium?"
+        "kode_pertanyaan": "AKUL11",
+        "isi_pertanyaan": "Saya tertarik menikmati kegiatan praktikum di laboratorium?"
       },
       {
-        "kode_pertanyaan": "KUL12",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk memecahkan masalah lingkungan menggunakan pendekatan ilmiah?"
+        "kode_pertanyaan": "AKUL12",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk memecahkan masalah lingkungan menggunakan pendekatan ilmiah?"
       },
       {
-        "kode_pertanyaan": "KUL13",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari bagaimana obat bekerja dalam tubuh manusia?"
+        "kode_pertanyaan": "AKUL13",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari bagaimana obat bekerja dalam tubuh manusia?"
       },
       {
-        "kode_pertanyaan": "KUL14",
-        "isi_pertanyaan": "Apakah Anda ingin membantu menciptakan obat-obatan yang dapat menyembuhkan penyakit?"
+        "kode_pertanyaan": "AKUL14",
+        "isi_pertanyaan": "Saya tertarik ingin membantu menciptakan obat-obatan yang dapat menyembuhkan penyakit?"
       },
       {
-        "kode_pertanyaan": "KUL15",
-        "isi_pertanyaan": "Apakah Anda suka belajar tentang bahan kimia dan bagaimana mereka digunakan untuk tujuan medis?"
+        "kode_pertanyaan": "AKUL15",
+        "isi_pertanyaan": "Saya tertarik suka belajar tentang bahan kimia dan bagaimana mereka digunakan untuk tujuan medis?"
       },
       {
-        "kode_pertanyaan": "KUL16",
-        "isi_pertanyaan": "Apakah Anda ingin tahu lebih banyak tentang bagaimana obat dikembangkan dan diuji?"
+        "kode_pertanyaan": "AKUL16",
+        "isi_pertanyaan": "Saya tertarik ingin tahu lebih banyak tentang bagaimana obat dikembangkan dan diuji?"
       },
       {
-        "kode_pertanyaan": "KUL17",
-        "isi_pertanyaan": "Apakah Anda tertarik pada pembuatan dan pengembangan kosmetik dan produk perawatan tubuh?"
+        "kode_pertanyaan": "AKUL17",
+        "isi_pertanyaan": "Saya tertarik tertarik pada pembuatan dan pengembangan kosmetik dan produk perawatan tubuh?"
       },
       {
-        "kode_pertanyaan": "KUL18",
-        "isi_pertanyaan": "Apakah Anda memiliki ketelitian tinggi dalam mengukur dan mencampur bahan-bahan kimia?"
+        "kode_pertanyaan": "AKUL18",
+        "isi_pertanyaan": "Saya tertarik memiliki ketelitian tinggi dalam mengukur dan mencampur bahan-bahan kimia?"
       },
       {
-        "kode_pertanyaan": "KUL19",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk menggabungkan teknologi dengan ilmu biologi?"
+        "kode_pertanyaan": "AKUL19",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk menggabungkan teknologi dengan ilmu biologi?"
       },
       {
-        "kode_pertanyaan": "KUL20",
-        "isi_pertanyaan": "Apakah Anda ingin mengembangkan produk atau teknologi baru berdasarkan proses biologis?"
+        "kode_pertanyaan": "AKUL20",
+        "isi_pertanyaan": "Saya tertarik ingin mengembangkan produk atau teknologi baru berdasarkan proses biologis?"
       },
       {
-        "kode_pertanyaan": "KUL21",
-        "isi_pertanyaan": "Apakah Anda tertarik pada rekayasa genetika dan aplikasinya?"
+        "kode_pertanyaan": "AKUL21",
+        "isi_pertanyaan": "Saya tertarik tertarik pada rekayasa genetika dan aplikasinya?"
       },
       {
-        "kode_pertanyaan": "KUL22",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja di laboratorium dengan peralatan canggih?"
+        "kode_pertanyaan": "AKUL22",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja di laboratorium dengan peralatan canggih?"
       },
       {
-        "kode_pertanyaan": "KUL23",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk meneliti cara meningkatkan kualitas pangan melalui bioteknologi?"
+        "kode_pertanyaan": "AKUL23",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk meneliti cara meningkatkan kualitas pangan melalui bioteknologi?"
       },
       {
-        "kode_pertanyaan": "KUL24",
-        "isi_pertanyaan": "Apakah Anda ingin berkontribusi dalam pengembangan terapi gen atau obat-obatan baru?"
+        "kode_pertanyaan": "AKUL24",
+        "isi_pertanyaan": "Saya tertarik ingin berkontribusi dalam pengembangan terapi gen atau obat-obatan baru?"
       },
       {
-        "kode_pertanyaan": "KUL25",
-        "isi_pertanyaan": "Apakah Anda peduli terhadap masalah lingkungan dan pelestarian alam?"
+        "kode_pertanyaan": "AKUL25",
+        "isi_pertanyaan": "Saya tertarik peduli terhadap masalah lingkungan dan pelestarian alam?"
       },
       {
-        "kode_pertanyaan": "KUL26",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari ekosistem dan keanekaragaman hayati Indonesia?"
+        "kode_pertanyaan": "AKUL26",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari ekosistem dan keanekaragaman hayati Indonesia?"
       },
       {
-        "kode_pertanyaan": "KUL27",
-        "isi_pertanyaan": "Apakah Anda ingin mengembangkan solusi untuk mengatasi polusi dan perubahan iklim?"
+        "kode_pertanyaan": "AKUL27",
+        "isi_pertanyaan": "Saya tertarik ingin mengembangkan solusi untuk mengatasi polusi dan perubahan iklim?"
       },
       {
-        "kode_pertanyaan": "KUL28",
-        "isi_pertanyaan": "Apakah Anda senang melakukan penelitian di lapangan/alam terbuka?"
+        "kode_pertanyaan": "AKUL28",
+        "isi_pertanyaan": "Saya tertarik senang melakukan penelitian di lapangan/alam terbuka?"
       },
       {
-        "kode_pertanyaan": "KUL29",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk melindungi spesies terancam punah dan habitat alaminya?"
+        "kode_pertanyaan": "AKUL29",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk melindungi spesies terancam punah dan habitat alaminya?"
       },
       {
-        "kode_pertanyaan": "KUL30",
-        "isi_pertanyaan": "Apakah Anda ingin mengedukasi masyarakat tentang pentingnya pelestarian lingkungan?"
+        "kode_pertanyaan": "AKUL30",
+        "isi_pertanyaan": "Saya tertarik ingin mengedukasi masyarakat tentang pentingnya pelestarian lingkungan?"
       },
       {
-        "kode_pertanyaan": "KUL31",
-        "isi_pertanyaan": "Apakah Anda tertarik mempelajari struktur dan proses yang terjadi di bumi?"
+        "kode_pertanyaan": "AKUL31",
+        "isi_pertanyaan": "Saya tertarik tertarik mempelajari struktur dan proses yang terjadi di bumi?"
       },
       {
-        "kode_pertanyaan": "KUL32",
-        "isi_pertanyaan": "Apakah Anda ingin memahami tentang gempa bumi, gunung berapi, dan bencana alam lainnya?"
+        "kode_pertanyaan": "AKUL32",
+        "isi_pertanyaan": "Saya tertarik ingin memahami tentang gempa bumi, gunung berapi, dan bencana alam lainnya?"
       },
       {
-        "kode_pertanyaan": "KUL33",
-        "isi_pertanyaan": "Apakah Anda suka mempelajari tentang batuan, mineral, dan sumber daya alam?"
+        "kode_pertanyaan": "AKUL33",
+        "isi_pertanyaan": "Saya tertarik suka mempelajari tentang batuan, mineral, dan sumber daya alam?"
       },
       {
-        "kode_pertanyaan": "KUL34",
-        "isi_pertanyaan": "Apakah Anda tertarik pada eksplorasi sumber daya tambang dan energi?"
+        "kode_pertanyaan": "AKUL34",
+        "isi_pertanyaan": "Saya tertarik tertarik pada eksplorasi sumber daya tambang dan energi?"
       },
       {
-        "kode_pertanyaan": "KUL35",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja di lapangan untuk menganalisis formasi geologis?"
+        "kode_pertanyaan": "AKUL35",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja di lapangan untuk menganalisis formasi geologis?"
       },
       {
-        "kode_pertanyaan": "KUL36",
-        "isi_pertanyaan": "Apakah Anda tertarik pada pemetaan dan pemodelan fenomena geologi?"
+        "kode_pertanyaan": "AKUL36",
+        "isi_pertanyaan": "Saya tertarik tertarik pada pemetaan dan pemodelan fenomena geologi?"
       },
       {
-        "kode_pertanyaan": "KUL37",
-        "isi_pertanyaan": "Apakah Anda tertarik mempelajari bagaimana otak manusia bekerja?"
+        "kode_pertanyaan": "AKUL37",
+        "isi_pertanyaan": "Saya tertarik tertarik mempelajari bagaimana otak manusia bekerja?"
       },
       {
-        "kode_pertanyaan": "KUL38",
-        "isi_pertanyaan": "Apakah Anda ingin memahami hubungan antara otak dan perilaku manusia?"
+        "kode_pertanyaan": "AKUL38",
+        "isi_pertanyaan": "Saya tertarik ingin memahami hubungan antara otak dan perilaku manusia?"
       },
       {
-        "kode_pertanyaan": "KUL39",
-        "isi_pertanyaan": "Apakah Anda tertarik pada penelitian penyakit neurologis dan cara mengobatinya?"
+        "kode_pertanyaan": "AKUL39",
+        "isi_pertanyaan": "Saya tertarik tertarik pada penelitian penyakit neurologis dan cara mengobatinya?"
       },
       {
-        "kode_pertanyaan": "KUL40",
-        "isi_pertanyaan": "Apakah Anda suka mempelajari sistem saraf dan transmisi sinyal di otak?"
+        "kode_pertanyaan": "AKUL40",
+        "isi_pertanyaan": "Saya tertarik suka mempelajari sistem saraf dan transmisi sinyal di otak?"
       },
       {
-        "kode_pertanyaan": "KUL41",
-        "isi_pertanyaan": "Apakah Anda tertarik pada kecerdasan buatan dan bagaimana meniru fungsi otak?"
+        "kode_pertanyaan": "AKUL41",
+        "isi_pertanyaan": "Saya tertarik tertarik pada kecerdasan buatan dan bagaimana meniru fungsi otak?"
       },
       {
-        "kode_pertanyaan": "KUL42",
-        "isi_pertanyaan": "Apakah Anda ingin membantu orang dengan gangguan neurologis atau psikiatri?"
+        "kode_pertanyaan": "AKUL42",
+        "isi_pertanyaan": "Saya tertarik ingin membantu orang dengan gangguan neurologis atau psikiatri?"
       },
       {
-        "kode_pertanyaan": "KUL43",
-        "isi_pertanyaan": "Apakah Anda tertarik menggabungkan ilmu teknik dengan medis?"
+        "kode_pertanyaan": "AKUL43",
+        "isi_pertanyaan": "Saya tertarik tertarik menggabungkan ilmu teknik dengan medis?"
       },
       {
-        "kode_pertanyaan": "KUL44",
-        "isi_pertanyaan": "Apakah Anda ingin merancang alat dan teknologi untuk diagnosis dan pengobatan?"
+        "kode_pertanyaan": "AKUL44",
+        "isi_pertanyaan": "Saya tertarik ingin merancang alat dan teknologi untuk diagnosis dan pengobatan?"
       },
       {
-        "kode_pertanyaan": "KUL45",
-        "isi_pertanyaan": "Apakah Anda tertarik pada pengembangan organ buatan dan implan?"
+        "kode_pertanyaan": "AKUL45",
+        "isi_pertanyaan": "Saya tertarik tertarik pada pengembangan organ buatan dan implan?"
       },
       {
-        "kode_pertanyaan": "KUL46",
-        "isi_pertanyaan": "Apakah Anda suka mempelajari cara kerja peralatan medis canggih?"
+        "kode_pertanyaan": "AKUL46",
+        "isi_pertanyaan": "Saya tertarik suka mempelajari cara kerja peralatan medis canggih?"
       },
       {
-        "kode_pertanyaan": "KUL47",
-        "isi_pertanyaan": "Apakah Anda tertarik pada pengolahan citra medis dan analisis data kesehatan?"
+        "kode_pertanyaan": "AKUL47",
+        "isi_pertanyaan": "Saya tertarik tertarik pada pengolahan citra medis dan analisis data kesehatan?"
       },
       {
-        "kode_pertanyaan": "KUL48",
-        "isi_pertanyaan": "Apakah Anda ingin berkontribusi dalam inovasi teknologi kesehatan?"
+        "kode_pertanyaan": "AKUL48",
+        "isi_pertanyaan": "Saya tertarik ingin berkontribusi dalam inovasi teknologi kesehatan?"
       }
     ]
   }

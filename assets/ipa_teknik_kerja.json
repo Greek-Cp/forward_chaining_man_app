@@ -17,12 +17,12 @@
     "minat": {
       "Elektronika": {
         "pertanyaan": [
-          "KER01: Apakah Anda tertarik untuk memperbaiki dan merakit perangkat elektronik tanpa kuliah formal? [2]",
-          "KER02: Apakah Anda ingin belajar tentang instalasi perangkat elektronik melalui kursus atau tutorial online? [4]",
-          "KER03: Apakah Anda tertarik untuk bekerja di industri yang mengembangkan teknologi elektronik? [6]",
-          "KER04: Apakah Anda ingin memecahkan masalah teknis dengan alat-alat elektronik? [6]",
-          "KER05: Apakah Anda suka membongkar dan mempelajari cara kerja perangkat elektronik? [6]",
-          "KER06: Apakah Anda tertarik untuk memodifikasi perangkat elektronik agar memiliki fungsi yang lebih baik? [6]"
+          "BKER01: Saya tertarik tertarik untuk memperbaiki dan merakit perangkat elektronik tanpa kuliah formal? [2]",
+          "BKER02: Saya tertarik ingin belajar tentang instalasi perangkat elektronik melalui kursus atau tutorial online? [4]",
+          "BKER03: Saya tertarik tertarik untuk bekerja di industri yang mengembangkan teknologi elektronik? [6]",
+          "BKER04: Saya tertarik ingin memecahkan masalah teknis dengan alat-alat elektronik? [6]",
+          "BKER05: Saya tertarik suka membongkar dan mempelajari cara kerja perangkat elektronik? [6]",
+          "BKER06: Saya tertarik tertarik untuk memodifikasi perangkat elektronik agar memiliki fungsi yang lebih baik? [6]"
         ],
         "riasecType": [
           {
@@ -131,12 +131,12 @@
       },
       "Mekatronika & Otomasi": {
         "pertanyaan": [
-          "KER07: Apakah Anda tertarik untuk mengembangkan robot atau mesin otomatis dengan belajar mandiri? [7]",
-          "KER08: Apakah Anda ingin bekerja dengan sistem robot dan otomatisasi tanpa kuliah formal? [7]",
-          "KER09: Apakah Anda ingin mempelajari lebih lanjut tentang teknologi robotika melalui kursus online? [6]",
-          "KER10: Apakah Anda tertarik untuk memprogram robot dan membuatnya berfungsi sesuai keinginan? [6]",
-          "KER11: Apakah Anda tertarik pada integrasi sensor dan aktuator untuk sistem otomatis? [5]",
-          "KER12: Apakah Anda ingin bekerja di industri yang menggunakan robot dan sistem otomatisasi? [6]"
+          "BKER07: Saya tertarik tertarik untuk mengembangkan robot atau mesin otomatis dengan belajar mandiri? [7]",
+          "BKER08: Saya tertarik ingin bekerja dengan sistem robot dan otomatisasi tanpa kuliah formal? [7]",
+          "BKER09: Saya tertarik ingin mempelajari lebih lanjut tentang teknologi robotika melalui kursus online? [6]",
+          "BKER10: Saya tertarik tertarik untuk memprogram robot dan membuatnya berfungsi sesuai keinginan? [6]",
+          "BKER11: Saya tertarik tertarik pada integrasi sensor dan aktuator untuk sistem otomatis? [5]",
+          "BKER12: Saya tertarik ingin bekerja di industri yang menggunakan robot dan sistem otomatisasi? [6]"
         ],
         "riasecType": [
           {
@@ -230,12 +230,12 @@
       },
       "Programmer": {
         "pertanyaan": [
-          "KER13: Apakah Anda tertarik untuk belajar pemrograman komputer dan membuat aplikasi secara mandiri? [7]",
-          "KER14: Apakah Anda ingin bekerja di bidang teknologi informasi tanpa kuliah? [6]",
-          "KER15: Apakah Anda suka memecahkan masalah logika dan mengembangkan algoritma? [6]",
-          "KER16: Apakah Anda tertarik untuk mengembangkan website atau aplikasi mobile? [6]",
-          "KER17: Apakah Anda tekun dan mau terus belajar teknologi baru secara mandiri? [6]",
-          "KER18: Apakah Anda tertarik dengan analisis data dan membuat visualisasi data? [5]"
+          "BKER13: Saya tertarik tertarik untuk belajar pemrograman komputer dan membuat aplikasi secara mandiri? [7]",
+          "BKER14: Saya tertarik ingin bekerja di bidang teknologi informasi tanpa kuliah? [6]",
+          "BKER15: Saya tertarik suka memecahkan masalah logika dan mengembangkan algoritma? [6]",
+          "BKER16: Saya tertarik tertarik untuk mengembangkan website atau aplikasi mobile? [6]",
+          "BKER17: Saya tertarik tekun dan mau terus belajar teknologi baru secara mandiri? [6]",
+          "BKER18: Saya tertarik tertarik dengan analisis data dan membuat visualisasi data? [5]"
         ],
         "riasecType": [
           {
@@ -350,12 +350,12 @@
       },
       "Jaringan & Infrastruktur IT": {
         "pertanyaan": [
-          "KER19: Apakah Anda tertarik untuk mempelajari jaringan komputer dan infrastruktur IT? [7]",
-          "KER20: Apakah Anda ingin bekerja dengan server, router, dan perangkat jaringan lainnya? [6]",
-          "KER21: Apakah Anda suka mengonfigurasi dan memecahkan masalah koneksi jaringan? [6]",
-          "KER22: Apakah Anda tertarik untuk mempelajari keamanan jaringan dan sistem komputer? [6]",
-          "KER23: Apakah Anda ingin bekerja sebagai teknisi IT di perusahaan atau institusi? [5]",
-          "KER24: Apakah Anda tertarik untuk belajar cloud computing dan virtualisasi? [5]"
+          "BKER19: Saya tertarik tertarik untuk mempelajari jaringan komputer dan infrastruktur IT? [7]",
+          "BKER20: Saya tertarik ingin bekerja dengan server, router, dan perangkat jaringan lainnya? [6]",
+          "BKER21: Saya tertarik suka mengonfigurasi dan memecahkan masalah koneksi jaringan? [6]",
+          "BKER22: Saya tertarik tertarik untuk mempelajari keamanan jaringan dan sistem komputer? [6]",
+          "BKER23: Saya tertarik ingin bekerja sebagai teknisi IT di perusahaan atau institusi? [5]",
+          "BKER24: Saya tertarik tertarik untuk belajar cloud computing dan virtualisasi? [5]"
         ],
         "riasecType": [
           {
@@ -454,12 +454,12 @@
       },
       "Teknik Mesin": {
         "pertanyaan": [
-          "KER25: Apakah Anda tertarik untuk bekerja dengan mesin dan perangkat mekanis tanpa gelar kuliah? [7]",
-          "KER26: Apakah Anda ingin mempelajari proses pembuatan dan perbaikan mesin melalui pelatihan atau kursus? [6]",
-          "KER27: Apakah Anda ingin bekerja di industri manufaktur dan perakitan mesin? [6]",
-          "KER28: Apakah Anda tertarik untuk memperbaiki mesin dan alat industri? [6]",
-          "KER29: Apakah Anda menyukai pekerjaan yang melibatkan alat-alat berat dan mesin industri? [6]",
-          "KER30: Apakah Anda tertarik untuk mempelajari desain dan pembacaan gambar teknik? [5]"
+          "BKER25: Saya tertarik tertarik untuk bekerja dengan mesin dan perangkat mekanis tanpa gelar kuliah? [7]",
+          "BKER26: Saya tertarik ingin mempelajari proses pembuatan dan perbaikan mesin melalui pelatihan atau kursus? [6]",
+          "BKER27: Saya tertarik ingin bekerja di industri manufaktur dan perakitan mesin? [6]",
+          "BKER28: Saya tertarik tertarik untuk memperbaiki mesin dan alat industri? [6]",
+          "BKER29: Saya tertarik menyukai pekerjaan yang melibatkan alat-alat berat dan mesin industri? [6]",
+          "BKER30: Saya tertarik tertarik untuk mempelajari desain dan pembacaan gambar teknik? [5]"
         ],
         "riasecType": [
           {
@@ -554,12 +554,12 @@
       },
       "Teknik Sipil": {
         "pertanyaan": [
-          "KER31: Apakah Anda tertarik untuk bekerja dalam perencanaan dan pengawasan proyek konstruksi tanpa kuliah? [7]",
-          "KER32: Apakah Anda ingin mempelajari dasar-dasar desain bangunan dan jalan melalui pelatihan? [7]",
-          "KER33: Apakah Anda ingin bekerja di lapangan untuk proyek konstruksi dan infrastruktur? [6]",
-          "KER34: Apakah Anda tertarik dengan analisis material dan struktur bangunan? [5]",
-          "KER35: Apakah Anda memiliki ketelitian dan kemampuan membaca gambar teknik? [5]",
-          "KER36: Apakah Anda tertarik dengan pekerjaan yang melibatkan pengukuran dan pemetaan lahan? [6]"
+          "BKER31: Saya tertarik tertarik untuk bekerja dalam perencanaan dan pengawasan proyek konstruksi tanpa kuliah? [7]",
+          "BKER32: Saya tertarik ingin mempelajari dasar-dasar desain bangunan dan jalan melalui pelatihan? [7]",
+          "BKER33: Saya tertarik ingin bekerja di lapangan untuk proyek konstruksi dan infrastruktur? [6]",
+          "BKER34: Saya tertarik tertarik dengan analisis material dan struktur bangunan? [5]",
+          "BKER35: Saya tertarik memiliki ketelitian dan kemampuan membaca gambar teknik? [5]",
+          "BKER36: Saya tertarik tertarik dengan pekerjaan yang melibatkan pengukuran dan pemetaan lahan? [6]"
         ],
         "riasecType": [
           {
@@ -658,12 +658,12 @@
       },
       "Teknik Kimia": {
         "pertanyaan": [
-          "KER37: Apakah Anda tertarik untuk bekerja di industri kimia tanpa gelar kuliah? [7]",
-          "KER38: Apakah Anda ingin memahami proses kimia industri melalui kursus atau pelatihan? [3]",
-          "KER39: Apakah Anda tertarik untuk bekerja dengan bahan kimia dan proses pembuatan produk kimia? [6]",
-          "KER40: Apakah Anda ingin berkarir di pengolahan limbah dan pemurnian air? [6]",
-          "KER41: Apakah Anda memiliki ketelitian dan disiplin dalam mengikuti prosedur operasi standar? [6]",
-          "KER42: Apakah Anda tertarik untuk mempelajari kontrol kualitas produk kimia? [6]"
+          "BKER37: Saya tertarik tertarik untuk bekerja di industri kimia tanpa gelar kuliah? [7]",
+          "BKER38: Saya tertarik ingin memahami proses kimia industri melalui kursus atau pelatihan? [3]",
+          "BKER39: Saya tertarik tertarik untuk bekerja dengan bahan kimia dan proses pembuatan produk kimia? [6]",
+          "BKER40: Saya tertarik ingin berkarir di pengolahan limbah dan pemurnian air? [6]",
+          "BKER41: Saya tertarik memiliki ketelitian dan disiplin dalam mengikuti prosedur operasi standar? [6]",
+          "BKER42: Saya tertarik tertarik untuk mempelajari kontrol kualitas produk kimia? [6]"
         ],
         "riasecType": [
           {
@@ -760,12 +760,12 @@
       },
       "Teknisi Energi": {
         "pertanyaan": [
-          "KER43: Apakah Anda tertarik untuk bekerja di bidang pembangkit listrik dan distribusi energi? [7]",
-          "KER44: Apakah Anda ingin mempelajari instalasi dan pemeliharaan sistem energi terbarukan? [7]",
-          "KER45: Apakah Anda tertarik dengan sistem listrik dan elektronika daya? [6]",
-          "KER46: Apakah Anda ingin bekerja di lapangan untuk instalasi atau perbaikan sistem energi? [6]",
-          "KER47: Apakah Anda tertarik untuk mempelajari efisiensi energi dan konservasi? [5]",
-          "KER48: Apakah Anda memiliki ketelitian dan kesadaran keselamatan yang tinggi? [6]"
+          "BKER43: Saya tertarik tertarik untuk bekerja di bidang pembangkit listrik dan distribusi energi? [7]",
+          "BKER44: Saya tertarik ingin mempelajari instalasi dan pemeliharaan sistem energi terbarukan? [7]",
+          "BKER45: Saya tertarik tertarik dengan sistem listrik dan elektronika daya? [6]",
+          "BKER46: Saya tertarik ingin bekerja di lapangan untuk instalasi atau perbaikan sistem energi? [6]",
+          "BKER47: Saya tertarik tertarik untuk mempelajari efisiensi energi dan konservasi? [5]",
+          "BKER48: Saya tertarik memiliki ketelitian dan kesadaran keselamatan yang tinggi? [6]"
         ],
         "riasecType": [
           {
@@ -860,12 +860,12 @@
       },
       "Teknik Otomotif": {
         "pertanyaan": [
-          "KER49: Apakah Anda tertarik untuk memperbaiki dan merawat kendaraan bermotor? [7]",
-          "KER50: Apakah Anda ingin mempelajari sistem mekanik dan elektronik pada kendaraan modern? [6]",
-          "KER51: Apakah Anda tertarik dengan diagnosis dan troubleshooting kerusakan kendaraan? [6]",
-          "KER52: Apakah Anda suka bekerja dengan tangan dan alat-alat mekanik? [7]",
-          "KER53: Apakah Anda tertarik untuk mempelajari sistem kendaraan listrik dan hybrid? [5]",
-          "KER54: Apakah Anda ingin bekerja di bengkel atau industri otomotif? [6]"
+          "BKER49: Saya tertarik tertarik untuk memperbaiki dan merawat kendaraan bermotor? [7]",
+          "BKER50: Saya tertarik ingin mempelajari sistem mekanik dan elektronik pada kendaraan modern? [6]",
+          "BKER51: Saya tertarik tertarik dengan diagnosis dan troubleshooting kerusakan kendaraan? [6]",
+          "BKER52: Saya tertarik suka bekerja dengan tangan dan alat-alat mekanik? [7]",
+          "BKER53: Saya tertarik tertarik untuk mempelajari sistem kendaraan listrik dan hybrid? [5]",
+          "BKER54: Saya tertarik ingin bekerja di bengkel atau industri otomotif? [6]"
         ],
         "riasecType": [
           {
@@ -961,220 +961,220 @@
     },
     "semua_pertanyaan": [
       {
-        "kode_pertanyaan": "KER01",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk memperbaiki dan merakit perangkat elektronik tanpa kuliah formal?"
+        "kode_pertanyaan": "BKER01",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk memperbaiki dan merakit perangkat elektronik tanpa kuliah formal?"
       },
       {
-        "kode_pertanyaan": "KER02",
-        "isi_pertanyaan": "Apakah Anda ingin belajar tentang instalasi perangkat elektronik melalui kursus atau tutorial online?"
+        "kode_pertanyaan": "BKER02",
+        "isi_pertanyaan": "Saya tertarik ingin belajar tentang instalasi perangkat elektronik melalui kursus atau tutorial online?"
       },
       {
-        "kode_pertanyaan": "KER03",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di industri yang mengembangkan teknologi elektronik?"
+        "kode_pertanyaan": "BKER03",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja di industri yang mengembangkan teknologi elektronik?"
       },
       {
-        "kode_pertanyaan": "KER04",
-        "isi_pertanyaan": "Apakah Anda ingin memecahkan masalah teknis dengan alat-alat elektronik?"
+        "kode_pertanyaan": "BKER04",
+        "isi_pertanyaan": "Saya tertarik ingin memecahkan masalah teknis dengan alat-alat elektronik?"
       },
       {
-        "kode_pertanyaan": "KER05",
-        "isi_pertanyaan": "Apakah Anda suka membongkar dan mempelajari cara kerja perangkat elektronik?"
+        "kode_pertanyaan": "BKER05",
+        "isi_pertanyaan": "Saya tertarik suka membongkar dan mempelajari cara kerja perangkat elektronik?"
       },
       {
-        "kode_pertanyaan": "KER06",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk memodifikasi perangkat elektronik agar memiliki fungsi yang lebih baik?"
+        "kode_pertanyaan": "BKER06",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk memodifikasi perangkat elektronik agar memiliki fungsi yang lebih baik?"
       },
       {
-        "kode_pertanyaan": "KER07",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mengembangkan robot atau mesin otomatis dengan belajar mandiri?"
+        "kode_pertanyaan": "BKER07",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mengembangkan robot atau mesin otomatis dengan belajar mandiri?"
       },
       {
-        "kode_pertanyaan": "KER08",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja dengan sistem robot dan otomatisasi tanpa kuliah formal?"
+        "kode_pertanyaan": "BKER08",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja dengan sistem robot dan otomatisasi tanpa kuliah formal?"
       },
       {
-        "kode_pertanyaan": "KER09",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari lebih lanjut tentang teknologi robotika melalui kursus online?"
+        "kode_pertanyaan": "BKER09",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari lebih lanjut tentang teknologi robotika melalui kursus online?"
       },
       {
-        "kode_pertanyaan": "KER10",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk memprogram robot dan membuatnya berfungsi sesuai keinginan?"
+        "kode_pertanyaan": "BKER10",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk memprogram robot dan membuatnya berfungsi sesuai keinginan?"
       },
       {
-        "kode_pertanyaan": "KER11",
-        "isi_pertanyaan": "Apakah Anda tertarik pada integrasi sensor dan aktuator untuk sistem otomatis?"
+        "kode_pertanyaan": "BKER11",
+        "isi_pertanyaan": "Saya tertarik tertarik pada integrasi sensor dan aktuator untuk sistem otomatis?"
       },
       {
-        "kode_pertanyaan": "KER12",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja di industri yang menggunakan robot dan sistem otomatisasi?"
+        "kode_pertanyaan": "BKER12",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja di industri yang menggunakan robot dan sistem otomatisasi?"
       },
       {
-        "kode_pertanyaan": "KER13",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk belajar pemrograman komputer dan membuat aplikasi secara mandiri?"
+        "kode_pertanyaan": "BKER13",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk belajar pemrograman komputer dan membuat aplikasi secara mandiri?"
       },
       {
-        "kode_pertanyaan": "KER14",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja di bidang teknologi informasi tanpa kuliah?"
+        "kode_pertanyaan": "BKER14",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja di bidang teknologi informasi tanpa kuliah?"
       },
       {
-        "kode_pertanyaan": "KER15",
-        "isi_pertanyaan": "Apakah Anda suka memecahkan masalah logika dan mengembangkan algoritma?"
+        "kode_pertanyaan": "BKER15",
+        "isi_pertanyaan": "Saya tertarik suka memecahkan masalah logika dan mengembangkan algoritma?"
       },
       {
-        "kode_pertanyaan": "KER16",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mengembangkan website atau aplikasi mobile?"
+        "kode_pertanyaan": "BKER16",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mengembangkan website atau aplikasi mobile?"
       },
       {
-        "kode_pertanyaan": "KER17",
-        "isi_pertanyaan": "Apakah Anda tekun dan mau terus belajar teknologi baru secara mandiri?"
+        "kode_pertanyaan": "BKER17",
+        "isi_pertanyaan": "Saya tertarik tekun dan mau terus belajar teknologi baru secara mandiri?"
       },
       {
-        "kode_pertanyaan": "KER18",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan analisis data dan membuat visualisasi data?"
+        "kode_pertanyaan": "BKER18",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan analisis data dan membuat visualisasi data?"
       },
       {
-        "kode_pertanyaan": "KER19",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari jaringan komputer dan infrastruktur IT?"
+        "kode_pertanyaan": "BKER19",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari jaringan komputer dan infrastruktur IT?"
       },
       {
-        "kode_pertanyaan": "KER20",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja dengan server, router, dan perangkat jaringan lainnya?"
+        "kode_pertanyaan": "BKER20",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja dengan server, router, dan perangkat jaringan lainnya?"
       },
       {
-        "kode_pertanyaan": "KER21",
-        "isi_pertanyaan": "Apakah Anda suka mengonfigurasi dan memecahkan masalah koneksi jaringan?"
+        "kode_pertanyaan": "BKER21",
+        "isi_pertanyaan": "Saya tertarik suka mengonfigurasi dan memecahkan masalah koneksi jaringan?"
       },
       {
-        "kode_pertanyaan": "KER22",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari keamanan jaringan dan sistem komputer?"
+        "kode_pertanyaan": "BKER22",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari keamanan jaringan dan sistem komputer?"
       },
       {
-        "kode_pertanyaan": "KER23",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja sebagai teknisi IT di perusahaan atau institusi?"
+        "kode_pertanyaan": "BKER23",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja sebagai teknisi IT di perusahaan atau institusi?"
       },
       {
-        "kode_pertanyaan": "KER24",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk belajar cloud computing dan virtualisasi?"
+        "kode_pertanyaan": "BKER24",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk belajar cloud computing dan virtualisasi?"
       },
       {
-        "kode_pertanyaan": "KER25",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja dengan mesin dan perangkat mekanis tanpa gelar kuliah?"
+        "kode_pertanyaan": "BKER25",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja dengan mesin dan perangkat mekanis tanpa gelar kuliah?"
       },
       {
-        "kode_pertanyaan": "KER26",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari proses pembuatan dan perbaikan mesin melalui pelatihan atau kursus?"
+        "kode_pertanyaan": "BKER26",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari proses pembuatan dan perbaikan mesin melalui pelatihan atau kursus?"
       },
       {
-        "kode_pertanyaan": "KER27",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja di industri manufaktur dan perakitan mesin?"
+        "kode_pertanyaan": "BKER27",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja di industri manufaktur dan perakitan mesin?"
       },
       {
-        "kode_pertanyaan": "KER28",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk memperbaiki mesin dan alat industri?"
+        "kode_pertanyaan": "BKER28",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk memperbaiki mesin dan alat industri?"
       },
       {
-        "kode_pertanyaan": "KER29",
-        "isi_pertanyaan": "Apakah Anda menyukai pekerjaan yang melibatkan alat-alat berat dan mesin industri?"
+        "kode_pertanyaan": "BKER29",
+        "isi_pertanyaan": "Saya tertarik menyukai pekerjaan yang melibatkan alat-alat berat dan mesin industri?"
       },
       {
-        "kode_pertanyaan": "KER30",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari desain dan pembacaan gambar teknik?"
+        "kode_pertanyaan": "BKER30",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari desain dan pembacaan gambar teknik?"
       },
       {
-        "kode_pertanyaan": "KER31",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja dalam perencanaan dan pengawasan proyek konstruksi tanpa kuliah?"
+        "kode_pertanyaan": "BKER31",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja dalam perencanaan dan pengawasan proyek konstruksi tanpa kuliah?"
       },
       {
-        "kode_pertanyaan": "KER32",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari dasar-dasar desain bangunan dan jalan melalui pelatihan?"
+        "kode_pertanyaan": "BKER32",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari dasar-dasar desain bangunan dan jalan melalui pelatihan?"
       },
       {
-        "kode_pertanyaan": "KER33",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja di lapangan untuk proyek konstruksi dan infrastruktur?"
+        "kode_pertanyaan": "BKER33",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja di lapangan untuk proyek konstruksi dan infrastruktur?"
       },
       {
-        "kode_pertanyaan": "KER34",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan analisis material dan struktur bangunan?"
+        "kode_pertanyaan": "BKER34",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan analisis material dan struktur bangunan?"
       },
       {
-        "kode_pertanyaan": "KER35",
-        "isi_pertanyaan": "Apakah Anda memiliki ketelitian dan kemampuan membaca gambar teknik?"
+        "kode_pertanyaan": "BKER35",
+        "isi_pertanyaan": "Saya tertarik memiliki ketelitian dan kemampuan membaca gambar teknik?"
       },
       {
-        "kode_pertanyaan": "KER36",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan pekerjaan yang melibatkan pengukuran dan pemetaan lahan?"
+        "kode_pertanyaan": "BKER36",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan pekerjaan yang melibatkan pengukuran dan pemetaan lahan?"
       },
       {
-        "kode_pertanyaan": "KER37",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di industri kimia tanpa gelar kuliah?"
+        "kode_pertanyaan": "BKER37",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja di industri kimia tanpa gelar kuliah?"
       },
       {
-        "kode_pertanyaan": "KER38",
-        "isi_pertanyaan": "Apakah Anda ingin memahami proses kimia industri melalui kursus atau pelatihan?"
+        "kode_pertanyaan": "BKER38",
+        "isi_pertanyaan": "Saya tertarik ingin memahami proses kimia industri melalui kursus atau pelatihan?"
       },
       {
-        "kode_pertanyaan": "KER39",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja dengan bahan kimia dan proses pembuatan produk kimia?"
+        "kode_pertanyaan": "BKER39",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja dengan bahan kimia dan proses pembuatan produk kimia?"
       },
       {
-        "kode_pertanyaan": "KER40",
-        "isi_pertanyaan": "Apakah Anda ingin berkarir di pengolahan limbah dan pemurnian air?"
+        "kode_pertanyaan": "BKER40",
+        "isi_pertanyaan": "Saya tertarik ingin berkarir di pengolahan limbah dan pemurnian air?"
       },
       {
-        "kode_pertanyaan": "KER41",
-        "isi_pertanyaan": "Apakah Anda memiliki ketelitian dan disiplin dalam mengikuti prosedur operasi standar?"
+        "kode_pertanyaan": "BKER41",
+        "isi_pertanyaan": "Saya tertarik memiliki ketelitian dan disiplin dalam mengikuti prosedur operasi standar?"
       },
       {
-        "kode_pertanyaan": "KER42",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari kontrol kualitas produk kimia?"
+        "kode_pertanyaan": "BKER42",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari kontrol kualitas produk kimia?"
       },
       {
-        "kode_pertanyaan": "KER43",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di bidang pembangkit listrik dan distribusi energi?"
+        "kode_pertanyaan": "BKER43",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja di bidang pembangkit listrik dan distribusi energi?"
       },
       {
-        "kode_pertanyaan": "KER44",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari instalasi dan pemeliharaan sistem energi terbarukan?"
+        "kode_pertanyaan": "BKER44",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari instalasi dan pemeliharaan sistem energi terbarukan?"
       },
       {
-        "kode_pertanyaan": "KER45",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan sistem listrik dan elektronika daya?"
+        "kode_pertanyaan": "BKER45",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan sistem listrik dan elektronika daya?"
       },
       {
-        "kode_pertanyaan": "KER46",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja di lapangan untuk instalasi atau perbaikan sistem energi?"
+        "kode_pertanyaan": "BKER46",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja di lapangan untuk instalasi atau perbaikan sistem energi?"
       },
       {
-        "kode_pertanyaan": "KER47",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari efisiensi energi dan konservasi?"
+        "kode_pertanyaan": "BKER47",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari efisiensi energi dan konservasi?"
       },
       {
-        "kode_pertanyaan": "KER48",
-        "isi_pertanyaan": "Apakah Anda memiliki ketelitian dan kesadaran keselamatan yang tinggi?"
+        "kode_pertanyaan": "BKER48",
+        "isi_pertanyaan": "Saya tertarik memiliki ketelitian dan kesadaran keselamatan yang tinggi?"
       },
       {
-        "kode_pertanyaan": "KER49",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk memperbaiki dan merawat kendaraan bermotor?"
+        "kode_pertanyaan": "BKER49",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk memperbaiki dan merawat kendaraan bermotor?"
       },
       {
-        "kode_pertanyaan": "KER50",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari sistem mekanik dan elektronik pada kendaraan modern?"
+        "kode_pertanyaan": "BKER50",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari sistem mekanik dan elektronik pada kendaraan modern?"
       },
       {
-        "kode_pertanyaan": "KER51",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan diagnosis dan troubleshooting kerusakan kendaraan?"
+        "kode_pertanyaan": "BKER51",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan diagnosis dan troubleshooting kerusakan kendaraan?"
       },
       {
-        "kode_pertanyaan": "KER52",
-        "isi_pertanyaan": "Apakah Anda suka bekerja dengan tangan dan alat-alat mekanik?"
+        "kode_pertanyaan": "BKER52",
+        "isi_pertanyaan": "Saya tertarik suka bekerja dengan tangan dan alat-alat mekanik?"
       },
       {
-        "kode_pertanyaan": "KER53",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari sistem kendaraan listrik dan hybrid?"
+        "kode_pertanyaan": "BKER53",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari sistem kendaraan listrik dan hybrid?"
       },
       {
-        "kode_pertanyaan": "KER54",
-        "isi_pertanyaan": "Apakah Anda ingin bekerja di bengkel atau industri otomotif?"
+        "kode_pertanyaan": "BKER54",
+        "isi_pertanyaan": "Saya tertarik ingin bekerja di bengkel atau industri otomotif?"
       }
     ]
   }
