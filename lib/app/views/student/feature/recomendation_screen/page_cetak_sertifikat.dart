@@ -409,7 +409,6 @@ class _CertificateFrontState extends State<CertificateFront> {
                     SizedBox(height: certificateHeight * 0.02),
 
                     // Student name will be added dynamically
-
                     // Student name - Firebase integration
                     FutureBuilder<String>(
                       // First, get the school ID from SharedPreferences
