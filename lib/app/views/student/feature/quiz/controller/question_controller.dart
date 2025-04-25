@@ -2,7 +2,7 @@
 /// import 'dart:convert';
 import 'dart:convert';
 import 'dart:math';
-
+import 'dart:developer' as dev;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -560,226 +560,261 @@ class QuestionController extends GetxController {
     return 5; // Default weight jika tidak ditemukan
   }
 
+// ───────────────────────────────────────────────────────────────
+// 0.  Dua saklar log sederhana
+// ───────────────────────────────────────────────────────────────
+  bool logVerbose = true; // ganti false jika ingin output ringkas
+  bool logTree = true; // ganti false jika tak perlu pohon
+
+  void _log(String msg, {bool verboseOnly = false}) {
+    if (!logVerbose && verboseOnly) return;
+    print(msg);
+  }
+
+// ───────────────────────────────────────────────────────────────
+// 1.  Forward-chaining engine lengkap
+// ───────────────────────────────────────────────────────────────
   RecommendationResult runForwardChaining() {
     final workingMemoryList = <String>[];
     final workingMemory = <String>{};
 
-    // 1️⃣ Menampilkan semua pertanyaan dan jawaban pengguna
-    print('📌 DAFTAR PERTANYAAN & JAWABAN PENGGUNA:');
+    _log('📌 DAFTAR PERTANYAAN & JAWABAN PENGGUNA:');
     for (var q in allQuestions) {
-      String answer = q.userAnswer == true ? "✅ Yes" : "❌ No";
-      print('\n'
-          '❓ ID: ${q.id}\n'
-          '🔹 Program: ${q.programName}\n'
-          '🔹 Minat: ${q.minatKey}\n'
-          '🔹 Pertanyaan: ${q.questionText}\n'
-          '🔹 Bobot: ${q.bobot}\n'
-          '🔹 Raw Question: ${q.rawQuestionText}\n'
-          '🔸 Jawaban: $answer\n');
+      final ans = q.userAnswer == true ? '✅ Yes' : '❌ No';
+      _log(
+        '\n❓ ID: ${q.id}\n'
+        '🔹 Program   : ${q.programName}\n'
+        '🔹 Minat     : ${q.minatKey}\n'
+        '🔹 Pertanyaan: ${q.questionText}\n'
+        '🔹 Bobot     : ${q.bobot}\n'
+        '🔹 Raw Q     : ${q.rawQuestionText}\n'
+        '🔸 Jawaban   : $ans',
+        verboseOnly: true,
+      );
     }
 
-    // 2️⃣ Inisialisasi working memory
-    // 2️⃣ Inisialisasi working memory
-    print('\n🔹 Initial Working Memory: $workingMemoryList');
+    // ― Inisialisasi working memory ―
+    final codeRegex = RegExp(r'([A-Z]+\d+):');
     for (var q in allQuestions) {
-      // Extract the question code (e.g., "KUL04") from the raw question text
-      String? questionCode;
-      final regex = RegExp(r'([A-Z]+\d+):');
-      final match = regex.firstMatch(q.rawQuestionText);
-      if (match != null && match.groupCount >= 1) {
-        questionCode = match.group(1);
-      } else {
-        questionCode = q.id; // Fallback to Q-style ID if code not found
-      }
-
-      if (q.userAnswer == true) {
-        workingMemory.add('$questionCode=Yes');
-        workingMemoryList.add('$questionCode=Yes');
-      } else if (q.userAnswer == false) {
-        workingMemory.add('$questionCode=No');
-        workingMemoryList.add('$questionCode=No');
-      }
+      final code = codeRegex.firstMatch(q.rawQuestionText)?.group(1) ?? q.id;
+      final fact = '$code=${q.userAnswer == true ? "Yes" : "No"}';
+      workingMemory..add(fact);
+      workingMemoryList.add(fact);
     }
-    print('🔹 Final Working Memory: $workingMemoryList\n');
-    // 3️⃣ Inisialisasi struktur data untuk bobot
+    _log('\n🔹 Final Working Memory: $workingMemoryList', verboseOnly: true);
+
+    // ― Hitung bobot total per-minat ―
     final minatBobotTotal = <String, int>{};
+    for (var q in allQuestions) {
+      final key = '${q.programName}|${q.minatKey}';
+      minatBobotTotal[key] = (minatBobotTotal[key] ?? 0) + q.bobot;
+    }
+
+    _log('\n📌 TOTAL BOBOT PER MINAT:');
+    minatBobotTotal.forEach((k, v) => _log('   🔹 $k → $v'));
+
+    // ― Generate rule ―
+    final rules = <Rule>[];
+    final ruleIds = <Rule, String>{};
+    int ruleCounter = 0;
     final minatBobotBenar = <String, int>{};
     final minatContrib = <String, List<String>>{};
 
-    // 4️⃣ Hitung total bobot per minat
     for (var q in allQuestions) {
+      final code = codeRegex.firstMatch(q.rawQuestionText)?.group(1) ?? q.id;
       final keyMinat = '${q.programName}|${q.minatKey}';
-      minatBobotTotal[keyMinat] = (minatBobotTotal[keyMinat] ?? 0) + q.bobot;
-    }
-
-    print('📌 TOTAL BOBOT PER MINAT:');
-    minatBobotTotal.forEach((key, value) {
-      print('   🔹 $key → Total Bobot: $value');
-    });
-    print('');
-
-    // 5️⃣ Generate rules untuk forward chaining
-    final rules = <Rule>[];
-    for (var q in allQuestions) {
-      // Extract the question code
-      String? questionCode;
-      final regex = RegExp(r'([A-Z]+\d+):');
-      final match = regex.firstMatch(q.rawQuestionText);
-      if (match != null && match.groupCount >= 1) {
-        questionCode = match.group(1);
-      } else {
-        questionCode = q.id; // Fallback to Q-style ID if code not found
-      }
 
       final rule = Rule(
-        ifFacts: ['$questionCode=Yes'],
-        thenAction: (wm) {
-          final keyMinat = '${q.programName}|${q.minatKey}';
-
-          // Tambahkan bobot ke skor benar
+        ifFacts: ['$code=Yes'],
+        thenAction: (_) {
           minatBobotBenar[keyMinat] =
               (minatBobotBenar[keyMinat] ?? 0) + q.bobot;
 
-          // Catat rule fired
           minatContrib[keyMinat] ??= [];
           minatContrib[keyMinat]!.add(
-              '✅ IF ($questionCode=Yes) THEN +${q.bobot} skor → $keyMinat\n'
-              '   [Pertanyaan: "${q.questionText}"]');
+            'IF ($code=Yes) THEN +${q.bobot} → $keyMinat  '
+            '[${q.questionText}]',
+          );
         },
       );
+
+      final id = 'R${(ruleCounter++).toString().padLeft(3, '0')}';
+      ruleIds[rule] = id;
       rules.add(rule);
+
+      _log('🔧 Generated $id  IF $code=Yes  THEN +${q.bobot} → $keyMinat',
+          verboseOnly: true);
     }
 
-    print('📌 GENERATED RULES:');
-    for (var r in rules) {
-      print('- IF ${r.ifFacts} THEN Update Skor');
-    }
-    print('');
-
-    // 6️⃣ Jalankan Forward Chaining
-    bool firedSomething = true;
+    // ― Forward-chaining eksekusi ―
+    _log('\n🚀 Starting Forward Chaining...\n');
     final firedRules = <Rule>{};
-
-    print('🚀 Starting Forward Chaining...\n');
+    bool firedSomething = true;
 
     while (firedSomething) {
       firedSomething = false;
+      final firedThisRound = <String>[];
+
       for (var r in rules) {
         if (firedRules.contains(r)) continue;
-        final allMatch =
-            r.ifFacts.every((fact) => workingMemory.contains(fact));
-
-        if (allMatch) {
+        if (r.ifFacts.every(workingMemory.contains)) {
           r.thenAction(workingMemory);
           firedRules.add(r);
+          firedThisRound.add(ruleIds[r]!);
           firedSomething = true;
-          print('🔥 Fired Rule: ${r.ifFacts}');
         }
       }
+      if (firedThisRound.isNotEmpty) {
+        _log('🔥 Fired: ${firedThisRound.join(', ')}', verboseOnly: true);
+      }
     }
 
-    // 7️⃣ Hitung skor persentase per minat
+    // ― Hitung skor minat ―
     final minatScores = <String, int>{};
-
-    print('\n📌 PERHITUNGAN SKOR MINAT:');
-    for (var entry in minatBobotTotal.entries) {
-      final keyMinat = entry.key;
-      final totalBobot = entry.value;
-      final bobotBenar = minatBobotBenar[keyMinat] ?? 0;
-      int percentage = 0;
-
-      if (totalBobot > 0) {
-        percentage = ((bobotBenar / totalBobot) * 100).round();
-      }
-
-      minatScores[keyMinat] = percentage;
-
-      print('➡️ $keyMinat: ($bobotBenar / $totalBobot) * 100 = $percentage%');
-    }
-
-    print('\n🔹 Final Minat Scores: $minatScores\n');
-
-    // 8️⃣ Urutkan minat berdasarkan persentase tertinggi
-    final sorted = minatScores.entries.toList();
-    sorted.sort((a, b) {
-      final percentageComparison = b.value.compareTo(a.value);
-      if (percentageComparison != 0) {
-        return percentageComparison;
-      }
-      // Jika sama, bandingkan bobot total benar
-      return (minatBobotBenar[b.key] ?? 0)
-          .compareTo(minatBobotBenar[a.key] ?? 0);
+    _log('\n📌 PERHITUNGAN SKOR MINAT:');
+    minatBobotTotal.forEach((key, total) {
+      final benar = minatBobotBenar[key] ?? 0;
+      final pct = total == 0 ? 0 : ((benar / total) * 100).round();
+      minatScores[key] = pct;
+      _log('➡️ $key: ($benar / $total) * 100 = $pct%');
     });
 
-    print('📌 Sorted Minat Scores: $sorted\n');
+    // ― Urutkan & ambil top-3 ―
+    final sorted = minatScores.entries.toList()
+      ..sort((a, b) {
+        final c = b.value.compareTo(a.value);
+        return c != 0
+            ? c
+            : (minatBobotBenar[b.key] ?? 0)
+                .compareTo(minatBobotBenar[a.key] ?? 0);
+      });
 
-    // 9️⃣ Ambil top 3 rekomendasi
-    final topRecommendations = sorted.take(3).toList();
+    _log('\n📌 Sorted Minat Scores: $sorted', verboseOnly: true);
+
     final recommendations = <RecommendationItem>[];
+    for (var i = 0; i < sorted.take(3).length; i++) {
+      final key = sorted[i].key;
+      final score = sorted[i].value;
+      final parts = key.split('|');
+      if (parts.length != 2) continue;
 
-    print('📌 TOP RECOMMENDATIONS:');
-    for (int i = 0; i < topRecommendations.length; i++) {
-      final minatKey = topRecommendations[i].key;
-      final score = topRecommendations[i].value;
-      final parts = minatKey.split('|');
+      final progName = parts[0];
+      final minatKey = parts[1];
 
-      if (parts.length == 2) {
-        final progName = parts[0];
-        final mKey = parts[1];
+      final prog = programList.value.firstWhere((p) => p.name == progName,
+          orElse: () => ProgramStudi.empty());
+      final mObj = prog.minat[minatKey];
+      if (mObj == null) continue;
 
-        final programStudi = programList.value.firstWhere(
-          (p) => p.name == progName,
-          orElse: () => ProgramStudi.empty(),
-        );
-        final minatObj = programStudi.minat[mKey];
-
-        if (minatObj != null) {
-          final careers = minatObj.karir;
-          final majors = minatObj.jurusanTerkait;
-          final rules = minatContrib[minatKey] ?? [];
-
-          // ✨ Tambahkan pengambilan recommendedCourses & recommendedUniversities
-          List<String>? recommendedCourses;
-          if (minatObj.rekomendasi_kursus != null &&
-              minatObj.rekomendasi_kursus!.isNotEmpty) {
-            recommendedCourses = minatObj.rekomendasi_kursus;
-          }
-
-          List<String>? recommendedUniversities;
-          if (minatObj.universitas_rekomendasi != null &&
-              minatObj.universitas_rekomendasi!.isNotEmpty) {
-            recommendedUniversities = minatObj.universitas_rekomendasi;
-          }
-
-          recommendations.add(
-            RecommendationItem(
-              title: minatKey,
-              score: score,
-              careers: careers,
-              majors: majors,
-              rules: rules,
-              index: i,
-              // ✨ masukkan ke constructor:
-              recommendedCourses: recommendedCourses,
-              recommendedUniversities: recommendedUniversities,
-            ),
-          );
-
-          print('⭐ Recommendation ${i + 1}: $minatKey');
-          print('   🔹 Score: $score%');
-          print('   📌 Careers: $careers');
-          print('   🎓 Majors: $majors');
-          print('   🎯 Recommended Courses: $recommendedCourses');
-          print('   🏛️ Recommended Universities: $recommendedUniversities');
-          print('   🔎 Rules Applied: $rules\n');
-        }
-      }
+      recommendations.add(
+        RecommendationItem(
+          title: key,
+          score: score,
+          careers: mObj.karir,
+          majors: mObj.jurusanTerkait,
+          rules: minatContrib[key] ?? [],
+          index: i,
+          recommendedCourses: mObj.rekomendasi_kursus,
+          recommendedUniversities: mObj.universitas_rekomendasi,
+        ),
+      );
     }
+
+    // ― Cetak pohon keputusan jika diminta ―
+    if (logTree) _printDecisionTree(minatScores, minatContrib);
+    _printTreeAsJson(
+      workingMemoryList,
+      minatScores,
+      minatContrib,
+      recommendations,
+    );
 
     return RecommendationResult(
       workingMemory: workingMemoryList,
       recommendations: recommendations,
     );
+  }
+
+  void _printTreeAsJson(
+    List<String> workingMemoryList,
+    Map<String, int> minatScores,
+    Map<String, List<String>> minatContrib,
+    List<RecommendationItem> recommendations,
+  ) {
+    final treeJson = <String, dynamic>{
+      'generatedAt': DateTime.now().toIso8601String(),
+      'workingMemory': workingMemoryList,
+      'minat': minatScores.entries.map((e) {
+        final parts = e.key.split('|');
+        final progName = parts[0];
+        final minatKey = parts[1];
+
+        final prog = programList.value.firstWhere((p) => p.name == progName,
+            orElse: () => ProgramStudi.empty());
+        final mObj = prog.minat[minatKey];
+
+        return {
+          'key': e.key,
+          'score': e.value,
+          'rules': minatContrib[e.key] ?? [],
+          'careers': mObj?.karir ?? [],
+          'majors': mObj?.jurusanTerkait ?? [],
+        };
+      }).toList(),
+      'topRecommendations': recommendations
+          .map((r) => {
+                'title': r.title,
+                'score': r.score,
+                'careers': r.careers,
+                'majors': r.majors,
+              })
+          .toList(),
+    };
+
+    final pretty = const JsonEncoder.withIndent('  ').convert(treeJson);
+    dev.log('\n🔍 JSON Pohon Keputusan ↓↓↓\n$pretty\n');
+  }
+
+// ───────────────────────────────────────────────────────────────
+// 2.  Cetak pohon keputusan (opsional)
+// ───────────────────────────────────────────────────────────────
+  void _printDecisionTree(
+      Map<String, int> scores, Map<String, List<String>> contrib) {
+    _log('\n🌳 POHON KEPUTUSAN');
+    final ordered = scores.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    for (var e in ordered) {
+      final key = e.key;
+      final score = e.value;
+      _log('├─ $key  [$score%]');
+
+      // ── 1.  Baris per-rule (IF … THEN …) ────────────────
+      for (var line in contrib[key] ?? const []) {
+        _log('│   ├─ $line');
+      }
+
+      // ── 2.  Tambahkan “hasil akhir”: Karier & Jurusan ───
+      final parts = key.split('|');
+      if (parts.length == 2) {
+        final progName = parts[0];
+        final minatKey = parts[1];
+
+        final prog = programList.value.firstWhere((p) => p.name == progName,
+            orElse: () => ProgramStudi.empty());
+        final mObj = prog.minat[minatKey];
+
+        if (mObj != null) {
+          final careers = mObj.karir.join(', ');
+          final majors = mObj.jurusanTerkait.join(', ');
+
+          _log('│   │');
+          _log('│   ├─ ⇒ Karier : $careers');
+          _log('│   └─ ⇒ Jurusan: $majors');
+        }
+      }
+    }
+    _log('└─ EOF\n');
   }
 
   Future<void> saveResultsToFirestore(RecommendationResult results) async {

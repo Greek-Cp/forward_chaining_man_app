@@ -17,12 +17,12 @@
     "minat": {
       "Elektronika": {
         "pertanyaan": [
-          "KUL01: Apakah Anda tertarik dengan dunia elektronik dan rangkaian listrik? [6]",
-          "KUL02: Apakah Anda ingin belajar cara membuat perangkat elektronik sederhana? [6]",
-          "KUL03: Apakah Anda suka memecahkan masalah teknis dengan alat-alat elektronik? [7]",
-          "KUL04: Apakah Anda tertarik untuk mengembangkan teknologi elektronik untuk kehidupan sehari-hari? [5]",
-          "KUL05: Apakah Anda tertarik mempelajari sistem kendali dan otomasi berbasis elektronika? [7]",
-          "KUL06: Apakah Anda ingin tahu lebih dalam tentang sistem komputer dan mikroprosesor? [6]"
+          "BKUL01: Saya tertarik tertarik dengan dunia elektronik dan rangkaian listrik? [6]",
+          "BKUL02: Saya tertarik ingin belajar cara membuat perangkat elektronik sederhana? [6]",
+          "BKUL03: Saya tertarik suka memecahkan masalah teknis dengan alat-alat elektronik? [7]",
+          "BKUL04: Saya tertarik tertarik untuk mengembangkan teknologi elektronik untuk kehidupan sehari-hari? [5]",
+          "BKUL05: Saya tertarik tertarik mempelajari sistem kendali dan otomasi berbasis elektronika? [7]",
+          "BKUL06: Saya tertarik ingin tahu lebih dalam tentang sistem komputer dan mikroprosesor? [6]"
         ],
         "riasecType": [
           {
@@ -107,13 +107,13 @@
           "I/R/E"
         ],
         "jurusan_terkait": [
-          "Teknik Elektro",
-          "Teknik Elektronika",
-          "Teknik Mekatronika",
-          "Teknik Telekomunikasi",
-          "Teknik Komputer",
-          "Elektronika Industri",
-          "Teknik Instrumentasi"
+          "BJUR01: Teknik Elektro",
+          "BJUR02: Teknik Elektronika",
+          "BJUR03: Teknik Mekatronika",
+          "BJUR04: Teknik Telekomunikasi",
+          "BJUR05: Teknik Komputer",
+          "BJUR06: Elektronika Industri",
+          "BJUR07: Teknik Instrumentasi"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -126,12 +126,12 @@
       },
       "Robotika": {
         "pertanyaan": [
-          "KUL07: Apakah Anda tertarik untuk mengembangkan robot atau mesin otomatis? [6]",
-          "KUL08: Apakah Anda suka bekerja dengan teknologi yang menggabungkan perangkat keras dan perangkat lunak? [6]",
-          "KUL09: Apakah Anda tertarik dengan dunia sensor dan bagaimana mereka bekerja dalam robot? [7]",
-          "KUL10: Apakah Anda menikmati belajar cara membuat robot bergerak atau berinteraksi dengan lingkungannya? [7]",
-          "KUL11: Apakah Anda tertarik dengan perkembangan kecerdasan buatan dan implementasinya pada robot? [6]",
-          "KUL12: Apakah Anda ingin belajar tentang pengembangan sistem otomasi industri? [7]"
+          "BKUL07: Saya tertarik tertarik untuk mengembangkan robot atau mesin otomatis? [6]",
+          "BKUL08: Saya tertarik suka bekerja dengan teknologi yang menggabungkan perangkat keras dan perangkat lunak? [6]",
+          "BKUL09: Saya tertarik tertarik dengan dunia sensor dan bagaimana mereka bekerja dalam robot? [7]",
+          "BKUL10: Saya tertarik menikmati belajar cara membuat robot bergerak atau berinteraksi dengan lingkungannya? [7]",
+          "BKUL11: Saya tertarik tertarik dengan perkembangan kecerdasan buatan dan implementasinya pada robot? [6]",
+          "BKUL12: Saya tertarik ingin belajar tentang pengembangan sistem otomasi industri? [7]"
         ],
         "riasecType": [
           {
@@ -218,13 +218,13 @@
           "I/R/E"
         ],
         "jurusan_terkait": [
-          "Teknik Mekatronika",
-          "Teknik Elektro",
-          "Teknik Informatika (Konsentrasi Robotika)",
-          "Teknik Komputer",
-          "Teknik Otomasi",
-          "Teknik Sistem Kendali",
-          "Teknik Mesin"
+          "BJUR08: Teknik Mekatronika",
+          "BJUR09: Teknik Elektro",
+          "BJUR10: Teknik Informatika (Konsentrasi Robotika)",
+          "BJUR11: Teknik Komputer",
+          "BJUR12: Teknik Otomasi",
+          "BJUR13: Teknik Sistem Kendali",
+          "BJUR14: Teknik Mesin"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -237,12 +237,12 @@
       },
       "Ilmu Komputer": {
         "pertanyaan": [
-          "KUL13: Apakah Anda tertarik untuk membuat perangkat lunak atau aplikasi untuk komputer atau ponsel? [7]",
-          "KUL14: Apakah Anda suka bekerja dengan kode dan pengembangan teknologi? [7]",
-          "KUL15: Apakah Anda ingin memahami cara kerja jaringan komputer dan internet? [7]",
-          "KUL16: Apakah Anda menikmati tantangan dalam menciptakan solusi teknologi untuk masalah sehari-hari? [7]",
-          "KUL17: Apakah Anda tertarik mempelajari algoritma dan struktur data? [7]",
-          "KUL18: Apakah Anda ingin mengembangkan keterampilan dalam kecerdasan buatan dan pembelajaran mesin? [7]"
+          "BKUL13: Saya tertarik tertarik untuk membuat perangkat lunak atau aplikasi untuk komputer atau ponsel? [7]",
+          "BKUL14: Saya tertarik suka bekerja dengan kode dan pengembangan teknologi? [7]",
+          "BKUL15: Saya tertarik ingin memahami cara kerja jaringan komputer dan internet? [7]",
+          "BKUL16: Saya tertarik menikmati tantangan dalam menciptakan solusi teknologi untuk masalah sehari-hari? [7]",
+          "BKUL17: Saya tertarik tertarik mempelajari algoritma dan struktur data? [7]",
+          "BKUL18: Saya tertarik ingin mengembangkan keterampilan dalam kecerdasan buatan dan pembelajaran mesin? [7]"
         ],
         "riasecType": [
           {
@@ -345,17 +345,17 @@
           "I"
         ],
         "jurusan_terkait": [
-          "Teknik Informatika",
-          "Ilmu Komputer",
-          "Sistem Informasi",
-          "Sains Data",
-          "Kecerdasan Buatan",
-          "Rekayasa Perangkat Lunak",
-          "Teknologi Informasi",
-          "Teknik Komputer",
-          "Teknik Telekomunikasi",
-          "Keamanan Siber",
-          "Teknik Jaringan"
+          "BJUR15: Teknik Informatika",
+          "BJUR16: Ilmu Komputer",
+          "BJUR17: Sistem Informasi",
+          "BJUR18: Sains Data",
+          "BJUR19: Kecerdasan Buatan",
+          "BJUR20: Rekayasa Perangkat Lunak",
+          "BJUR21: Teknologi Informasi",
+          "BJUR22: Teknik Komputer",
+          "BJUR23: Teknik Telekomunikasi",
+          "BJUR24: Keamanan Siber",
+          "BJUR25: Teknik Jaringan"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -369,12 +369,12 @@
       },
       "Sistem & Infrastruktur IT": {
         "pertanyaan": [
-          "KUL19: Apakah Anda tertarik untuk mengelola sistem komputer dan jaringan? [6]",
-          "KUL20: Apakah Anda ingin belajar tentang keamanan sistem dan jaringan? [6]",
-          "KUL21: Apakah Anda suka mengatur dan mengoptimalkan infrastruktur IT? [5]",
-          "KUL22: Apakah Anda tertarik dengan cloud computing dan virtualisasi? [6]",
-          "KUL23: Apakah Anda ingin mempelajari cara membangun dan mengatur server? [5]",
-          "KUL24: Apakah Anda tertarik dengan pengelolaan big data dan infrastrukturnya? [5]"
+          "BKUL19: Saya tertarik tertarik untuk mengelola sistem komputer dan jaringan? [6]",
+          "BKUL20: Saya tertarik ingin belajar tentang keamanan sistem dan jaringan? [6]",
+          "BKUL21: Saya tertarik suka mengatur dan mengoptimalkan infrastruktur IT? [5]",
+          "BKUL22: Saya tertarik tertarik dengan cloud computing dan virtualisasi? [6]",
+          "BKUL23: Saya tertarik ingin mempelajari cara membangun dan mengatur server? [5]",
+          "BKUL24: Saya tertarik tertarik dengan pengelolaan big data dan infrastrukturnya? [5]"
         ],
         "riasecType": [
           {
@@ -463,13 +463,13 @@
           "I/E/C"
         ],
         "jurusan_terkait": [
-          "Teknik Informatika",
-          "Sistem Informasi",
-          "Teknologi Informasi",
-          "Teknik Komputer",
-          "Teknik Telekomunikasi",
-          "Keamanan Siber",
-          "Teknik Jaringan"
+          "BJUR26: Teknik Informatika",
+          "BJUR27: Sistem Informasi",
+          "BJUR28: Teknologi Informasi",
+          "BJUR29: Teknik Komputer",
+          "BJUR30: Teknik Telekomunikasi",
+          "BJUR31: Keamanan Siber",
+          "BJUR32: Teknik Jaringan"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -483,12 +483,12 @@
       },
       "Teknik Mesin": {
         "pertanyaan": [
-          "KUL25: Apakah Anda tertarik dengan cara kerja mesin dan perangkat mekanis? [6]",
-          "KUL26: Apakah Anda ingin belajar tentang proses manufaktur dan pembuatan mesin? [6]",
-          "KUL27: Apakah Anda suka mempelajari cara benda-benda bergerak atau bekerja dalam kehidupan sehari-hari? [5]",
-          "KUL28: Apakah Anda tertarik untuk merancang alat atau mesin yang bisa membantu memecahkan masalah? [6]",
-          "KUL29: Apakah Anda tertarik dengan pengembangan sistem termal dan fluida? [5]",
-          "KUL30: Apakah Anda ingin mempelajari tentang desain dan analisis struktural mekanik? [5]"
+          "BKUL25: Saya tertarik tertarik dengan cara kerja mesin dan perangkat mekanis? [6]",
+          "BKUL26: Saya tertarik ingin belajar tentang proses manufaktur dan pembuatan mesin? [6]",
+          "BKUL27: Saya tertarik suka mempelajari cara benda-benda bergerak atau bekerja dalam kehidupan sehari-hari? [5]",
+          "BKUL28: Saya tertarik tertarik untuk merancang alat atau mesin yang bisa membantu memecahkan masalah? [6]",
+          "BKUL29: Saya tertarik tertarik dengan pengembangan sistem termal dan fluida? [5]",
+          "BKUL30: Saya tertarik ingin mempelajari tentang desain dan analisis struktural mekanik? [5]"
         ],
         "riasecType": [
           {
@@ -575,13 +575,13 @@
           "I/R/E"
         ],
         "jurusan_terkait": [
-          "Teknik Mesin",
-          "Teknik Industri",
-          "Teknik Otomotif",
-          "Teknik Aeronautika",
-          "Teknik Material",
-          "Teknik Manufaktur",
-          "Teknik Perkapalan"
+          "BJUR33: Teknik Mesin",
+          "BJUR34: Teknik Industri",
+          "BJUR35: Teknik Otomotif",
+          "BJUR36: Teknik Aeronautika",
+          "BJUR37: Teknik Material",
+          "BJUR38: Teknik Manufaktur",
+          "BJUR39: Teknik Perkapalan"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -595,12 +595,12 @@
       },
       "Teknik Sipil": {
         "pertanyaan": [
-          "KUL31: Apakah Anda tertarik dengan pembangunan dan perancangan bangunan? [7]",
-          "KUL32: Apakah Anda suka belajar tentang bagaimana gedung atau jembatan dibangun? [7]",
-          "KUL33: Apakah Anda tertarik untuk mempelajari cara bangunan menahan beban? [7]",
-          "KUL34: Apakah Anda menikmati mempelajari teknik dan cara-cara konstruksi dalam kehidupan sehari-hari? [6]",
-          "KUL35: Apakah Anda tertarik dengan perencanaan infrastruktur seperti jalan dan sistem transportasi? [6]",
-          "KUL36: Apakah Anda ingin belajar tentang manajemen sumber daya air dan penanganan bencana? [6]"
+          "BKUL31: Saya tertarik tertarik dengan pembangunan dan perancangan bangunan? [7]",
+          "BKUL32: Saya tertarik suka belajar tentang bagaimana gedung atau jembatan dibangun? [7]",
+          "BKUL33: Saya tertarik tertarik untuk mempelajari cara bangunan menahan beban? [7]",
+          "BKUL34: Saya tertarik menikmati mempelajari teknik dan cara-cara konstruksi dalam kehidupan sehari-hari? [6]",
+          "BKUL35: Saya tertarik tertarik dengan perencanaan infrastruktur seperti jalan dan sistem transportasi? [6]",
+          "BKUL36: Saya tertarik ingin belajar tentang manajemen sumber daya air dan penanganan bencana? [6]"
         ],
         "riasecType": [
           {
@@ -691,13 +691,13 @@
           "I/S/E"
         ],
         "jurusan_terkait": [
-          "Teknik Sipil",
-          "Teknik Konstruksi",
-          "Teknik Transportasi",
-          "Teknik Pengairan",
-          "Teknik Lingkungan",
-          "Arsitektur",
-          "Perencanaan Wilayah dan Kota"
+          "BJUR40: Teknik Sipil",
+          "BJUR41: Teknik Konstruksi",
+          "BJUR42: Teknik Transportasi",
+          "BJUR43: Teknik Pengairan",
+          "BJUR44: Teknik Lingkungan",
+          "BJUR45: Arsitektur",
+          "BJUR46: Perencanaan Wilayah dan Kota"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -711,12 +711,12 @@
       },
       "Teknik Kimia": {
         "pertanyaan": [
-          "KUL37: Apakah Anda tertarik dengan reaksi kimia yang terjadi di sekitar kita? [6]",
-          "KUL38: Apakah Anda ingin memahami bagaimana bahan kimia digunakan dalam industri? [6]",
-          "KUL39: Apakah Anda tertarik untuk mempelajari cara proses kimia bekerja dalam skala industri? [6]",
-          "KUL40: Apakah Anda ingin tahu lebih banyak tentang pengolahan limbah atau kualitas air? [7]",
-          "KUL41: Apakah Anda tertarik mengembangkan produk berbasis kimia yang ramah lingkungan? [7]",
-          "KUL42: Apakah Anda ingin mempelajari teknologi pemrosesan minyak bumi dan gas alam? [6]"
+          "BKUL37: Saya tertarik tertarik dengan reaksi kimia yang terjadi di sekitar kita? [6]",
+          "BKUL38: Saya tertarik ingin memahami bagaimana bahan kimia digunakan dalam industri? [6]",
+          "BKUL39: Saya tertarik tertarik untuk mempelajari cara proses kimia bekerja dalam skala industri? [6]",
+          "BKUL40: Saya tertarik ingin tahu lebih banyak tentang pengolahan limbah atau kualitas air? [7]",
+          "BKUL41: Saya tertarik tertarik mengembangkan produk berbasis kimia yang ramah lingkungan? [7]",
+          "BKUL42: Saya tertarik ingin mempelajari teknologi pemrosesan minyak bumi dan gas alam? [6]"
         ],
         "riasecType": [
           {
@@ -807,13 +807,13 @@
           "I/E/C"
         ],
         "jurusan_terkait": [
-          "Teknik Kimia",
-          "Teknik Lingkungan",
-          "Teknik Bioproses",
-          "Biokimia Terapan",
-          "Teknik Perminyakan",
-          "Teknik Material",
-          "Teknologi Pangan"
+          "BJUR47: Teknik Kimia",
+          "BJUR48: Teknik Lingkungan",
+          "BJUR49: Teknik Bioproses",
+          "BJUR50: Biokimia Terapan",
+          "BJUR51: Teknik Perminyakan",
+          "BJUR52: Teknik Material",
+          "BJUR53: Teknologi Pangan"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -827,12 +827,12 @@
       },
       "Teknik Industri": {
         "pertanyaan": [
-          "KUL43: Apakah Anda tertarik pada optimasi sistem dan proses? [6]",
-          "KUL44: Apakah Anda suka menyelesaikan masalah yang melibatkan efisiensi dan produktivitas? [7]",
-          "KUL45: Apakah Anda tertarik dengan manajemen operasi dan rantai pasok? [5]",
-          "KUL46: Apakah Anda ingin mempelajari cara meningkatkan kualitas produk dan layanan? [5]",
-          "KUL47: Apakah Anda menyukai kombinasi antara teknik, bisnis, dan manajemen? [6]",
-          "KUL48: Apakah Anda ingin mempelajari cara mendesain sistem kerja yang ergonomis? [5]"
+          "BKUL43: Saya tertarik tertarik pada optimasi sistem dan proses? [6]",
+          "BKUL44: Saya tertarik suka menyelesaikan masalah yang melibatkan efisiensi dan produktivitas? [7]",
+          "BKUL45: Saya tertarik tertarik dengan manajemen operasi dan rantai pasok? [5]",
+          "BKUL46: Saya tertarik ingin mempelajari cara meningkatkan kualitas produk dan layanan? [5]",
+          "BKUL47: Saya tertarik menyukai kombinasi antara teknik, bisnis, dan manajemen? [6]",
+          "BKUL48: Saya tertarik ingin mempelajari cara mendesain sistem kerja yang ergonomis? [5]"
         ],
         "riasecType": [
           {
@@ -927,13 +927,13 @@
           "E/C/I"
         ],
         "jurusan_terkait": [
-          "Teknik Industri",
-          "Manajemen Rekayasa",
-          "Teknik Logistik",
-          "Manajemen Operasi",
-          "Teknik Sistem",
-          "Teknik Manufaktur",
-          "Manajemen Kualitas"
+          "BJUR54: Teknik Industri",
+          "BJUR55: Manajemen Rekayasa",
+          "BJUR56: Teknik Logistik",
+          "BJUR57: Manajemen Operasi",
+          "BJUR58: Teknik Sistem",
+          "BJUR59: Teknik Manufaktur",
+          "BJUR60: Manajemen Kualitas"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -947,12 +947,12 @@
       },
       "Teknik Energi": {
         "pertanyaan": [
-          "KUL49: Apakah Anda tertarik dengan sumber energi terbarukan dan konservasi energi? [7]",
-          "KUL50: Apakah Anda ingin mempelajari sistem pembangkit listrik dan distribusi energi? [7]",
-          "KUL51: Apakah Anda peduli tentang efisiensi energi dan dampak lingkungan? [7]",
-          "KUL52: Apakah Anda tertarik dengan teknologi panel surya, turbin angin, atau bioenergi? [7]",
-          "KUL53: Apakah Anda ingin berkontribusi pada solusi energi masa depan? [6]",
-          "KUL54: Apakah Anda tertarik dengan manajemen energi di industri dan bangunan? [7]"
+          "BKUL49: Saya tertarik tertarik dengan sumber energi terbarukan dan konservasi energi? [7]",
+          "BKUL50: Saya tertarik ingin mempelajari sistem pembangkit listrik dan distribusi energi? [7]",
+          "BKUL51: Saya tertarik peduli tentang efisiensi energi dan dampak lingkungan? [7]",
+          "BKUL52: Saya tertarik tertarik dengan teknologi panel surya, turbin angin, atau bioenergi? [7]",
+          "BKUL53: Saya tertarik ingin berkontribusi pada solusi energi masa depan? [6]",
+          "BKUL54: Saya tertarik tertarik dengan manajemen energi di industri dan bangunan? [7]"
         ],
         "riasecType": [
           {
@@ -1043,13 +1043,13 @@
           "I/R"
         ],
         "jurusan_terkait": [
-          "Teknik Energi",
-          "Teknik Elektro (Konsentrasi Energi)",
-          "Energi Terbarukan",
-          "Teknik Fisika",
-          "Teknik Lingkungan",
-          "Teknik Perminyakan",
-          "Teknologi Energi"
+          "BJUR61: Teknik Energi",
+          "BJUR62: Teknik Elektro (Konsentrasi Energi)",
+          "BJUR63: Energi Terbarukan",
+          "BJUR64: Teknik Fisika",
+          "BJUR65: Teknik Lingkungan",
+          "BJUR66: Teknik Perminyakan",
+          "BJUR67: Teknologi Energi"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -1064,220 +1064,220 @@
     },
     "semua_pertanyaan": [
       {
-        "kode_pertanyaan": "KUL01",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan dunia elektronik dan rangkaian listrik?"
+        "kode_pertanyaan": "BKUL01",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan dunia elektronik dan rangkaian listrik?"
       },
       {
-        "kode_pertanyaan": "KUL02",
-        "isi_pertanyaan": "Apakah Anda ingin belajar cara membuat perangkat elektronik sederhana?"
+        "kode_pertanyaan": "BKUL02",
+        "isi_pertanyaan": "Saya tertarik ingin belajar cara membuat perangkat elektronik sederhana?"
       },
       {
-        "kode_pertanyaan": "KUL03",
-        "isi_pertanyaan": "Apakah Anda suka memecahkan masalah teknis dengan alat-alat elektronik?"
+        "kode_pertanyaan": "BKUL03",
+        "isi_pertanyaan": "Saya tertarik suka memecahkan masalah teknis dengan alat-alat elektronik?"
       },
       {
-        "kode_pertanyaan": "KUL04",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mengembangkan teknologi elektronik untuk kehidupan sehari-hari?"
+        "kode_pertanyaan": "BKUL04",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mengembangkan teknologi elektronik untuk kehidupan sehari-hari?"
       },
       {
-        "kode_pertanyaan": "KUL05",
-        "isi_pertanyaan": "Apakah Anda tertarik mempelajari sistem kendali dan otomasi berbasis elektronika?"
+        "kode_pertanyaan": "BKUL05",
+        "isi_pertanyaan": "Saya tertarik tertarik mempelajari sistem kendali dan otomasi berbasis elektronika?"
       },
       {
-        "kode_pertanyaan": "KUL06",
-        "isi_pertanyaan": "Apakah Anda ingin tahu lebih dalam tentang sistem komputer dan mikroprosesor?"
+        "kode_pertanyaan": "BKUL06",
+        "isi_pertanyaan": "Saya tertarik ingin tahu lebih dalam tentang sistem komputer dan mikroprosesor?"
       },
       {
-        "kode_pertanyaan": "KUL07",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mengembangkan robot atau mesin otomatis?"
+        "kode_pertanyaan": "BKUL07",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mengembangkan robot atau mesin otomatis?"
       },
       {
-        "kode_pertanyaan": "KUL08",
-        "isi_pertanyaan": "Apakah Anda suka bekerja dengan teknologi yang menggabungkan perangkat keras dan perangkat lunak?"
+        "kode_pertanyaan": "BKUL08",
+        "isi_pertanyaan": "Saya tertarik suka bekerja dengan teknologi yang menggabungkan perangkat keras dan perangkat lunak?"
       },
       {
-        "kode_pertanyaan": "KUL09",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan dunia sensor dan bagaimana mereka bekerja dalam robot?"
+        "kode_pertanyaan": "BKUL09",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan dunia sensor dan bagaimana mereka bekerja dalam robot?"
       },
       {
-        "kode_pertanyaan": "KUL10",
-        "isi_pertanyaan": "Apakah Anda menikmati belajar cara membuat robot bergerak atau berinteraksi dengan lingkungannya?"
+        "kode_pertanyaan": "BKUL10",
+        "isi_pertanyaan": "Saya tertarik menikmati belajar cara membuat robot bergerak atau berinteraksi dengan lingkungannya?"
       },
       {
-        "kode_pertanyaan": "KUL11",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan perkembangan kecerdasan buatan dan implementasinya pada robot?"
+        "kode_pertanyaan": "BKUL11",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan perkembangan kecerdasan buatan dan implementasinya pada robot?"
       },
       {
-        "kode_pertanyaan": "KUL12",
-        "isi_pertanyaan": "Apakah Anda ingin belajar tentang pengembangan sistem otomasi industri?"
+        "kode_pertanyaan": "BKUL12",
+        "isi_pertanyaan": "Saya tertarik ingin belajar tentang pengembangan sistem otomasi industri?"
       },
       {
-        "kode_pertanyaan": "KUL13",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk membuat perangkat lunak atau aplikasi untuk komputer atau ponsel?"
+        "kode_pertanyaan": "BKUL13",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk membuat perangkat lunak atau aplikasi untuk komputer atau ponsel?"
       },
       {
-        "kode_pertanyaan": "KUL14",
-        "isi_pertanyaan": "Apakah Anda suka bekerja dengan kode dan pengembangan teknologi?"
+        "kode_pertanyaan": "BKUL14",
+        "isi_pertanyaan": "Saya tertarik suka bekerja dengan kode dan pengembangan teknologi?"
       },
       {
-        "kode_pertanyaan": "KUL15",
-        "isi_pertanyaan": "Apakah Anda ingin memahami cara kerja jaringan komputer dan internet?"
+        "kode_pertanyaan": "BKUL15",
+        "isi_pertanyaan": "Saya tertarik ingin memahami cara kerja jaringan komputer dan internet?"
       },
       {
-        "kode_pertanyaan": "KUL16",
-        "isi_pertanyaan": "Apakah Anda menikmati tantangan dalam menciptakan solusi teknologi untuk masalah sehari-hari?"
+        "kode_pertanyaan": "BKUL16",
+        "isi_pertanyaan": "Saya tertarik menikmati tantangan dalam menciptakan solusi teknologi untuk masalah sehari-hari?"
       },
       {
-        "kode_pertanyaan": "KUL17",
-        "isi_pertanyaan": "Apakah Anda tertarik mempelajari algoritma dan struktur data?"
+        "kode_pertanyaan": "BKUL17",
+        "isi_pertanyaan": "Saya tertarik tertarik mempelajari algoritma dan struktur data?"
       },
       {
-        "kode_pertanyaan": "KUL18",
-        "isi_pertanyaan": "Apakah Anda ingin mengembangkan keterampilan dalam kecerdasan buatan dan pembelajaran mesin?"
+        "kode_pertanyaan": "BKUL18",
+        "isi_pertanyaan": "Saya tertarik ingin mengembangkan keterampilan dalam kecerdasan buatan dan pembelajaran mesin?"
       },
       {
-        "kode_pertanyaan": "KUL19",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mengelola sistem komputer dan jaringan?"
+        "kode_pertanyaan": "BKUL19",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mengelola sistem komputer dan jaringan?"
       },
       {
-        "kode_pertanyaan": "KUL20",
-        "isi_pertanyaan": "Apakah Anda ingin belajar tentang keamanan sistem dan jaringan?"
+        "kode_pertanyaan": "BKUL20",
+        "isi_pertanyaan": "Saya tertarik ingin belajar tentang keamanan sistem dan jaringan?"
       },
       {
-        "kode_pertanyaan": "KUL21",
-        "isi_pertanyaan": "Apakah Anda suka mengatur dan mengoptimalkan infrastruktur IT?"
+        "kode_pertanyaan": "BKUL21",
+        "isi_pertanyaan": "Saya tertarik suka mengatur dan mengoptimalkan infrastruktur IT?"
       },
       {
-        "kode_pertanyaan": "KUL22",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan cloud computing dan virtualisasi?"
+        "kode_pertanyaan": "BKUL22",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan cloud computing dan virtualisasi?"
       },
       {
-        "kode_pertanyaan": "KUL23",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari cara membangun dan mengatur server?"
+        "kode_pertanyaan": "BKUL23",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari cara membangun dan mengatur server?"
       },
       {
-        "kode_pertanyaan": "KUL24",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan pengelolaan big data dan infrastrukturnya?"
+        "kode_pertanyaan": "BKUL24",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan pengelolaan big data dan infrastrukturnya?"
       },
       {
-        "kode_pertanyaan": "KUL25",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan cara kerja mesin dan perangkat mekanis?"
+        "kode_pertanyaan": "BKUL25",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan cara kerja mesin dan perangkat mekanis?"
       },
       {
-        "kode_pertanyaan": "KUL26",
-        "isi_pertanyaan": "Apakah Anda ingin belajar tentang proses manufaktur dan pembuatan mesin?"
+        "kode_pertanyaan": "BKUL26",
+        "isi_pertanyaan": "Saya tertarik ingin belajar tentang proses manufaktur dan pembuatan mesin?"
       },
       {
-        "kode_pertanyaan": "KUL27",
-        "isi_pertanyaan": "Apakah Anda suka mempelajari cara benda-benda bergerak atau bekerja dalam kehidupan sehari-hari?"
+        "kode_pertanyaan": "BKUL27",
+        "isi_pertanyaan": "Saya tertarik suka mempelajari cara benda-benda bergerak atau bekerja dalam kehidupan sehari-hari?"
       },
       {
-        "kode_pertanyaan": "KUL28",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk merancang alat atau mesin yang bisa membantu memecahkan masalah?"
+        "kode_pertanyaan": "BKUL28",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk merancang alat atau mesin yang bisa membantu memecahkan masalah?"
       },
       {
-        "kode_pertanyaan": "KUL29",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan pengembangan sistem termal dan fluida?"
+        "kode_pertanyaan": "BKUL29",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan pengembangan sistem termal dan fluida?"
       },
       {
-        "kode_pertanyaan": "KUL30",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari tentang desain dan analisis struktural mekanik?"
+        "kode_pertanyaan": "BKUL30",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari tentang desain dan analisis struktural mekanik?"
       },
       {
-        "kode_pertanyaan": "KUL31",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan pembangunan dan perancangan bangunan?"
+        "kode_pertanyaan": "BKUL31",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan pembangunan dan perancangan bangunan?"
       },
       {
-        "kode_pertanyaan": "KUL32",
-        "isi_pertanyaan": "Apakah Anda suka belajar tentang bagaimana gedung atau jembatan dibangun?"
+        "kode_pertanyaan": "BKUL32",
+        "isi_pertanyaan": "Saya tertarik suka belajar tentang bagaimana gedung atau jembatan dibangun?"
       },
       {
-        "kode_pertanyaan": "KUL33",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari cara bangunan menahan beban?"
+        "kode_pertanyaan": "BKUL33",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari cara bangunan menahan beban?"
       },
       {
-        "kode_pertanyaan": "KUL34",
-        "isi_pertanyaan": "Apakah Anda menikmati mempelajari teknik dan cara-cara konstruksi dalam kehidupan sehari-hari?"
+        "kode_pertanyaan": "BKUL34",
+        "isi_pertanyaan": "Saya tertarik menikmati mempelajari teknik dan cara-cara konstruksi dalam kehidupan sehari-hari?"
       },
       {
-        "kode_pertanyaan": "KUL35",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan perencanaan infrastruktur seperti jalan dan sistem transportasi?"
+        "kode_pertanyaan": "BKUL35",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan perencanaan infrastruktur seperti jalan dan sistem transportasi?"
       },
       {
-        "kode_pertanyaan": "KUL36",
-        "isi_pertanyaan": "Apakah Anda ingin belajar tentang manajemen sumber daya air dan penanganan bencana?"
+        "kode_pertanyaan": "BKUL36",
+        "isi_pertanyaan": "Saya tertarik ingin belajar tentang manajemen sumber daya air dan penanganan bencana?"
       },
       {
-        "kode_pertanyaan": "KUL37",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan reaksi kimia yang terjadi di sekitar kita?"
+        "kode_pertanyaan": "BKUL37",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan reaksi kimia yang terjadi di sekitar kita?"
       },
       {
-        "kode_pertanyaan": "KUL38",
-        "isi_pertanyaan": "Apakah Anda ingin memahami bagaimana bahan kimia digunakan dalam industri?"
+        "kode_pertanyaan": "BKUL38",
+        "isi_pertanyaan": "Saya tertarik ingin memahami bagaimana bahan kimia digunakan dalam industri?"
       },
       {
-        "kode_pertanyaan": "KUL39",
-        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari cara proses kimia bekerja dalam skala industri?"
+        "kode_pertanyaan": "BKUL39",
+        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari cara proses kimia bekerja dalam skala industri?"
       },
       {
-        "kode_pertanyaan": "KUL40",
-        "isi_pertanyaan": "Apakah Anda ingin tahu lebih banyak tentang pengolahan limbah atau kualitas air?"
+        "kode_pertanyaan": "BKUL40",
+        "isi_pertanyaan": "Saya tertarik ingin tahu lebih banyak tentang pengolahan limbah atau kualitas air?"
       },
       {
-        "kode_pertanyaan": "KUL41",
-        "isi_pertanyaan": "Apakah Anda tertarik mengembangkan produk berbasis kimia yang ramah lingkungan?"
+        "kode_pertanyaan": "BKUL41",
+        "isi_pertanyaan": "Saya tertarik tertarik mengembangkan produk berbasis kimia yang ramah lingkungan?"
       },
       {
-        "kode_pertanyaan": "KUL42",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari teknologi pemrosesan minyak bumi dan gas alam?"
+        "kode_pertanyaan": "BKUL42",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari teknologi pemrosesan minyak bumi dan gas alam?"
       },
       {
-        "kode_pertanyaan": "KUL43",
-        "isi_pertanyaan": "Apakah Anda tertarik pada optimasi sistem dan proses?"
+        "kode_pertanyaan": "BKUL43",
+        "isi_pertanyaan": "Saya tertarik tertarik pada optimasi sistem dan proses?"
       },
       {
-        "kode_pertanyaan": "KUL44",
-        "isi_pertanyaan": "Apakah Anda suka menyelesaikan masalah yang melibatkan efisiensi dan produktivitas?"
+        "kode_pertanyaan": "BKUL44",
+        "isi_pertanyaan": "Saya tertarik suka menyelesaikan masalah yang melibatkan efisiensi dan produktivitas?"
       },
       {
-        "kode_pertanyaan": "KUL45",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan manajemen operasi dan rantai pasok?"
+        "kode_pertanyaan": "BKUL45",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan manajemen operasi dan rantai pasok?"
       },
       {
-        "kode_pertanyaan": "KUL46",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari cara meningkatkan kualitas produk dan layanan?"
+        "kode_pertanyaan": "BKUL46",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari cara meningkatkan kualitas produk dan layanan?"
       },
       {
-        "kode_pertanyaan": "KUL47",
-        "isi_pertanyaan": "Apakah Anda menyukai kombinasi antara teknik, bisnis, dan manajemen?"
+        "kode_pertanyaan": "BKUL47",
+        "isi_pertanyaan": "Saya tertarik menyukai kombinasi antara teknik, bisnis, dan manajemen?"
       },
       {
-        "kode_pertanyaan": "KUL48",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari cara mendesain sistem kerja yang ergonomis?"
+        "kode_pertanyaan": "BKUL48",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari cara mendesain sistem kerja yang ergonomis?"
       },
       {
-        "kode_pertanyaan": "KUL49",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan sumber energi terbarukan dan konservasi energi?"
+        "kode_pertanyaan": "BKUL49",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan sumber energi terbarukan dan konservasi energi?"
       },
       {
-        "kode_pertanyaan": "KUL50",
-        "isi_pertanyaan": "Apakah Anda ingin mempelajari sistem pembangkit listrik dan distribusi energi?"
+        "kode_pertanyaan": "BKUL50",
+        "isi_pertanyaan": "Saya tertarik ingin mempelajari sistem pembangkit listrik dan distribusi energi?"
       },
       {
-        "kode_pertanyaan": "KUL51",
-        "isi_pertanyaan": "Apakah Anda peduli tentang efisiensi energi dan dampak lingkungan?"
+        "kode_pertanyaan": "BKUL51",
+        "isi_pertanyaan": "Saya tertarik peduli tentang efisiensi energi dan dampak lingkungan?"
       },
       {
-        "kode_pertanyaan": "KUL52",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan teknologi panel surya, turbin angin, atau bioenergi?"
+        "kode_pertanyaan": "BKUL52",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan teknologi panel surya, turbin angin, atau bioenergi?"
       },
       {
-        "kode_pertanyaan": "KUL53",
-        "isi_pertanyaan": "Apakah Anda ingin berkontribusi pada solusi energi masa depan?"
+        "kode_pertanyaan": "BKUL53",
+        "isi_pertanyaan": "Saya tertarik ingin berkontribusi pada solusi energi masa depan?"
       },
       {
-        "kode_pertanyaan": "KUL54",
-        "isi_pertanyaan": "Apakah Anda tertarik dengan manajemen energi di industri dan bangunan?"
+        "kode_pertanyaan": "BKUL54",
+        "isi_pertanyaan": "Saya tertarik tertarik dengan manajemen energi di industri dan bangunan?"
       }
     ]
   }
