@@ -9,6 +9,7 @@ import 'package:forward_chaining_man_app/app/views/page_intro.dart';
 import 'package:forward_chaining_man_app/app/views/page_login.dart';
 import 'package:forward_chaining_man_app/app/views/page_profile.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/quiz/controller/question_controller.dart';
+import 'package:forward_chaining_man_app/app/views/student/feature/quiz/page_feedback_evaluation.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/quiz/view/page_select_economy.dart';
 import 'package:forward_chaining_man_app/app/views/student/feature/quiz/view/widget/shimmer.dart';
 import 'package:get/get.dart';
@@ -1529,8 +1530,10 @@ class _QuestionPageState extends State<QuestionPage>
                                               .saveResultsToFirestore(results)
                                               .then((_) {
                                             // Then show results to user
-                                            showRecommendationResultsGetx(
-                                                results);
+                                            showFeedbackEvaluationPage(
+                                                results,
+                                                controller.isKerja,
+                                                controller.majorType);
                                           });
                                         }
                                       } else {
