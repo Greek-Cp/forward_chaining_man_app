@@ -8,91 +8,23 @@
       "Pekerjaan Sains",
       "Teknis Laboratorium"
     ],
-    "riasec": {
-      "primary": "I (Investigative)",
-      "secondary": "R (Realistic)",
-      "tertiary": "C (Conventional)",
-      "code": "IRC"
-    },
     "minat": {
       "Kedokteran": {
         "pertanyaan": [
-          "AKER01: Saya tertarik tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal? [6]",
-          "AKER02: Saya tertarik ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh? [7]",
-          "AKER03: Saya tertarik tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan? [6]",
-          "AKER04: Saya tertarik ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter? [5]",
-          "AKER05: Saya tertarik tertarik dengan pekerjaan administrasi di lingkungan rumah sakit atau klinik? [5]",
-          "AKER06: Saya tertarik memiliki empati tinggi dan ingin membantu pasien secara langsung? [5]"
-        ],
-        "riasecType": [
-          {
-            "type": [
-              "I",
-              "S"
-            ],
-            "bobot": [
-              3,
-              3
-            ]
-          },
-          {
-            "type": [
-              "S"
-            ],
-            "bobot": [
-              6
-            ]
-          },
-          {
-            "type": [
-              "I"
-            ],
-            "bobot": [
-              6
-            ]
-          },
-          {
-            "type": [
-              "S",
-              "I"
-            ],
-            "bobot": [
-              3,
-              2
-            ]
-          },
-          {
-            "type": [
-              "C"
-            ],
-            "bobot": [
-              4
-            ]
-          },
-          {
-            "type": [
-              "S"
-            ],
-            "bobot": [
-              6
-            ]
-          }
+          "AKER01: Apakah Anda tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal? [6]",
+          "AKER02: Apakah Anda ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh? [7]",
+          "AKER03: Apakah Anda tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan? [6]",
+          "AKER04: Apakah Anda ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter? [5]",
+          "AKER05: Apakah Anda tertarik dengan pekerjaan administrasi di lingkungan rumah sakit atau klinik? [5]",
+          "AKER06: Apakah Anda memiliki empati tinggi dan ingin membantu pasien secara langsung? [5]"
         ],
         "karir": [
-          "Asisten Medis [20]",
-          "Tenaga Kesehatan [20]",
-          "Staf Klinik [20]",
-          "Administrasi Rumah Sakit [20]",
-          "Teknisi Alat Kesehatan [20]",
-          "Customer Service Asuransi Kesehatan [20]"
-        ],
-        "karir_riasec": [
-          "S/I",
-          "S/I",
-          "S/C",
-          "C",
-          "R/I",
-          "S/C"
+          "AKAR01: Asisten Medis [20]",
+          "AKAR02: Tenaga Kesehatan [20]",
+          "AKAR03: Staf Klinik [20]",
+          "AKAR04: Administrasi Rumah Sakit [20]",
+          "AKAR05: Teknisi Alat Kesehatan [20]",
+          "AKAR06: Customer Service Asuransi Kesehatan [20]"
         ],
         "jurusan_terkait": [
           "D3 Keperawatan",
@@ -111,82 +43,20 @@
       },
       "Sains": {
         "pertanyaan": [
-          "AKER07: Saya tertarik ingin menjadi peneliti atau bekerja di laboratorium? [7]",
-          "AKER08: Saya tertarik senang melakukan eksperimen ilmiah dan mempelajari data percobaan? [6]",
-          "AKER09: Saya tertarik tertarik untuk bekerja di bidang riset atau pengembangan produk tanpa kuliah formal? [6]",
-          "AKER10: Saya tertarik ingin bekerja dengan tim sains di industri atau lembaga penelitian? [6]",
-          "AKER11: Saya tertarik teliti dan mampu mengikuti protokol dengan tepat? [5]",
-          "AKER12: Saya tertarik tertarik dalam pengolahan dan analisis data penelitian? [5]"
-        ],
-        "riasecType": [
-          {
-            "type": [
-              "I"
-            ],
-            "bobot": [
-              7
-            ]
-          },
-          {
-            "type": [
-              "I"
-            ],
-            "bobot": [
-              6
-            ]
-          },
-          {
-            "type": [
-              "I"
-            ],
-            "bobot": [
-              6
-            ]
-          },
-          {
-            "type": [
-              "I",
-              "S"
-            ],
-            "bobot": [
-              4,
-              2
-            ]
-          },
-          {
-            "type": [
-              "C"
-            ],
-            "bobot": [
-              5
-            ]
-          },
-          {
-            "type": [
-              "I",
-              "C"
-            ],
-            "bobot": [
-              3,
-              2
-            ]
-          }
+          "AKER07: Apakah Anda ingin menjadi peneliti atau bekerja di laboratorium? [7]",
+          "AKER08: Apakah Anda senang melakukan eksperimen ilmiah dan mempelajari data percobaan? [6]",
+          "AKER09: Apakah Anda tertarik untuk bekerja di bidang riset atau pengembangan produk tanpa kuliah formal? [6]",
+          "AKER10: Apakah Anda ingin bekerja dengan tim sains di industri atau lembaga penelitian? [6]",
+          "AKER11: Apakah Anda teliti dan mampu mengikuti protokol dengan tepat? [5]",
+          "AKER12: Apakah Anda tertarik dalam pengolahan dan analisis data penelitian? [5]"
         ],
         "karir": [
-          "Teknisi Laboratorium [20]",
-          "Teknisi Peralatan Sains [20]",
-          "Staf R&D [20]",
-          "Pengumpul Data Lapangan [20]",
-          "Operator Peralatan Penelitian [20]",
-          "Staf Pengujian Kualitas [20]"
-        ],
-        "karir_riasec": [
-          "I/R",
-          "R/I",
-          "I",
-          "I/R",
-          "R/I",
-          "I/C"
+          "AKAR07: Teknisi Laboratorium [20]",
+          "AKAR08: Teknisi Peralatan Sains [20]",
+          "AKAR09: Staf R&D [20]",
+          "AKAR10: Pengumpul Data Lapangan [20]",
+          "AKAR11: Operator Peralatan Penelitian [20]",
+          "AKAR12: Staf Pengujian Kualitas [20]"
         ],
         "jurusan_terkait": [
           "D3 Analis Kimia",
@@ -206,12 +76,12 @@
       },
       "Farmasi": {
         "pertanyaan": [
-          "AKER13: Saya tertarik tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal? [6]",
-          "AKER14: Saya tertarik ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat? [6]",
-          "AKER15: Saya tertarik tertarik dengan pengujian obat dan kualitas farmasi di industri? [6]",
-          "AKER16: Saya tertarik ingin menjadi bagian dari tim yang mengembangkan produk obat? [6]",
-          "AKER17: Saya tertarik teliti dalam mengukur dan mencatat informasi penting? [6]",
-          "AKER18: Saya tertarik tertarik dalam penyimpanan dan pendistribusian obat-obatan? [6]"
+          "AKER13: Apakah Anda tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal? [6]",
+          "AKER14: Apakah Anda ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat? [6]",
+          "AKER15: Apakah Anda tertarik dengan pengujian obat dan kualitas farmasi di industri? [6]",
+          "AKER16: Apakah Anda ingin menjadi bagian dari tim yang mengembangkan produk obat? [6]",
+          "AKER17: Apakah Anda teliti dalam mengukur dan mencatat informasi penting? [6]",
+          "AKER18: Apakah Anda tertarik dalam penyimpanan dan pendistribusian obat-obatan? [6]"
         ],
         "riasecType": [
           {
@@ -272,13 +142,13 @@
           }
         ],
         "karir": [
-          "Asisten Apoteker [20]",
-          "Teknisi Farmasi [20]",
-          "Staf Produksi Obat [20]",
-          "Pengujian Kualitas Obat [20]",
-          "Staf Logistik Farmasi [20]",
-          "Sales Representative Produk Farmasi [20]",
-          "Staf Administrasi Apotek [20]"
+          "AKAR13: Asisten Apoteker [20]",
+          "AKAR14: Teknisi Farmasi [20]",
+          "AKAR15: Staf Produksi Obat [20]",
+          "AKAR16: Pengujian Kualitas Obat [20]",
+          "AKAR17: Staf Logistik Farmasi [20]",
+          "AKAR18: Sales Representative Produk Farmasi [20]",
+          "AKAR19: Staf Administrasi Apotek [20]"
         ],
         "karir_riasec": [
           "I/C",
@@ -306,12 +176,12 @@
       },
       "Laboratorium": {
         "pertanyaan": [
-          "AKER19: Saya tertarik tertarik bekerja dengan peralatan dan instrumen laboratorium? [6]",
-          "AKER20: Saya tertarik menyukai pekerjaan yang membutuhkan ketelitian dan konsistensi tinggi? [6]",
-          "AKER21: Saya tertarik ingin bekerja di laboratorium klinik, industri, atau penelitian? [6]",
-          "AKER22: Saya tertarik tertarik untuk mempelajari teknik-teknik analisis laboratorium? [6]",
-          "AKER23: Saya tertarik mampu mengikuti protokol dan prosedur standar dengan tepat? [6]",
-          "AKER24: Saya tertarik tertarik dalam persiapan sampel dan pengujian bahan? [6]"
+          "AKER19: Apakah Anda tertarik bekerja dengan peralatan dan instrumen laboratorium? [6]",
+          "AKER20: Apakah Anda menyukai pekerjaan yang membutuhkan ketelitian dan konsistensi tinggi? [6]",
+          "AKER21: Apakah Anda ingin bekerja di laboratorium klinik, industri, atau penelitian? [6]",
+          "AKER22: Apakah Anda tertarik untuk mempelajari teknik-teknik analisis laboratorium? [6]",
+          "AKER23: Apakah Anda mampu mengikuti protokol dan prosedur standar dengan tepat? [6]",
+          "AKER24: Apakah Anda tertarik dalam persiapan sampel dan pengujian bahan? [6]"
         ],
         "riasecType": [
           {
@@ -368,11 +238,11 @@
           }
         ],
         "karir": [
-          "Teknisi Laboratorium Klinik [20]",
-          "Teknisi Laboratorium Industri [20]",
-          "Staf Pengujian Kualitas [20]",
-          "Teknisi Instrumentasi [20]",
-          "Staf Pengambilan Sampel [20]"
+          "AKAR20: Teknisi Laboratorium Klinik [20]",
+          "AKAR21: Teknisi Laboratorium Industri [20]",
+          "AKAR22: Staf Pengujian Kualitas [20]",
+          "AKAR23: Teknisi Instrumentasi [20]",
+          "AKAR24: Staf Pengambilan Sampel [20]"
         ],
         "karir_riasec": [
           "I/R",
@@ -399,12 +269,12 @@
       },
       "Lingkungan": {
         "pertanyaan": [
-          "AKER25: Saya tertarik tertarik untuk bekerja dalam pemantauan dan pengelolaan lingkungan? [6]",
-          "AKER26: Saya tertarik peduli terhadap isu-isu lingkungan dan pelestarian alam? [7]",
-          "AKER27: Saya tertarik suka bekerja di lapangan dan mengumpulkan data lingkungan? [7]",
-          "AKER28: Saya tertarik tertarik untuk mempelajari cara mengukur polusi dan kualitas lingkungan? [6]",
-          "AKER29: Saya tertarik ingin bekerja dalam proyek konservasi atau pengelolaan limbah? [6]",
-          "AKER30: Saya tertarik tertarik dalam pendidikan lingkungan dan kampanye kesadaran? [7]"
+          "AKER25: Apakah Anda tertarik untuk bekerja dalam pemantauan dan pengelolaan lingkungan? [6]",
+          "AKER26: Apakah Anda peduli terhadap isu-isu lingkungan dan pelestarian alam? [7]",
+          "AKER27: Apakah Anda suka bekerja di lapangan dan mengumpulkan data lingkungan? [7]",
+          "AKER28: Apakah Anda tertarik untuk mempelajari cara mengukur polusi dan kualitas lingkungan? [6]",
+          "AKER29: Apakah Anda ingin bekerja dalam proyek konservasi atau pengelolaan limbah? [6]",
+          "AKER30: Apakah Anda tertarik dalam pendidikan lingkungan dan kampanye kesadaran? [7]"
         ],
         "riasecType": [
           {
@@ -467,12 +337,12 @@
           }
         ],
         "karir": [
-          "Teknisi Pemantauan Lingkungan [20]",
-          "Staf Pengelolaan Limbah [20]",
-          "Asisten Pengambil Sampel Lingkungan [20]",
-          "Operator Pengolahan Air [20]",
-          "Staf Lapangan Konservasi [20]",
-          "Teknisi Pengendalian Polusi [20]"
+          "AKAR25: Teknisi Pemantauan Lingkungan [20]",
+          "AKAR26: Staf Pengelolaan Limbah [20]",
+          "AKAR27: Asisten Pengambil Sampel Lingkungan [20]",
+          "AKAR28: Operator Pengolahan Air [20]",
+          "AKAR29: Staf Lapangan Konservasi [20]",
+          "AKAR30: Teknisi Pengendalian Polusi [20]"
         ],
         "karir_riasec": [
           "I/R",
@@ -499,12 +369,12 @@
       },
       "Pangan dan Nutrisi": {
         "pertanyaan": [
-          "AKER31: Saya tertarik tertarik bekerja dalam pengujian dan pengembangan produk pangan? [6]",
-          "AKER32: Saya tertarik ingin mempelajari cara menganalisis kualitas dan keamanan makanan? [7]",
-          "AKER33: Saya tertarik tertarik untuk bekerja di industri pengolahan pangan? [5]",
-          "AKER34: Saya tertarik peduli tentang nutrisi dan dampaknya terhadap kesehatan? [5]",
-          "AKER35: Saya tertarik tertarik dalam produksi dan pengawasan makanan? [5]",
-          "AKER36: Saya tertarik ingin membantu orang dengan masalah nutrisi dan diet? [4]"
+          "AKER31: Apakah Anda tertarik bekerja dalam pengujian dan pengembangan produk pangan? [6]",
+          "AKER32: Apakah Anda ingin mempelajari cara menganalisis kualitas dan keamanan makanan? [7]",
+          "AKER33: Apakah Anda tertarik untuk bekerja di industri pengolahan pangan? [5]",
+          "AKER34: Apakah Anda peduli tentang nutrisi dan dampaknya terhadap kesehatan? [5]",
+          "AKER35: Apakah Anda tertarik dalam produksi dan pengawasan makanan? [5]",
+          "AKER36: Apakah Anda ingin membantu orang dengan masalah nutrisi dan diet? [4]"
         ],
         "riasecType": [
           {
@@ -563,12 +433,12 @@
           }
         ],
         "karir": [
-          "Teknisi Pengujian Pangan [20]",
-          "Asisten Quality Control Makanan [20]",
-          "Staf Produksi Industri Pangan [20]",
-          "Teknisi Pengolahan Makanan [20]",
-          "Staf Pengembangan Produk Pangan [20]",
-          "Asisten Food Safety [20]"
+          "AKAR31: Teknisi Pengujian Pangan [20]",
+          "AKAR32: Asisten Quality Control Makanan [20]",
+          "AKAR33: Staf Produksi Industri Pangan [20]",
+          "AKAR34: Teknisi Pengolahan Makanan [20]",
+          "AKAR35: Staf Pengembangan Produk Pangan [20]",
+          "AKAR36: Asisten Food Safety [20]"
         ],
         "karir_riasec": [
           "I/R",
@@ -595,12 +465,12 @@
       },
       "Peralatan Medis": {
         "pertanyaan": [
-          "AKER37: Saya tertarik tertarik bekerja dengan peralatan dan teknologi medis? [6]",
-          "AKER38: Saya tertarik ingin mempelajari cara mengoperasikan dan memelihara alat medis? [7]",
-          "AKER39: Saya tertarik tertarik untuk bekerja di rumah sakit atau perusahaan peralatan medis? [5]",
-          "AKER40: Saya tertarik memiliki keterampilan teknis dan ingin menerapkannya di bidang kesehatan? [6]",
-          "AKER41: Saya tertarik tertarik dalam pengenalan dan pelatihan penggunaan peralatan medis? [5]",
-          "AKER42: Saya tertarik suka memperbaiki dan memecahkan masalah pada perangkat elektronik? [6]"
+          "AKER37: Apakah Anda tertarik bekerja dengan peralatan dan teknologi medis? [6]",
+          "AKER38: Apakah Anda ingin mempelajari cara mengoperasikan dan memelihara alat medis? [7]",
+          "AKER39: Apakah Anda tertarik untuk bekerja di rumah sakit atau perusahaan peralatan medis? [5]",
+          "AKER40: Apakah Anda memiliki keterampilan teknis dan ingin menerapkannya di bidang kesehatan? [6]",
+          "AKER41: Apakah Anda tertarik dalam pengenalan dan pelatihan penggunaan peralatan medis? [5]",
+          "AKER42: Apakah Anda suka memperbaiki dan memecahkan masalah pada perangkat elektronik? [6]"
         ],
         "riasecType": [
           {
@@ -661,11 +531,11 @@
           }
         ],
         "karir": [
-          "Teknisi Peralatan Medis [20]",
-          "Teknisi Laboratorium Medis [20]",
-          "Staf Penjualan Alat Kesehatan [20]",
-          "Teknisi Pemeliharaan Alat Medis [20]",
-          "Staf Logistik Peralatan Medis [20]"
+          "AKAR37: Teknisi Peralatan Medis [20]",
+          "AKAR38: Teknisi Laboratorium Medis [20]",
+          "AKAR39: Staf Penjualan Alat Kesehatan [20]",
+          "AKAR40: Teknisi Pemeliharaan Alat Medis [20]",
+          "AKAR41: Staf Logistik Peralatan Medis [20]"
         ],
         "karir_riasec": [
           "R/I",
@@ -693,171 +563,171 @@
     "semua_pertanyaan": [
       {
         "kode_pertanyaan": "AKER01",
-        "isi_pertanyaan": "Saya tertarik tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal?"
+        "isi_pertanyaan": "Apakah Anda tertarik bekerja di rumah sakit atau klinik tanpa kuliah formal?"
       },
       {
         "kode_pertanyaan": "AKER02",
-        "isi_pertanyaan": "Saya tertarik ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh?"
+        "isi_pertanyaan": "Apakah Anda ingin mempelajari cara dasar merawat pasien atau membantu mereka sembuh?"
       },
       {
         "kode_pertanyaan": "AKER03",
-        "isi_pertanyaan": "Saya tertarik tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan?"
+        "isi_pertanyaan": "Apakah Anda tertarik untuk mendapatkan pengetahuan medis melalui kursus online atau pelatihan?"
       },
       {
         "kode_pertanyaan": "AKER04",
-        "isi_pertanyaan": "Saya tertarik ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter?"
+        "isi_pertanyaan": "Apakah Anda ingin bekerja sebagai asisten medis atau tenaga medis tanpa harus menjadi dokter?"
       },
       {
         "kode_pertanyaan": "AKER05",
-        "isi_pertanyaan": "Saya tertarik tertarik dengan pekerjaan administrasi di lingkungan rumah sakit atau klinik?"
+        "isi_pertanyaan": "Apakah Anda tertarik dengan pekerjaan administrasi di lingkungan rumah sakit atau klinik?"
       },
       {
         "kode_pertanyaan": "AKER06",
-        "isi_pertanyaan": "Saya tertarik memiliki empati tinggi dan ingin membantu pasien secara langsung?"
+        "isi_pertanyaan": "Apakah Anda memiliki empati tinggi dan ingin membantu pasien secara langsung?"
       },
       {
         "kode_pertanyaan": "AKER07",
-        "isi_pertanyaan": "Saya tertarik ingin menjadi peneliti atau bekerja di laboratorium?"
+        "isi_pertanyaan": "Apakah Anda ingin menjadi peneliti atau bekerja di laboratorium?"
       },
       {
         "kode_pertanyaan": "AKER08",
-        "isi_pertanyaan": "Saya tertarik senang melakukan eksperimen ilmiah dan mempelajari data percobaan?"
+        "isi_pertanyaan": "Apakah Anda senang melakukan eksperimen ilmiah dan mempelajari data percobaan?"
       },
       {
         "kode_pertanyaan": "AKER09",
-        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja di bidang riset atau pengembangan produk tanpa kuliah formal?"
+        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di bidang riset atau pengembangan produk tanpa kuliah formal?"
       },
       {
         "kode_pertanyaan": "AKER10",
-        "isi_pertanyaan": "Saya tertarik ingin bekerja dengan tim sains di industri atau lembaga penelitian?"
+        "isi_pertanyaan": "Apakah Anda ingin bekerja dengan tim sains di industri atau lembaga penelitian?"
       },
       {
         "kode_pertanyaan": "AKER11",
-        "isi_pertanyaan": "Saya tertarik teliti dan mampu mengikuti protokol dengan tepat?"
+        "isi_pertanyaan": "Apakah Anda teliti dan mampu mengikuti protokol dengan tepat?"
       },
       {
         "kode_pertanyaan": "AKER12",
-        "isi_pertanyaan": "Saya tertarik tertarik dalam pengolahan dan analisis data penelitian?"
+        "isi_pertanyaan": "Apakah Anda tertarik dalam pengolahan dan analisis data penelitian?"
       },
       {
         "kode_pertanyaan": "AKER13",
-        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal?"
+        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di apotek atau di industri farmasi tanpa kuliah formal?"
       },
       {
         "kode_pertanyaan": "AKER14",
-        "isi_pertanyaan": "Saya tertarik ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat?"
+        "isi_pertanyaan": "Apakah Anda ingin mempelajari bagaimana obat bekerja melalui kursus atau pelatihan singkat?"
       },
       {
         "kode_pertanyaan": "AKER15",
-        "isi_pertanyaan": "Saya tertarik tertarik dengan pengujian obat dan kualitas farmasi di industri?"
+        "isi_pertanyaan": "Apakah Anda tertarik dengan pengujian obat dan kualitas farmasi di industri?"
       },
       {
         "kode_pertanyaan": "AKER16",
-        "isi_pertanyaan": "Saya tertarik ingin menjadi bagian dari tim yang mengembangkan produk obat?"
+        "isi_pertanyaan": "Apakah Anda ingin menjadi bagian dari tim yang mengembangkan produk obat?"
       },
       {
         "kode_pertanyaan": "AKER17",
-        "isi_pertanyaan": "Saya tertarik teliti dalam mengukur dan mencatat informasi penting?"
+        "isi_pertanyaan": "Apakah Anda teliti dalam mengukur dan mencatat informasi penting?"
       },
       {
         "kode_pertanyaan": "AKER18",
-        "isi_pertanyaan": "Saya tertarik tertarik dalam penyimpanan dan pendistribusian obat-obatan?"
+        "isi_pertanyaan": "Apakah Anda tertarik dalam penyimpanan dan pendistribusian obat-obatan?"
       },
       {
         "kode_pertanyaan": "AKER19",
-        "isi_pertanyaan": "Saya tertarik tertarik bekerja dengan peralatan dan instrumen laboratorium?"
+        "isi_pertanyaan": "Apakah Anda tertarik bekerja dengan peralatan dan instrumen laboratorium?"
       },
       {
         "kode_pertanyaan": "AKER20",
-        "isi_pertanyaan": "Saya tertarik menyukai pekerjaan yang membutuhkan ketelitian dan konsistensi tinggi?"
+        "isi_pertanyaan": "Apakah Anda menyukai pekerjaan yang membutuhkan ketelitian dan konsistensi tinggi?"
       },
       {
         "kode_pertanyaan": "AKER21",
-        "isi_pertanyaan": "Saya tertarik ingin bekerja di laboratorium klinik, industri, atau penelitian?"
+        "isi_pertanyaan": "Apakah Anda ingin bekerja di laboratorium klinik, industri, atau penelitian?"
       },
       {
         "kode_pertanyaan": "AKER22",
-        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari teknik-teknik analisis laboratorium?"
+        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari teknik-teknik analisis laboratorium?"
       },
       {
         "kode_pertanyaan": "AKER23",
-        "isi_pertanyaan": "Saya tertarik mampu mengikuti protokol dan prosedur standar dengan tepat?"
+        "isi_pertanyaan": "Apakah Anda mampu mengikuti protokol dan prosedur standar dengan tepat?"
       },
       {
         "kode_pertanyaan": "AKER24",
-        "isi_pertanyaan": "Saya tertarik tertarik dalam persiapan sampel dan pengujian bahan?"
+        "isi_pertanyaan": "Apakah Anda tertarik dalam persiapan sampel dan pengujian bahan?"
       },
       {
         "kode_pertanyaan": "AKER25",
-        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja dalam pemantauan dan pengelolaan lingkungan?"
+        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja dalam pemantauan dan pengelolaan lingkungan?"
       },
       {
         "kode_pertanyaan": "AKER26",
-        "isi_pertanyaan": "Saya tertarik peduli terhadap isu-isu lingkungan dan pelestarian alam?"
+        "isi_pertanyaan": "Apakah Anda peduli terhadap isu-isu lingkungan dan pelestarian alam?"
       },
       {
         "kode_pertanyaan": "AKER27",
-        "isi_pertanyaan": "Saya tertarik suka bekerja di lapangan dan mengumpulkan data lingkungan?"
+        "isi_pertanyaan": "Apakah Anda suka bekerja di lapangan dan mengumpulkan data lingkungan?"
       },
       {
         "kode_pertanyaan": "AKER28",
-        "isi_pertanyaan": "Saya tertarik tertarik untuk mempelajari cara mengukur polusi dan kualitas lingkungan?"
+        "isi_pertanyaan": "Apakah Anda tertarik untuk mempelajari cara mengukur polusi dan kualitas lingkungan?"
       },
       {
         "kode_pertanyaan": "AKER29",
-        "isi_pertanyaan": "Saya tertarik ingin bekerja dalam proyek konservasi atau pengelolaan limbah?"
+        "isi_pertanyaan": "Apakah Anda ingin bekerja dalam proyek konservasi atau pengelolaan limbah?"
       },
       {
         "kode_pertanyaan": "AKER30",
-        "isi_pertanyaan": "Saya tertarik tertarik dalam pendidikan lingkungan dan kampanye kesadaran?"
+        "isi_pertanyaan": "Apakah Anda tertarik dalam pendidikan lingkungan dan kampanye kesadaran?"
       },
       {
         "kode_pertanyaan": "AKER31",
-        "isi_pertanyaan": "Saya tertarik tertarik bekerja dalam pengujian dan pengembangan produk pangan?"
+        "isi_pertanyaan": "Apakah Anda tertarik bekerja dalam pengujian dan pengembangan produk pangan?"
       },
       {
         "kode_pertanyaan": "AKER32",
-        "isi_pertanyaan": "Saya tertarik ingin mempelajari cara menganalisis kualitas dan keamanan makanan?"
+        "isi_pertanyaan": "Apakah Anda ingin mempelajari cara menganalisis kualitas dan keamanan makanan?"
       },
       {
         "kode_pertanyaan": "AKER33",
-        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja di industri pengolahan pangan?"
+        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di industri pengolahan pangan?"
       },
       {
         "kode_pertanyaan": "AKER34",
-        "isi_pertanyaan": "Saya tertarik peduli tentang nutrisi dan dampaknya terhadap kesehatan?"
+        "isi_pertanyaan": "Apakah Anda peduli tentang nutrisi dan dampaknya terhadap kesehatan?"
       },
       {
         "kode_pertanyaan": "AKER35",
-        "isi_pertanyaan": "Saya tertarik tertarik dalam produksi dan pengawasan makanan?"
+        "isi_pertanyaan": "Apakah Anda tertarik dalam produksi dan pengawasan makanan?"
       },
       {
         "kode_pertanyaan": "AKER36",
-        "isi_pertanyaan": "Saya tertarik ingin membantu orang dengan masalah nutrisi dan diet?"
+        "isi_pertanyaan": "Apakah Anda ingin membantu orang dengan masalah nutrisi dan diet?"
       },
       {
         "kode_pertanyaan": "AKER37",
-        "isi_pertanyaan": "Saya tertarik tertarik bekerja dengan peralatan dan teknologi medis?"
+        "isi_pertanyaan": "Apakah Anda tertarik bekerja dengan peralatan dan teknologi medis?"
       },
       {
         "kode_pertanyaan": "AKER38",
-        "isi_pertanyaan": "Saya tertarik ingin mempelajari cara mengoperasikan dan memelihara alat medis?"
+        "isi_pertanyaan": "Apakah Anda ingin mempelajari cara mengoperasikan dan memelihara alat medis?"
       },
       {
         "kode_pertanyaan": "AKER39",
-        "isi_pertanyaan": "Saya tertarik tertarik untuk bekerja di rumah sakit atau perusahaan peralatan medis?"
+        "isi_pertanyaan": "Apakah Anda tertarik untuk bekerja di rumah sakit atau perusahaan peralatan medis?"
       },
       {
         "kode_pertanyaan": "AKER40",
-        "isi_pertanyaan": "Saya tertarik memiliki keterampilan teknis dan ingin menerapkannya di bidang kesehatan?"
+        "isi_pertanyaan": "Apakah Anda memiliki keterampilan teknis dan ingin menerapkannya di bidang kesehatan?"
       },
       {
         "kode_pertanyaan": "AKER41",
-        "isi_pertanyaan": "Saya tertarik tertarik dalam pengenalan dan pelatihan penggunaan peralatan medis?"
+        "isi_pertanyaan": "Apakah Anda tertarik dalam pengenalan dan pelatihan penggunaan peralatan medis?"
       },
       {
         "kode_pertanyaan": "AKER42",
-        "isi_pertanyaan": "Saya tertarik suka memperbaiki dan memecahkan masalah pada perangkat elektronik?"
+        "isi_pertanyaan": "Apakah Anda suka memperbaiki dan memecahkan masalah pada perangkat elektronik?"
       }
     ]
   }

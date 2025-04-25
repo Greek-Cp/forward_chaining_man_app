@@ -98,12 +98,12 @@
           "I"
         ],
         "jurusan_terkait": [
-          "Kedokteran Umum",
-          "Kedokteran Gigi",
-          "Kedokteran Hewan",
-          "Kesehatan Masyarakat",
-          "Keperawatan",
-          "Kebidanan"
+          "AJUR01: Kedokteran Umum",
+          "AJUR02: Kedokteran Gigi",
+          "AJUR03: Kedokteran Hewan",
+          "AJUR04: Kesehatan Masyarakat",
+          "AJUR05: Keperawatan",
+          "AJUR06: Kebidanan"
         ],
         "universitas_rekomendasi": [
           "Universitas Indonesia (UI)",
@@ -205,13 +205,13 @@
           "I/R"
         ],
         "jurusan_terkait": [
-          "Biologi",
-          "Kimia",
-          "Fisika",
-          "Matematika",
-          "Fisika (peminatan Astrofisika)",
-          "Geofisika",
-          "Meteorologi dan Klimatologi"
+          "AJUR07: Biologi",
+          "AJUR08: Kimia",
+          "AJUR09: Fisika",
+          "AJUR10: Matematika",
+          "AJUR11: Fisika (peminatan Astrofisika)",
+          "AJUR12: Geofisika",
+          "AJUR13: Meteorologi dan Klimatologi"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -307,12 +307,12 @@
           "I/S"
         ],
         "jurusan_terkait": [
-          "Farmasi",
-          "Kimia",
-          "Teknologi Pangan",
-          "Bioteknologi",
-          "Teknik Kimia",
-          "Biokimia"
+          "AJUR14: Farmasi",
+          "AJUR15: Kimia",
+          "AJUR16: Teknologi Pangan",
+          "AJUR17: Bioteknologi",
+          "AJUR18: Teknik Kimia",
+          "AJUR19: Biokimia"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -410,12 +410,12 @@
           "I"
         ],
         "jurusan_terkait": [
-          "Bioteknologi",
-          "Teknologi Pangan",
-          "Mikrobiologi",
-          "Teknik Biomedis",
-          "Biologi Molekuler",
-          "Biologi (peminatan Genetika)"
+          "AJUR20: Bioteknologi",
+          "AJUR21: Teknologi Pangan",
+          "AJUR22: Mikrobiologi",
+          "AJUR23: Teknik Biomedis",
+          "AJUR24: Biologi Molekuler",
+          "AJUR25: Biologi (peminatan Genetika)"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -517,12 +517,12 @@
           "I/R"
         ],
         "jurusan_terkait": [
-          "Ilmu Lingkungan",
-          "Biologi (peminatan Konservasi)",
-          "Kehutanan",
-          "Teknik Lingkungan",
-          "Oseanografi",
-          "Meteorologi dan Geofisika"
+          "AJUR26: Ilmu Lingkungan",
+          "AJUR27: Biologi (peminatan Konservasi)",
+          "AJUR28: Kehutanan",
+          "AJUR29: Teknik Lingkungan",
+          "AJUR30: Oseanografi",
+          "AJUR31: Meteorologi dan Geofisika"
         ],
         "universitas_rekomendasi": [
           "Institut Pertanian Bogor (IPB)",
@@ -622,12 +622,12 @@
           "R/I"
         ],
         "jurusan_terkait": [
-          "Geologi",
-          "Geofisika",
-          "Teknik Perminyakan",
-          "Teknik Pertambangan",
-          "Oseanografi",
-          "Geodesi"
+          "AJUR32: Geologi",
+          "AJUR33: Geofisika",
+          "AJUR34: Teknik Perminyakan",
+          "AJUR35: Teknik Pertambangan",
+          "AJUR36: Oseanografi",
+          "AJUR37: Geodesi"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -723,12 +723,12 @@
           "S/I"
         ],
         "jurusan_terkait": [
-          "Kedokteran (spesialisasi Neurologi)",
-          "Psikologi",
-          "Biologi",
-          "Teknologi Medis",
-          "Ilmu Biomedis",
-          "Farmakologi"
+          "AJUR38: Kedokteran (spesialisasi Neurologi)",
+          "AJUR39: Psikologi",
+          "AJUR40: Biologi",
+          "AJUR41: Teknologi Medis",
+          "AJUR42: Ilmu Biomedis",
+          "AJUR43: Farmakologi"
         ],
         "universitas_rekomendasi": [
           "Universitas Indonesia (UI)",
@@ -830,12 +830,12 @@
           "R/I"
         ],
         "jurusan_terkait": [
-          "Teknik Biomedis",
-          "Teknologi Medis",
-          "Fisika (peminatan Medis)",
-          "Teknik Elektro",
-          "Ilmu Komputer",
-          "Teknik Mesin"
+          "AJUR44: Teknik Biomedis",
+          "AJUR45: Teknologi Medis",
+          "AJUR46: Fisika (peminatan Medis)",
+          "AJUR47: Teknik Elektro",
+          "AJUR48: Ilmu Komputer",
+          "AJUR49: Teknik Mesin"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",

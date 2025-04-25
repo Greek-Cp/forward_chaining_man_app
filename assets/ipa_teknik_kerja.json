@@ -87,16 +87,16 @@
           }
         ],
         "karir": [
-          "Teknisi Elektronika [20]",
-          "Teknisi Perangkat Elektronik [20]",
-          "Teknisi Service HP/Laptop [20]",
-          "Teknisi Instalasi CCTV [20]",
-          "Assembler Perangkat Elektronik [20]",
-          "Teknisi Peralatan Audio-Visual [20]",
-          "Teknisi Telekomunikasi [20]",
-          "Operator Mesin Produksi [20]",
-          "Teknisi Maintenance Pabrik [20]",
-          "Petugas Lini Produksi [20]"
+          "BKAR01: Teknisi Elektronika [20]",
+          "BKAR02: Teknisi Perangkat Elektronik [20]",
+          "BKAR03: Teknisi Service HP/Laptop [20]",
+          "BKAR04: Teknisi Instalasi CCTV [20]",
+          "BKAR05: Assembler Perangkat Elektronik [20]",
+          "BKAR06: Teknisi Peralatan Audio-Visual [20]",
+          "BKAR07: Teknisi Telekomunikasi [20]",
+          "BKAR08: Operator Mesin Produksi [20]",
+          "BKAR09: Teknisi Maintenance Pabrik [20]",
+          "BKAR10: Petugas Lini Produksi [20]"
         ],
         "karir_riasec": [
           "R/I",
@@ -203,9 +203,9 @@
           }
         ],
         "karir": [
-          "Operator Mesin Produksi [18]",
-          "Teknisi Maintenance Pabrik [19]",
-          "Petugas Lini Produksi [17]"
+          "BKAR11: Operator Mesin Produksi [18]",
+          "BKAR12: Teknisi Maintenance Pabrik [19]",
+          "BKAR13: Petugas Lini Produksi [17]"
         ],
         "karir_riasec": [
           "R",
@@ -302,17 +302,17 @@
           }
         ],
         "karir": [
-          "Junior Web Developer [20]",
-          "Junior Mobile App Developer [20]",
-          "Front-End Developer [20]",
-          "Technical Support [20]",
-          "Content Creator Digital [20]",
-          "Freelance Programmer [20]",
-          "Teknisi Jaringan [20]",
-          "IT Support Specialist [20]",
-          "Network Technician [20]",
-          "Helpdesk Support [20]",
-          "Teknisi Instalasi Internet [20]"
+          "BKAR14: Junior Web Developer [20]",
+          "BKAR15: Junior Mobile App Developer [20]",
+          "BKAR16: Front-End Developer [20]",
+          "BKAR17: Technical Support [20]",
+          "BKAR18: Content Creator Digital [20]",
+          "BKAR19: Freelance Programmer [20]",
+          "BKAR20: Teknisi Jaringan [20]",
+          "BKAR21: IT Support Specialist [20]",
+          "BKAR22: Network Technician [20]",
+          "BKAR23: Helpdesk Support [20]",
+          "BKAR24: Teknisi Instalasi Internet [20]"
         ],
         "karir_riasec": [
           "I/A",
@@ -422,11 +422,11 @@
           }
         ],
         "karir": [
-          "Teknisi Jaringan [20]",
-          "IT Support Specialist [19]",
-          "Network Technician [19]",
-          "Helpdesk Support [17]",
-          "Teknisi Instalasi Internet [18]"
+          "BKAR25: Teknisi Jaringan [20]",
+          "BKAR26: IT Support Specialist [19]",
+          "BKAR27: Network Technician [19]",
+          "BKAR28: Helpdesk Support [17]",
+          "BKAR29: Teknisi Instalasi Internet [18]"
         ],
         "karir_riasec": [
           "R/I",
@@ -520,12 +520,12 @@
           }
         ],
         "karir": [
-          "Teknisi Mesin [20]",
-          "Operator Mesin CNC [20]",
-          "Teknisi Pemeliharaan Industri [20]",
-          "Teknisi Otomotif [20]",
-          "Operator Alat Berat [20]",
-          "Welder/Tukang Las [20]"
+          "BKAR30: Teknisi Mesin [20]",
+          "BKAR31: Operator Mesin CNC [20]",
+          "BKAR32: Teknisi Pemeliharaan Industri [20]",
+          "BKAR33: Teknisi Otomotif [20]",
+          "BKAR34: Operator Alat Berat [20]",
+          "BKAR35: Welder/Tukang Las [20]"
         ],
         "karir_riasec": [
           "R",
@@ -626,11 +626,11 @@
           }
         ],
         "karir": [
-          "Pelaksana Lapangan Konstruksi [20]",
-          "Surveyor Lapangan [20]",
-          "Juru Gambar/Drafter [20]",
-          "Mandor Bangunan [20]",
-          "Tenaga Administrasi Proyek [20]"
+          "BKAR36: Pelaksana Lapangan Konstruksi [20]",
+          "BKAR37: Surveyor Lapangan [20]",
+          "BKAR38: Juru Gambar/Drafter [20]",
+          "BKAR39: Mandor Bangunan [20]",
+          "BKAR40: Tenaga Administrasi Proyek [20]"
         ],
         "karir_riasec": [
           "R/E",
@@ -728,11 +728,11 @@
           }
         ],
         "karir": [
-          "Operator Proses Kimia [20]",
-          "Petugas Pengecekan Produk [20]",
-          "Petugas Instalasi Pengolahan Limbah [20]",
-          "Operator Instalasi Pengolahan Air [20]",
-          "Petugas K3 Pabrik [20]"
+          "BKAR41: Operator Proses Kimia [20]",
+          "BKAR42: Petugas Pengecekan Produk [20]",
+          "BKAR43: Petugas Instalasi Pengolahan Limbah [20]",
+          "BKAR44: Operator Instalasi Pengolahan Air [20]",
+          "BKAR45: Petugas K3 Pabrik [20]"
         ],
         "karir_riasec": [
           "R/C",
@@ -828,11 +828,11 @@
           }
         ],
         "karir": [
-          "Teknisi Listrik [20]",
-          "Teknisi Panel Surya [20]",
-          "Operator Pembangkit Listrik [20]",
-          "Teknisi Instalasi Listrik [20]",
-          "Teknisi Pemeliharaan Sistem Energi [20]"
+          "BKAR46: Teknisi Listrik [20]",
+          "BKAR47: Teknisi Panel Surya [20]",
+          "BKAR48: Operator Pembangkit Listrik [20]",
+          "BKAR49: Teknisi Instalasi Listrik [20]",
+          "BKAR50: Teknisi Pemeliharaan Sistem Energi [20]"
         ],
         "karir_riasec": [
           "R",
@@ -926,12 +926,12 @@
           }
         ],
         "karir": [
-          "Mekanik Otomotif [20]",
-          "Mekanik Sepeda Motor [20]",
-          "Teknisi Kelistrikan Otomotif [20]",
-          "Teknisi AC Mobil [20]",
-          "Service Advisor [20]",
-          "Petugas Bengkel Umum [20]"
+          "BKAR51: Mekanik Otomotif [20]",
+          "BKAR52: Mekanik Sepeda Motor [20]",
+          "BKAR53: Teknisi Kelistrikan Otomotif [20]",
+          "BKAR54: Teknisi AC Mobil [20]",
+          "BKAR55: Service Advisor [20]",
+          "BKAR56: Petugas Bengkel Umum [20]"
         ],
         "karir_riasec": [
           "R",

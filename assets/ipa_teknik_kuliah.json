@@ -107,13 +107,13 @@
           "I/R/E"
         ],
         "jurusan_terkait": [
-          "Teknik Elektro",
-          "Teknik Elektronika",
-          "Teknik Mekatronika",
-          "Teknik Telekomunikasi",
-          "Teknik Komputer",
-          "Elektronika Industri",
-          "Teknik Instrumentasi"
+          "BJUR01: Teknik Elektro",
+          "BJUR02: Teknik Elektronika",
+          "BJUR03: Teknik Mekatronika",
+          "BJUR04: Teknik Telekomunikasi",
+          "BJUR05: Teknik Komputer",
+          "BJUR06: Elektronika Industri",
+          "BJUR07: Teknik Instrumentasi"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -218,13 +218,13 @@
           "I/R/E"
         ],
         "jurusan_terkait": [
-          "Teknik Mekatronika",
-          "Teknik Elektro",
-          "Teknik Informatika (Konsentrasi Robotika)",
-          "Teknik Komputer",
-          "Teknik Otomasi",
-          "Teknik Sistem Kendali",
-          "Teknik Mesin"
+          "BJUR08: Teknik Mekatronika",
+          "BJUR09: Teknik Elektro",
+          "BJUR10: Teknik Informatika (Konsentrasi Robotika)",
+          "BJUR11: Teknik Komputer",
+          "BJUR12: Teknik Otomasi",
+          "BJUR13: Teknik Sistem Kendali",
+          "BJUR14: Teknik Mesin"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -345,17 +345,17 @@
           "I"
         ],
         "jurusan_terkait": [
-          "Teknik Informatika",
-          "Ilmu Komputer",
-          "Sistem Informasi",
-          "Sains Data",
-          "Kecerdasan Buatan",
-          "Rekayasa Perangkat Lunak",
-          "Teknologi Informasi",
-          "Teknik Komputer",
-          "Teknik Telekomunikasi",
-          "Keamanan Siber",
-          "Teknik Jaringan"
+          "BJUR15: Teknik Informatika",
+          "BJUR16: Ilmu Komputer",
+          "BJUR17: Sistem Informasi",
+          "BJUR18: Sains Data",
+          "BJUR19: Kecerdasan Buatan",
+          "BJUR20: Rekayasa Perangkat Lunak",
+          "BJUR21: Teknologi Informasi",
+          "BJUR22: Teknik Komputer",
+          "BJUR23: Teknik Telekomunikasi",
+          "BJUR24: Keamanan Siber",
+          "BJUR25: Teknik Jaringan"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -463,13 +463,13 @@
           "I/E/C"
         ],
         "jurusan_terkait": [
-          "Teknik Informatika",
-          "Sistem Informasi",
-          "Teknologi Informasi",
-          "Teknik Komputer",
-          "Teknik Telekomunikasi",
-          "Keamanan Siber",
-          "Teknik Jaringan"
+          "BJUR26: Teknik Informatika",
+          "BJUR27: Sistem Informasi",
+          "BJUR28: Teknologi Informasi",
+          "BJUR29: Teknik Komputer",
+          "BJUR30: Teknik Telekomunikasi",
+          "BJUR31: Keamanan Siber",
+          "BJUR32: Teknik Jaringan"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -575,13 +575,13 @@
           "I/R/E"
         ],
         "jurusan_terkait": [
-          "Teknik Mesin",
-          "Teknik Industri",
-          "Teknik Otomotif",
-          "Teknik Aeronautika",
-          "Teknik Material",
-          "Teknik Manufaktur",
-          "Teknik Perkapalan"
+          "BJUR33: Teknik Mesin",
+          "BJUR34: Teknik Industri",
+          "BJUR35: Teknik Otomotif",
+          "BJUR36: Teknik Aeronautika",
+          "BJUR37: Teknik Material",
+          "BJUR38: Teknik Manufaktur",
+          "BJUR39: Teknik Perkapalan"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -691,13 +691,13 @@
           "I/S/E"
         ],
         "jurusan_terkait": [
-          "Teknik Sipil",
-          "Teknik Konstruksi",
-          "Teknik Transportasi",
-          "Teknik Pengairan",
-          "Teknik Lingkungan",
-          "Arsitektur",
-          "Perencanaan Wilayah dan Kota"
+          "BJUR40: Teknik Sipil",
+          "BJUR41: Teknik Konstruksi",
+          "BJUR42: Teknik Transportasi",
+          "BJUR43: Teknik Pengairan",
+          "BJUR44: Teknik Lingkungan",
+          "BJUR45: Arsitektur",
+          "BJUR46: Perencanaan Wilayah dan Kota"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -807,13 +807,13 @@
           "I/E/C"
         ],
         "jurusan_terkait": [
-          "Teknik Kimia",
-          "Teknik Lingkungan",
-          "Teknik Bioproses",
-          "Biokimia Terapan",
-          "Teknik Perminyakan",
-          "Teknik Material",
-          "Teknologi Pangan"
+          "BJUR47: Teknik Kimia",
+          "BJUR48: Teknik Lingkungan",
+          "BJUR49: Teknik Bioproses",
+          "BJUR50: Biokimia Terapan",
+          "BJUR51: Teknik Perminyakan",
+          "BJUR52: Teknik Material",
+          "BJUR53: Teknologi Pangan"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -927,13 +927,13 @@
           "E/C/I"
         ],
         "jurusan_terkait": [
-          "Teknik Industri",
-          "Manajemen Rekayasa",
-          "Teknik Logistik",
-          "Manajemen Operasi",
-          "Teknik Sistem",
-          "Teknik Manufaktur",
-          "Manajemen Kualitas"
+          "BJUR54: Teknik Industri",
+          "BJUR55: Manajemen Rekayasa",
+          "BJUR56: Teknik Logistik",
+          "BJUR57: Manajemen Operasi",
+          "BJUR58: Teknik Sistem",
+          "BJUR59: Teknik Manufaktur",
+          "BJUR60: Manajemen Kualitas"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
@@ -1043,13 +1043,13 @@
           "I/R"
         ],
         "jurusan_terkait": [
-          "Teknik Energi",
-          "Teknik Elektro (Konsentrasi Energi)",
-          "Energi Terbarukan",
-          "Teknik Fisika",
-          "Teknik Lingkungan",
-          "Teknik Perminyakan",
-          "Teknologi Energi"
+          "BJUR61: Teknik Energi",
+          "BJUR62: Teknik Elektro (Konsentrasi Energi)",
+          "BJUR63: Energi Terbarukan",
+          "BJUR64: Teknik Fisika",
+          "BJUR65: Teknik Lingkungan",
+          "BJUR66: Teknik Perminyakan",
+          "BJUR67: Teknologi Energi"
         ],
         "universitas_rekomendasi": [
           "Institut Teknologi Bandung (ITB)",
