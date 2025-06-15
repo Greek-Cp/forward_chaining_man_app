@@ -1085,14 +1085,6 @@ class _QuestionPageState extends State<QuestionPage>
       },
 
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.amber.shade600,
-          onPressed: () {
-            _showAutoFillOptions(context, controller);
-          },
-          child: const Icon(Icons.bolt, size: 28),
-          tooltip: 'Auto Fill (Testing)',
-        ),
         body: Container(
           color: Colors.blue.shade700,
           child: Obx(() {

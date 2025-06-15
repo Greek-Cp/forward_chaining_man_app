@@ -331,6 +331,8 @@ class _FeedbackEvaluationPageState extends State<FeedbackEvaluationPage> {
           ),
         ),
         child: SafeArea(
+          top: true,
+          bottom: false,
           child: Column(
             children: [
               // Header
@@ -699,47 +701,47 @@ class _FeedbackEvaluationPageState extends State<FeedbackEvaluationPage> {
 
                             const SizedBox(height: 16),
 
-                            // Skip button (with warning)
-                            TextButton(
-                              onPressed: () {
-                                // Show confirmation dialog
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('Lewati Evaluasi?'),
-                                    content: const Text(
-                                        'Feedback Anda sangat penting untuk meningkatkan akurasi sistem. Yakin ingin melewati tahap ini?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text('KEMBALI'),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                          showRecommendationResultsGetx(
-                                              widget.recommendationResults);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.red.shade600,
-                                        ),
-                                        child: const Text('YA, LEWATI'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.grey.shade700,
-                                minimumSize: const Size(double.infinity, 44),
-                              ),
-                              child: const Text(
-                                'Lewati Evaluasi',
-                                style: TextStyle(
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
+                            // // Skip button (with warning)
+                            // TextButton(
+                            //   onPressed: () {
+                            //     // Show confirmation dialog
+                            //     showDialog(
+                            //       context: context,
+                            //       builder: (context) => AlertDialog(
+                            //         title: const Text('Lewati Evaluasi?'),
+                            //         content: const Text(
+                            //             'Feedback Anda sangat penting untuk meningkatkan akurasi sistem. Yakin ingin melewati tahap ini?'),
+                            //         actions: [
+                            //           TextButton(
+                            //             onPressed: () => Navigator.pop(context),
+                            //             child: const Text('KEMBALI'),
+                            //           ),
+                            //           ElevatedButton(
+                            //             onPressed: () {
+                            //               Navigator.pop(context);
+                            //               showRecommendationResultsGetx(
+                            //                   widget.recommendationResults);
+                            //             },
+                            //             style: ElevatedButton.styleFrom(
+                            //               backgroundColor: Colors.red.shade600,
+                            //             ),
+                            //             child: const Text('YA, LEWATI'),
+                            //           ),
+                            //         ],
+                            //       ),
+                            //     );
+                            //   },
+                            //   style: TextButton.styleFrom(
+                            //     foregroundColor: Colors.grey.shade700,
+                            //     minimumSize: const Size(double.infinity, 44),
+                            //   ),
+                            //   child: const Text(
+                            //     'Lewati Evaluasi',
+                            //     style: TextStyle(
+                            //       decoration: TextDecoration.underline,
+                            //     ),
+                            //   ),
+                            // ),
 
                             const SizedBox(height: 40),
                           ],

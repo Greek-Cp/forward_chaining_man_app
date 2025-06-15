@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final studentLoginController = Get.put(StudentLoginController());
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Forward Chaining Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
