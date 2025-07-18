@@ -728,6 +728,10 @@ class QuestionController extends GetxController {
       minatContrib,
       recommendations,
     );
+    saveResultsToFirestore(RecommendationResult(
+      workingMemory: workingMemoryList,
+      recommendations: recommendations,
+    ));
 
     return RecommendationResult(
       workingMemory: workingMemoryList,
